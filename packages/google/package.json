@@ -1,0 +1,36 @@
+{
+  "name": "mermaidchart-google",
+  "private": true,
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "login": "clasp login",
+    "push": "clasp push",
+    "watch": "clasp push --watch",
+    "pull": "clasp pull",
+    "build": "rollup -c --bundleConfigAsCjs",
+    "build:watch": "rollup -c --bundleConfigAsCjs --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.22.9",
+    "@babel/plugin-transform-runtime": "^7.22.9",
+    "@babel/preset-env": "^7.22.9",
+    "@babel/preset-typescript": "^7.22.5",
+    "@google/clasp": "^2.4.2",
+    "@rollup/plugin-babel": "^6.0.3",
+    "@rollup/plugin-node-resolve": "^15.1.0",
+    "@types/google-apps-script": "^1.0.65",
+    "@types/google-apps-script-oauth2": "^38.0.0",
+    "@types/node": "^20.4.2",
+    "@types/uuid": "^9.0.2",
+    "rollup": "^3.26.3",
+    "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "js-base64": "^3.7.5",
+    "uuid": "^9.0.0"
+  }
+}

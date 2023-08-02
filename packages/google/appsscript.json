@@ -1,0 +1,80 @@
+{
+  "timeZone": "America/New_York",
+  "dependencies": {
+    "libraries": [
+      {
+        "userSymbol": "OAuth2",
+        "version": "43",
+        "libraryId": "1B7FSrk5Zi6L1rSxxTDgDEUsPzlukDsi4KGuTMorsTQHhGBzBkMun4iDF"
+      }
+    ]
+  },
+  "exceptionLogging": "STACKDRIVER",
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/drive.addons.metadata.readonly",
+    "https://www.googleapis.com/auth/gmail.addons.current.action.compose",
+    "https://www.googleapis.com/auth/gmail.addons.current.message.readonly",
+    "https://www.googleapis.com/auth/gmail.addons.execute",
+    "https://www.googleapis.com/auth/script.locale",
+    "https://www.googleapis.com/auth/workspace.linkpreview",
+    "https://www.googleapis.com/auth/script.external_request",
+    "https://www.googleapis.com/auth/drive.file",
+    "https://www.googleapis.com/auth/documents",
+    "https://www.googleapis.com/auth/script.container.ui"
+  ],
+  "runtimeVersion": "V8",
+  "addOns": {
+    "common": {
+      "name": "Mermaid Chart",
+      "logoUrl": "https://i.ibb.co/nPcBc9z/icon-1.png",
+      "useLocaleFromApp": true,
+      "universalActions": [
+        {
+          "label": "Learn more about Mermaid Chart",
+          "openLink": "https://www.mermaidchart.com"
+        }
+      ],
+      "layoutProperties": {
+        "primaryColor": "#424242",
+        "secondaryColor": "#ff3670"
+      }
+    },
+    "gmail": {
+      "contextualTriggers": [
+        {
+          "unconditional": {},
+          "onTriggerFunction": "onGmailMessage"
+        }
+      ],
+      "composeTrigger": {
+        "selectActions": [
+          {
+            "text": "Insert Diagram",
+            "runFunction": "onGmailCompose"
+          }
+        ],
+        "draftAccess": "NONE"
+      }
+    },
+    "docs": {
+      "homepageTrigger": {
+        "runFunction": "onDocsHomepage"
+      },
+      "linkPreviewTriggers": [
+        {
+          "patterns": [
+            {
+              "hostPattern": "mermaidchart.com"
+            },
+            {
+              "hostPattern": "whole-tires-fix.loca.lt"
+            }
+          ],
+          "runFunction": "diagramLinkPreview",
+          "labelText": "Mermaid Diagram",
+          "logoUrl": "https://i.ibb.co/nPcBc9z/icon-1.png"
+        }
+      ]
+    }
+  }
+}
