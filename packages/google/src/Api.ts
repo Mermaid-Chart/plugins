@@ -77,19 +77,24 @@ export function accessProtectedResource(
  *  @return A configured OAuth2 service object.
  */
 function getOAuthService() {
-  return (
-    OAuth2.createService('Mermaid Chart')
-      .setAuthorizationBaseUrl('https://whole-tires-fix.loca.lt/oauth/authorize')
-      .setTokenUrl('https://whole-tires-fix.loca.lt/oauth/token')
-      .setClientId('f88f1365-dea8-466e-8880-e22211e145bd')
-      .setParam('code_challenge_method', 'S256')
-      .setScope('email')
-      .setCallbackFunction('authCallback')
-      // @ts-expect-error
-      .generateCodeVerifier()
-      .setCache(CacheService.getUserCache())
-      .setPropertyStore(PropertiesService.getUserProperties())
-  );
+  pkceChallengeVerifier();
+  const userProps = PropertiesService.getUserProperties();
+  return OAuth2.createService('Mermaid Chart')
+    .setAuthorizationBaseUrl('https://whole-tires-fix.loca.lt/oauth/authorize')
+    .setTokenUrl('https://whole-tires-fix.loca.lt/oauth/token')
+    .setClientId('f88f1365-dea8-466e-8880-e22211e145bd')
+    .setScope('email')
+    .setCallbackFunction('authCallback')
+    .setCache(CacheService.getUserCache())
+    .setPropertyStore(PropertiesService.getUserProperties())
+    .setTokenPayloadHandler((payload) => {
+      // @ts-ignore
+      payload['code_verifier'] = userProps.getProperty('code_verifier');
+      return payload;
+    })
+    .setParam('response_type', 'code')
+    .setParam('code_challenge_method', 'S256')
+    .setParam('code_challenge', userProps.getProperty('code_challenge') ?? '');
 }
 
 /**
@@ -133,6 +138,9 @@ export function authCallback(callbackRequest: any) {
  */
 export function resetOAuth() {
   getOAuthService().reset();
+  PropertiesService.getUserProperties()
+    .deleteProperty('code_challenge')
+    .deleteProperty('code_verifier');
 }
 
 export function cachedFetch<T>(key: string, url: string, ttl: number, fallback: string = '[]'): T {
@@ -162,4 +170,26 @@ function hasAccess() {
   const service = getOAuthService();
   const maybeAuthorized = service.hasAccess();
   return maybeAuthorized;
+}
+
+function pkceChallengeVerifier() {
+  const userProps = PropertiesService.getUserProperties();
+  if (!userProps.getProperty('code_verifier')) {
+    let verifier = '';
+    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+    for (let i = 0; i < 128; i++) {
+      verifier += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+
+    const sha256Hash = Utilities.computeDigest(
+      Utilities.DigestAlgorithm.SHA_256,
+      verifier,
+      Utilities.Charset.US_ASCII
+    );
+    let challenge = Utilities.base64EncodeWebSafe(sha256Hash);
+    challenge = challenge.slice(0, challenge.indexOf('='));
+    userProps.setProperty('code_verifier', verifier);
+    userProps.setProperty('code_challenge', challenge);
+  }
 }
