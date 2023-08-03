@@ -67,7 +67,7 @@
               "hostPattern": "mermaidchart.com"
             },
             {
-              "hostPattern": "whole-tires-fix.loca.lt"
+              "hostPattern": "stage.mermaidchart.com"
             }
           ],
           "runFunction": "diagramLinkPreview",

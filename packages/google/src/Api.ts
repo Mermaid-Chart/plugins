@@ -1,6 +1,6 @@
 import { MCDocument, CacheKeys, URLS, TimeInSeconds, MCProject } from './Common';
 
-export const baseURL = 'https://whole-tires-fix.loca.lt';
+export const baseURL = 'https://stage.mermaidchart.com';
 
 /**
  * Attempts to access a non-Google API using a constructed service
@@ -57,7 +57,7 @@ export function accessProtectedResource(
     // Invoke the authorization flow using the default authorization prompt card.
     CardService.newAuthorizationException()
       .setAuthorizationUrl(service.getAuthorizationUrl())
-      .setResourceDisplayName('Display name to show to the user')
+      .setResourceDisplayName('diagrams')
       .throwException();
   }
 }
@@ -80,8 +80,8 @@ function getOAuthService() {
   pkceChallengeVerifier();
   const userProps = PropertiesService.getUserProperties();
   return OAuth2.createService('Mermaid Chart')
-    .setAuthorizationBaseUrl('https://whole-tires-fix.loca.lt/oauth/authorize')
-    .setTokenUrl('https://whole-tires-fix.loca.lt/oauth/token')
+    .setAuthorizationBaseUrl(baseURL + '/oauth/authorize')
+    .setTokenUrl(baseURL + '/oauth/token')
     .setClientId('f88f1365-dea8-466e-8880-e22211e145bd')
     .setScope('email')
     .setCallbackFunction('authCallback')

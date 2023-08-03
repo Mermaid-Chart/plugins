@@ -38,7 +38,7 @@ export function createCard(e: any, selectedProject?: string) {
     const { title, documentID, updatedAt } = document;
     documentSection.addWidget(
       CardService.newDecoratedText()
-        .setText(title)
+        .setText(title ?? 'Untitled Diagram')
         .setBottomLabel('Last Updated: ' + updatedAt)
         .setOnClickAction(
           CardService.newAction().setFunctionName('injectImageIntoDocument').setParameters({
