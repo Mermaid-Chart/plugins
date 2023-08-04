@@ -1,6 +1,6 @@
 import { MCDocument, CacheKeys, URLS, TimeInSeconds, MCProject } from './Common';
 
-export const baseURL = 'https://stage.mermaidchart.com';
+export const baseURL = 'https://www.mermaidchart.com';
 
 /**
  * Attempts to access a non-Google API using a constructed service

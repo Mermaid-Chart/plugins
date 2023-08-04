@@ -11,22 +11,19 @@
   },
   "exceptionLogging": "STACKDRIVER",
   "oauthScopes": [
-    "https://www.googleapis.com/auth/drive.addons.metadata.readonly",
-    "https://www.googleapis.com/auth/gmail.addons.current.action.compose",
-    "https://www.googleapis.com/auth/gmail.addons.current.message.readonly",
-    "https://www.googleapis.com/auth/gmail.addons.execute",
-    "https://www.googleapis.com/auth/script.locale",
-    "https://www.googleapis.com/auth/workspace.linkpreview",
-    "https://www.googleapis.com/auth/script.external_request",
-    "https://www.googleapis.com/auth/drive.file",
     "https://www.googleapis.com/auth/documents",
-    "https://www.googleapis.com/auth/script.container.ui"
+    "https://www.googleapis.com/auth/drive.addons.metadata.readonly",
+    "https://www.googleapis.com/auth/drive.file",
+    "https://www.googleapis.com/auth/script.container.ui",
+    "https://www.googleapis.com/auth/script.external_request",
+    "https://www.googleapis.com/auth/script.locale",
+    "https://www.googleapis.com/auth/workspace.linkpreview"
   ],
   "runtimeVersion": "V8",
   "addOns": {
     "common": {
       "name": "Mermaid Chart",
-      "logoUrl": "https://i.ibb.co/nPcBc9z/icon-1.png",
+      "logoUrl": "https://www.mermaidchart.com/img/mermaid-chart-48.png",
       "useLocaleFromApp": true,
       "universalActions": [
         {
@@ -65,14 +62,11 @@
           "patterns": [
             {
               "hostPattern": "mermaidchart.com"
-            },
-            {
-              "hostPattern": "stage.mermaidchart.com"
             }
           ],
           "runFunction": "diagramLinkPreview",
           "labelText": "Mermaid Diagram",
-          "logoUrl": "https://i.ibb.co/nPcBc9z/icon-1.png"
+          "logoUrl": "https://www.mermaidchart.com/img/mermaid-chart-48.png"
         }
       ]
     }
