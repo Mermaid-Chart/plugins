@@ -22,7 +22,7 @@ export function createCard(e: any, selectedProject?: string) {
     const text =
       projects.length > 0
         ? 'Select a project to continue.'
-        : 'No projects found. Create a project in MermaidChart to continue.';
+        : 'No projects found. Create a project in Mermaid Chart to continue.';
     builder.addSection(
       CardService.newCardSection().addWidget(CardService.newTextParagraph().setText(text))
     );
@@ -50,17 +50,23 @@ export function createCard(e: any, selectedProject?: string) {
             // TODO: Fix URL
             .setIconUrl('https://www.mermaidchart.com/img/mermaid-chart-48.png')
             .setOpenLink(CardService.newOpenLink().setUrl(baseURL + URLS.diagram(document).edit))
-            .setAltText('Open in MermaidChart')
+            .setAltText('Open in Mermaid Chart')
         )
     );
   }
   builder.addSection(documentSection);
   builder.setFixedFooter(
-    CardService.newFixedFooter().setPrimaryButton(
-      CardService.newTextButton()
-        .setText('Logout')
-        .setOnClickAction(CardService.newAction().setFunctionName('resetOAuth'))
-    )
+    CardService.newFixedFooter()
+      .setPrimaryButton(
+        CardService.newTextButton()
+          .setText('Logout')
+          .setOnClickAction(CardService.newAction().setFunctionName('resetOAuth'))
+      )
+      .setSecondaryButton(
+        CardService.newTextButton()
+          .setText('Sync Diagrams')
+          .setOnClickAction(CardService.newAction().setFunctionName('refreshAllImagesInDocument'))
+      )
   );
   return builder.build();
 }

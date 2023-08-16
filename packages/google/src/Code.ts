@@ -7,7 +7,10 @@
 import { diagramLinkPreview as _diagramLinkPreview } from './Links';
 import { authCallback as _authCallback, resetOAuth as _resetOAuth } from './Api';
 import { createCard } from './Card';
-import { injectImageIntoDocument as _injectImageIntoDocument } from './Docs';
+import {
+  injectImageIntoDocument as _injectImageIntoDocument,
+  refreshAllImagesInDocument as _refreshAllImagesInDocument
+} from './Docs';
 
 // function onGmailCompose(e: any) {
 //   return _onGmailCompose(e);
@@ -43,4 +46,6 @@ function injectImageIntoDocument(e: any) {
   return _injectImageIntoDocument(e);
 }
 
-// TODO: Add a refresh all images button, which will scan all images in the document with our URL and refresh them
+function refreshAllImagesInDocument(e: any) {
+  return _refreshAllImagesInDocument();
+}
