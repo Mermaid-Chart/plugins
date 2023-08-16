@@ -149,7 +149,11 @@ export function cachedFetch<T>(key: string, url: string, ttl: number, fallback: 
   let value = shouldUseCache ? cache.get(key) : undefined;
   if (!value) {
     value = accessProtectedResource(url)?.getContentText() ?? fallback;
-    cache.put(key, value, ttl);
+    try {
+      cache.put(key, value, ttl);
+    } catch {
+      // Ignore. Cache put might fail for large objects. Which is fine.
+    }
   }
   return JSON.parse(value) as T;
 }

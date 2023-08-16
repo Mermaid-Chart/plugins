@@ -3,7 +3,7 @@ import { MCProject, URLS } from './Common';
 
 export function createCard(e: any, selectedProject?: string) {
   const builder = CardService.newCardBuilder();
-  const projects: MCProject[] = getProjects();
+  const projects: MCProject[] = getProjects().sort((a, b) => a.title.localeCompare(b.title));
   const projectSelectionSection = CardService.newCardSection();
   const radioGroup = CardService.newSelectionInput()
     .setType(CardService.SelectionInputType.DROPDOWN)
