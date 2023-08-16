@@ -142,7 +142,7 @@ export interface MCDocument {
   major: string;
   minor: string;
   title: string;
-  updatedAt: Date;
+  updatedAt: string;
 }
 
 export const CacheKeys = {

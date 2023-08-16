@@ -39,7 +39,7 @@ export function createCard(e: any, selectedProject?: string) {
     documentSection.addWidget(
       CardService.newDecoratedText()
         .setText(title ?? 'Untitled Diagram')
-        .setBottomLabel('Last Updated: ' + updatedAt)
+        .setBottomLabel('Last Updated: ' + new Date(updatedAt).toLocaleString())
         .setOnClickAction(
           CardService.newAction().setFunctionName('injectImageIntoDocument').setParameters({
             documentID
