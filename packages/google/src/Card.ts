@@ -47,7 +47,6 @@ export function createCard(e: any, selectedProject?: string) {
         )
         .setButton(
           CardService.newImageButton()
-            // TODO: Fix URL
             .setIconUrl('https://www.mermaidchart.com/img/mermaid-chart-48.png')
             .setOpenLink(CardService.newOpenLink().setUrl(baseURL + URLS.diagram(document).edit))
             .setAltText('Open in Mermaid Chart')
