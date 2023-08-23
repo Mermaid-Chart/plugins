@@ -1,0 +1,29 @@
+{
+  "extends": "./.svelte-kit/tsconfig.json",
+  "compilerOptions": {
+    "module": "ES2022",
+    "allowJs": true,
+    "checkJs": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strict": true,
+    "types": ["office-js"],
+    "typeRoots": [ "node_modules/@types" ] 
+  },
+  "include": [
+    "./.svelte-kit/ambient.d.ts",
+    "./.svelte-kit/types/**/$types.d.ts",
+    "./vite.config.ts",
+    "./svelte.config.js",
+    "./src/**/*.js",
+    "./src/**/*.ts",
+    "./src/**/*.svelte",
+    "./src/**/*.js",
+    "./src/**/*.ts",
+    "./src/**/*.svelte"
+  ],
+  "exclude": ["./svelte.config.js"]
+}

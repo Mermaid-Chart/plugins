@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%sveltekit.assets%/img/favicon.ico" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Mermaid Chart for Office</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <script type="text/javascript">
+      // Office js deletes window.history.pushState and window.history.replaceState. Cache them and restore them
+      window._historyCache = {
+        replaceState: window.history.replaceState,
+        pushState: window.history.pushState
+      };
+    </script>
+
+    <script
+      type="text/javascript"
+      src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+
+    <script type="text/javascript">
+      // Office js deletes window.history.pushState and window.history.replaceState. Restore them
+      window.history.replaceState = window._historyCache.replaceState;
+      window.history.pushState = window._historyCache.pushState;
+    </script>
+
+    <link
+      rel="stylesheet"
+      href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/css/fabric.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/css/fabric.components.min.css" />
+    <script src="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/js/fabric.min.js"></script>
+
+    %sveltekit.head%
+  </head>
+  <body class="ms-Fabric h-fit">
+    <div style="height: 100%">%sveltekit.body%</div>
+  </body>
+</html>

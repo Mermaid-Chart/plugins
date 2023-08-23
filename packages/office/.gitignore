@@ -1,0 +1,26 @@
+coverage
+.DS_Store
+node_modules
+/build
+/.svelte-kit
+/package
+static/blog
+.env
+.env.*
+!.env.dev
+!.env.hosted
+test-results
+screenshots
+
+# Supabase
+.branches
+.temp
+
+.vercel
+.env-local-hosted
+.env-local-localdb
+playwright/
+server.log
+
+prisma/schema.prisma
+vite.config.ts.timestamp*
