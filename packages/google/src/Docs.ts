@@ -6,10 +6,10 @@ function getImageByDocumentID(documentID: string) {
   const resp = accessProtectedResource(
     URLS.raw(
       {
-        documentID
+        documentID,
       },
-      'light'
-    ).png
+      'light',
+    ).png,
   );
 
   if (resp) {
@@ -20,7 +20,7 @@ function getImageByDocumentID(documentID: string) {
 function scaleImageAndSetURL(
   image: GoogleAppsScript.Document.InlineImage,
   documentID: string,
-  { width, height }: { width: number; height: number }
+  { width, height }: { width: number; height: number },
 ) {
   const imageHeight = image.getHeight();
   const imageWidth = image.getWidth();
@@ -28,7 +28,7 @@ function scaleImageAndSetURL(
   const editURL =
     baseURL +
     URLS.shortDiagram({
-      documentID
+      documentID,
     }) +
     '#inlineImage=true';
   image.setLinkUrl(editURL);
@@ -83,7 +83,7 @@ export function refreshAllImagesInDocument() {
     const newImage = image.getParent().asParagraph().insertInlineImage(childIndex, blob);
     scaleImageAndSetURL(newImage, documentID, {
       width: image.getWidth(),
-      height: image.getHeight()
+      height: image.getHeight(),
     });
     image.removeFromParent();
   }

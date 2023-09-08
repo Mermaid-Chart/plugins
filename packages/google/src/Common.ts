@@ -1,5 +1,5 @@
 /**
- * Creates a card with an image of a cat, overlayed with the text.
+ * Creates a card with an image of a cat, overlaid with the text.
  * @param {String} text The text to overlay on the image.
  * @param {Boolean} isHomepage True if the card created here is a homepage;
  *      false otherwise. Defaults to false.
@@ -7,7 +7,7 @@
  */
 export function createCatCard(
   text: string,
-  isHomepage = false
+  isHomepage = false,
 ): GoogleAppsScript.Card_Service.Card {
   // Use the "Cat as a service" API to get the cat image. Add a "time" URL
   // parameter to act as a cache buster.
@@ -17,7 +17,7 @@ export function createCatCard(
   const imageUrl = Utilities.formatString(
     'https://cataas.com/cat/says/%s?time=%s',
     encodeURIComponent(caption),
-    now.getTime()
+    now.getTime(),
   );
   const image = CardService.newImage().setImageUrl(imageUrl).setAltText('Meow');
 
@@ -36,7 +36,7 @@ export function createCatCard(
   const footer = CardService.newFixedFooter().setPrimaryButton(
     CardService.newTextButton()
       .setText('Powered by cataas.com')
-      .setOpenLink(CardService.newOpenLink().setUrl('https://cataas.com'))
+      .setOpenLink(CardService.newOpenLink().setUrl('https://cataas.com')),
   );
 
   // Assemble the widgets and return the card.
@@ -46,7 +46,7 @@ export function createCatCard(
   if (!isHomepage) {
     // Create the header shown when the card is minimized,
     // but only when this card is a contextual card. Peek headers
-    // are never used by non-contexual cards like homepages.
+    // are never used by non-contextual cards like homepages.
     const peekHeader = CardService.newCardHeader()
       .setTitle('Contextual Cat')
       .setImageUrl('https://www.gstatic.com/images/icons/material/system/1x/pets_black_48dp.png')
@@ -86,23 +86,23 @@ function onChangeCat(e: any) {
 export const URLS = {
   rest: {
     users: {
-      self: `/rest-api/users/me`
+      self: `/rest-api/users/me`,
     },
     projects: {
       list: `/rest-api/projects`,
       get: (projectID: string) => {
         return {
-          documents: `/rest-api/projects/${projectID}/documents`
+          documents: `/rest-api/projects/${projectID}/documents`,
         };
-      }
-    }
+      },
+    },
   },
   raw: (
     document: Pick<MCDocument, 'documentID'> & {
       major?: string;
       minor?: string;
     },
-    theme: 'light' | 'dark'
+    theme: 'light' | 'dark',
   ) => {
     const base = `/raw/${document.documentID}?version=v${document.major ?? 0}.${
       document.minor ?? 1
@@ -110,7 +110,7 @@ export const URLS = {
     return {
       html: base + 'html',
       svg: base + 'svg',
-      png: base + 'png'
+      png: base + 'png',
     };
   },
   diagram: (d: Pick<MCDocument, 'projectID' | 'documentID' | 'major' | 'minor'>) => {
@@ -118,12 +118,12 @@ export const URLS = {
     return {
       self: base,
       edit: base + '/edit',
-      view: base + '/view'
+      view: base + '/view',
     } as const;
   },
   shortDiagram: (d: Pick<MCDocument, 'documentID'>) => {
     return `/app/diagrams/${d.documentID}`;
-  }
+  },
 } as const;
 
 export interface MCUser {
@@ -147,7 +147,7 @@ export interface MCDocument {
 
 export const CacheKeys = {
   projects: 'mc_projects',
-  documents: (projectID: string) => `mc_documents_${projectID}`
+  documents: (projectID: string) => `mc_documents_${projectID}`,
 } as const;
 
 export const TimeInSeconds = {
@@ -156,5 +156,5 @@ export const TimeInSeconds = {
   day: 60 * 60 * 24,
   minutes: (n: number) => n * TimeInSeconds.minute,
   hours: (n: number) => n * TimeInSeconds.hour,
-  days: (n: number) => n * TimeInSeconds.day
+  days: (n: number) => n * TimeInSeconds.day,
 } as const;

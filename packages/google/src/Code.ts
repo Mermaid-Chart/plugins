@@ -9,7 +9,7 @@ import { authCallback as _authCallback, resetOAuth as _resetOAuth } from './Api'
 import { createCard } from './Card';
 import {
   injectImageIntoDocument as _injectImageIntoDocument,
-  refreshAllImagesInDocument as _refreshAllImagesInDocument
+  refreshAllImagesInDocument as _refreshAllImagesInDocument,
 } from './Docs';
 
 // function onGmailCompose(e: any) {
