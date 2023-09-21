@@ -1,4 +1,3 @@
-import { URLS } from '$lib/urls';
 import { C } from '$lib/constants';
 import { fetchBase64Image, splitReferenceToken } from '$lib/utils';
 import { loading } from '../stores/loading';
@@ -87,7 +86,7 @@ export class WordService extends OfficeService {
 
   private async insertNewDiagram(tag: string) {
     const docDetails = splitReferenceToken(tag);
-    const base64Image = await fetchBase64Image(URLS.raw(docDetails.documentID, docDetails.major, docDetails.minor), this.authToken);
+    const base64Image = await this.mermaidChartApi.getDocumentAsPng(docDetails, 'light');//await fetchBase64Image(URLS.raw(docDetails.documentID, docDetails.major, docDetails.minor), this.authToken);
 
     try {
       await Word.run(async (context) => {

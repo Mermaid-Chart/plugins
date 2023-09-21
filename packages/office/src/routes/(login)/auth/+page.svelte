@@ -9,7 +9,7 @@
   const mermaidChartApi = new MermaidChart({
     clientID: C.ClientId,
     baseURL: C.MermaidChartBaseUrl,
-    redirectURI: C.oauthRedirect
+    redirectURI: `${C.mcOfficeBaseUrl}/auth`
   });
 
   let userMessage = '';
@@ -42,8 +42,8 @@
         authStateStore.update(authData.state, verifier);
         void goto(authData.url);
       }
-    }).catch(() => {
-      //failed to load
+    }).catch((error) => {
+      userMessage = `office failed to load ${error}`;
     });
   });
 </script>

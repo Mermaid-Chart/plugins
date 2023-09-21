@@ -4,7 +4,7 @@ import defaultAxios, { type AxiosInstance } from "axios";
 // eslint-disable-next-line unicorn/prefer-node-protocol
 import {Buffer} from 'buffer';
 
-const defaultBaseURL = "https://www.mermaidchart.com"; // "http://127.0.0.1:5174"
+const defaultBaseURL = "https://www.mermaidchart.com"; 
 const authorizationURLTimeout = 60_000;
 
 export interface InitParams {
@@ -236,11 +236,28 @@ export class MermaidChart {
     return projects.data;
   }
 
+  // public async getDocument(documentID: string): Promise<MCDocument> {
+  //   const document = await this.axios.get<MCDocument[]>(
+  //     this.URLS.rest.documents.get(documentID)
+  //   );
+  //   return document.data;
+  // }
+
   public getEditURL(
     document: Pick<MCDocument, "documentID" | "major" | "minor" | "projectID">
   ) {
     const url = `${this.baseURL}${this.URLS.diagram(document).edit}`;
     return url;
+  }
+
+  public async getDocumentAsPng(
+    document: Pick<MCDocument, "documentID" | "major" | "minor">,
+    theme: "light" | "dark"
+  ) {
+    const png = await this.axios.get<string>(
+      this.URLS.raw(document, theme).png
+    );
+    return png.data;
   }
 
   public async getRawDocument(
@@ -265,6 +282,11 @@ export class MermaidChart {
       users: {
         self: `/rest-api/users/me`,
       },
+      documents: {
+        get: (documentID: string) => {
+          return `/rest-api/documents/${documentID}`;
+        }
+      },
       projects: {
         list: `/rest-api/projects`,
         get: (projectID: string) => {
@@ -282,6 +304,7 @@ export class MermaidChart {
       return {
         html: base + "html",
         svg: base + "svg",
+        png: base + 'png'
       };
     },
     diagram: (
@@ -290,7 +313,7 @@ export class MermaidChart {
       const base = `/app/projects/${d.projectID}/diagrams/${d.documentID}/version/v${d.major}.${d.minor}`;
       return {
         self: base,
-        edit: base + "/edit",
+        edit: `/diagrams/${d.documentID}/`,
         view: base + "/view",
       } as const;
     },

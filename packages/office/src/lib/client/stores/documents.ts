@@ -1,8 +1,7 @@
 import { writable } from 'svelte/store';
-import { getProjectDocuments } from '../clientApi/projectManager';
 import { getDiagramType } from '$lib/utils';
 import { loading } from './loading';
-import type { MCDocument } from '$lib/mermaidChartApi';
+import type { MCDocument, MermaidChart } from '$lib/mermaidChartApi';
 
 interface MCDocumentDB {
   filterStr: string;
@@ -20,34 +19,12 @@ function createDocumentStore() {
   const { subscribe, set, update } = writable(defaultDB);
   return {
     subscribe,
-    fetchDocuments: async (projectID: string) => {
-      loading.setState(true, 'Getting diagrams...');
-      const documents = await getProjectDocuments(projectID);
-      
-      const res = update((documentDB) => {
-        documentDB.list = [];
-        documentDB.documents = {};
-        if(documents) {
-          for (const document of documents) {
-            if (document.code) {
-              document.diagramType = getDiagramType(document.code);
-              documentDB.documents[document.documentID] = document;
-              documentDB.list.push(document.documentID);
-            }
-          }
-          documentDB.list.sort((a, b) => doSort(a, b, 'updatedAt', documentDB.documents, 'asc'));
-        }
-        return { ...documentDB };
-      });
-      loading.setState(false, '');
-      return res;
-    },
-    fetchAllDocuments: async (projectIDList: string[]) => {
+    fetchDocuments: async (projectIDList: string[], mermaidChartApi: MermaidChart) => {
       loading.setState(true, 'Getting diagrams...');
       const documents: MCDocument[] = [];
       
       for (const projectID of projectIDList) {
-        const projectDocuments = await getProjectDocuments(projectID);
+        const projectDocuments = await mermaidChartApi.getDocuments(projectID);
         documents.push(...projectDocuments);
       }
       

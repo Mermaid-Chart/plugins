@@ -8,12 +8,12 @@
   import EllipsisIcon from 'svelte-icons/fa/FaEllipsisV.svelte';
   import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
 
-  storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
+  // storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
   let syncDiagramsInDocument: () => Promise<void>;
 </script>
 
-<AppBar
+<!-- <AppBar
   gridColumns="grid-cols-3"
   class="shadow shadow-slate-500/10 w-screen sticky top-0 z-20"
   slotDefault="place-self-center"
@@ -28,9 +28,9 @@
       <div class="w-4 h-4"><EllipsisIcon /></div>
     </button>
   </svelte:fragment>
-</AppBar>
+</AppBar> -->
 
-<div data-popup="header-menu" class="z-20">
+<!-- <div data-popup="header-menu" class="z-20">
   <div class="flex flex-col gap-4 bg-neutral-100 rounded p-8">
     <a href="/diagrams">Diagrams</a>
     <hr />
@@ -38,7 +38,7 @@
     <hr />
     <a href="/settings" class="no-underline">Settings</a>
   </div>
-</div>
+</div> -->
 
 <Toast position="t" />
 
@@ -54,7 +54,7 @@
     </div>
   {:else}
     <div class="pb-12">
-      <slot />
+      <slot {syncDiagramsInDocument}/>
     </div>
   {/if}
 </div>

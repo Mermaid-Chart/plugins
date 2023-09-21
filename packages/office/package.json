@@ -28,6 +28,7 @@
     "@logtail/pino": "^0.3.1",
     "@sveltejs/adapter-vercel": "3.0.1",
     "@types/uuid": "^9.0.1",
+    "autoprefixer": "^10.4.15",
     "axios": "^1.4.0",
     "buffer": "^6.0.3",
     "html2canvas": "^1.4.1",

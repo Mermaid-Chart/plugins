@@ -1,32 +1,58 @@
 <script lang="ts">
   import type { OfficeManager } from '$lib/client/clientApi/officeManager';
-  import { URLS } from '$lib/urls';
   import { createEventDispatcher } from 'svelte';
   import { documentStore } from '../stores/documents';
+  import EllipsisIcon from 'svelte-icons/fa/FaEllipsisV.svelte';
+  import { popup, storePopup } from '@skeletonlabs/skeleton';
+  import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
+    import { C } from '$lib/constants';
+
+  storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
   export let documentID: string;
   export let isOfficeInitialized = false;
-
+  export let officeManager: OfficeManager;
+  export let editUrl: string;
+  
   const dispatch = createEventDispatcher();
   const diagram = $documentStore.documents[documentID];
 
-  export let officeManager: OfficeManager;
-
-  const editUrl = URLS.app.diagrams.pick(diagram).edit;
-
-  const editDiagram = (url: string) => {
+  const editDiagram = () => {
     if (isOfficeInitialized) {
       Office.context.ui.displayDialogAsync(
-        url,
+        editUrl,
         { height: 300, width: 600 },
         function (asyncResult) {
           const dialog = asyncResult.value;
           dialog.addEventHandler(Office.EventType.DialogMessageReceived, (arg) => {
             dialog.close();
-            editFinished();
+            void editFinished();
           });
         }
       );
+    }
+  };
+
+  const previewDiagram = () => {
+    if (isOfficeInitialized) {
+      Office.context.ui.displayDialogAsync(
+        `${C.mcOfficeBaseUrl}/preview?id=${documentID}`,
+        { height: 300, width: 600 },
+        function (asyncResult) {
+          const dialog = asyncResult.value;
+          dialog.addEventHandler(Office.EventType.DialogMessageReceived, (arg) => {
+            dialog.close();
+            void processPreviewResponse(arg);
+          });
+        }
+      );
+    }
+  };
+
+  const processPreviewResponse = async (arg) => {
+    const response = JSON.parse(arg.message);
+    if(response) {
+      await officeManager.insertDiagram(diagram);
     }
   };
 
@@ -34,15 +60,20 @@
     dispatch('editFinished');
   };
 
-  const doInsert = async () => {
+  const insertDiagram = async () => {
     await officeManager.insertDiagram(diagram);
   };
 </script>
 
-<button on:click={() => doInsert()} class="card hover:shadow-lg p-3 cursor-pointer">
+<!-- <button on:click={() => doInsert()} class="card hover:shadow-lg p-3 cursor-pointer"> -->
   <div data-testid="diagram-title" class="mb-4 grid gap-2 text-center">
     {diagram.title || 'Untitled Diagram'}
   </div>
+  <button
+      use:popup={{ event: 'click', target: 'header-menu' }}
+      class="p-2 rounded-full hover:bg-neutral-200">
+      <div class="w-4 h-4"><EllipsisIcon /></div>
+    </button>
   <div class="text-xs text-gray-500 dark:text-gray-400 my-2 text-center flex flex-col gap-1">
     <div>Last updated:</div>
     <div>{diagram?.updatedAt ? new Date(diagram?.updatedAt).toLocaleString() : 'na'}</div>
@@ -52,7 +83,17 @@
       <a on:click|stopPropagation class="ms-link" href={editUrl}>Open in Mermaid Chart</a>
     </div>
   </div>
-</button>
+<!-- </button> -->
+
+<div data-popup="header-menu" class="z-20">
+  <div class="flex flex-col gap-4 bg-neutral-100 rounded p-8">
+    <button on:click={() => insertDiagram()} class="text-left">Insert</button>
+    <hr />
+    <button on:click={() => previewDiagram()} class="text-left">Preview</button>
+    <hr />
+    <button on:click={() => editDiagram()} class="text-left">Edit</button>
+  </div>
+</div>
 
 <svelte:head>
   <link

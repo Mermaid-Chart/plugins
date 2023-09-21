@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { isEmpty } from '$lib/utils';
   import { onMount } from 'svelte';
   import { C } from '$lib/constants';
   import { OfficeManager } from '$lib/client/clientApi/officeManager';
@@ -7,25 +6,32 @@
   import DocumentCard from '$components/DocumentCard.svelte';
   import { documentStore } from '$lib/client/stores/documents';
   import { loading } from '$lib/client/stores/loading';
-  import { projectStore } from '$lib/client/stores/projects';
   import { showUserMessage } from '$lib/client/stores/messaging';
+  import { MermaidChart, type MCProject, type MCDocument } from '$lib/mermaidChartApi';
 
   let selectedProject = 'all';
   let authToken: string | undefined;
   let isOfficeInitialized = false;
-  let projectStoreLoaded = false;
   let officeManager: OfficeManager;
+  let projects: MCProject[] = [];
+  let projectIds: string[] = [];
 
+  const mermaidChartApi = new MermaidChart({
+    clientID: C.ClientId,
+    baseURL: C.MermaidChartBaseUrl,
+    redirectURI: `${C.mcOfficeBaseUrl}/auth`
+  });
+  
   onMount(() => {
     const Office = window.Office;
     Office.onReady(async (info) => {
       isOfficeInitialized = true;
-      officeManager = new OfficeManager(info.host);
+      officeManager = new OfficeManager(info.host, mermaidChartApi);
 
+      authToken = await getAuthKey();
+      
       if (authToken) {
         await loadProjects();
-      } else {
-        authToken = await getAuthKey();
       }
     }).catch((error) => {
       showUserMessage('Office environment unable to start', 'error');
@@ -35,12 +41,14 @@
   const getAuthKey = async () => {
     let key;
     try {
-      if (isOfficeInitialized && Office.context.roamingSettings) {
-        authToken = Office.context.roamingSettings.get(C.TokenSettingName) as string;
-      }
-
+      authToken = mermaidChartApi.getAccessToken();
       if (!authToken) {
-        authToken = authStore.accessKey();
+        if (isOfficeInitialized && Office.context.roamingSettings) {
+          authToken = Office.context.roamingSettings.get(C.TokenSettingName) as string;
+        }
+        if (!authToken) {
+          authToken = authStore.accessKey();
+        }
       }
 
       if (authToken) {
@@ -54,7 +62,7 @@
   const authenticate = () => {
     if (isOfficeInitialized) {
       Office.context.ui.displayDialogAsync(
-        C.oauthRedirect,
+        `${C.mcOfficeBaseUrl}/auth`,
         { height: 200, width: 200 },
         function (asyncResult) {
           const dialog = asyncResult.value;
@@ -71,6 +79,8 @@
     const { status, result } = JSON.parse(arg.message);
     if (status && status == 'success') {
       authToken = result as string;
+      mermaidChartApi.setAccessToken(authToken);
+
       if (isOfficeInitialized && Office.context.roamingSettings) {
         Office.context.roamingSettings.set(C.TokenSettingName, authToken);
       }
@@ -85,23 +95,25 @@
   }
 
   const loadProjects = async () => {
-    if (!projectStoreLoaded) {
-      await projectStore.fetchProjects();
-      projectStoreLoaded = true;
-      await refreshDiagramList();
+    projects = await mermaidChartApi.getProjects();
+    projectIds = [];
+    for(let project of projects) {
+      projectIds.push(project.id);
     }
+    await refreshDiagramList();
   };
 
   const refreshDiagramList = async () => {
-    await (selectedProject === 'all'
-      ? documentStore.fetchAllDocuments($projectStore.list)
-      : documentStore.fetchDocuments(selectedProject));
+    const documentList: MCDocument[] = [];
+    if(selectedProject === 'all') {
+      documentStore.fetchDocuments(projectIds, mermaidChartApi);
+    } else {
+      documentStore.fetchDocuments([selectedProject], mermaidChartApi);
+    }
   };
 
   let innerWidth = 0;
   $: isMobile = innerWidth < 658;
-
-  $: projectIds = $projectStore.list;
   $: documentIds = $documentStore.list;
 </script>
 
@@ -144,8 +156,8 @@
           bind:value={selectedProject}
           on:change={async () => refreshDiagramList()}>
           <option value="all">All</option>
-          {#each projectIds as projectId}
-            <option value={projectId}>{$projectStore.projects[projectId].title}</option>
+          {#each projects as project}
+            <option value={project.id}>{project.title}</option>
           {/each}
         </select>
       </div>
@@ -169,7 +181,7 @@
                 <DocumentCard
                   {documentID}
                   {officeManager}
-                  {isOfficeInitialized}
+                  editUrl = {mermaidChartApi.getEditURL($documentStore.documents[documentID])}
                   on:editFinished={refreshDiagramList} />
               {/if}
             {/each}
