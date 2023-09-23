@@ -4,7 +4,8 @@
   "description": "Access the MermaidChart services with OAuth and type safety.",
   "main": "dist/index.js",
   "scripts": {
-    "build": "esbuild src/index.ts --bundle --minify --outfile=dist/index.js && pnpm build:types",
+    "build": "pnpm build:code && pnpm build:types",
+    "build:code": "esbuild src/index.ts --bundle --minify --outfile=dist/index.js",
     "build:types": "tsc -p ./tsconfig.json --emitDeclarationOnly"
   },
   "keywords": [],

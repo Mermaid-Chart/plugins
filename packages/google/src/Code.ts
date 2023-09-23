@@ -3,7 +3,6 @@
  * We should not use the `export` keyword in this file.
  * All functions that needs to be exported should be defined in this file.
  */
-// import { onGmailCompose as _onGmailCompose } from './Gmail';
 import { diagramLinkPreview as _diagramLinkPreview } from './Links';
 import { authCallback as _authCallback, resetOAuth as _resetOAuth } from './Api';
 import { createCard } from './Card';
@@ -11,10 +10,6 @@ import {
   injectImageIntoDocument as _injectImageIntoDocument,
   refreshAllImagesInDocument as _refreshAllImagesInDocument,
 } from './Docs';
-
-// function onGmailCompose(e: any) {
-//   return _onGmailCompose(e);
-// }
 
 function diagramLinkPreview(e: any) {
   return _diagramLinkPreview(e);
