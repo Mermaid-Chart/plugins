@@ -1,0 +1,31 @@
+{
+  "name": "@mermaidchart/sdk",
+  "version": "0.1.1",
+  "description": "Access the MermaidChart services with OAuth and type safety.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "pnpm build:code && pnpm build:types",
+    "build:code": "esbuild src/index.ts --bundle --minify --outfile=dist/index.js",
+    "build:types": "tsc -p ./tsconfig.json --emitDeclarationOnly"
+  },
+  "keywords": [],
+  "contributors": [
+    "Sidharth Vinod (https://sidharth.dev)"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@badgateway/oauth2-client": "^2.2.4",
+    "axios": "^1.5.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/uuid": "^9.0.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "/dist",
+    "README.md"
+  ]
+}
