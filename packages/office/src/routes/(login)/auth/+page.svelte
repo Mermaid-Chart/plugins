@@ -48,13 +48,13 @@
   });
 </script>
 
-<div class="flex flex-col items-center gap-6 p-16 w-full text-center">
+<div class="flex flex-col items-center gap-6 p-16 text-center">
   <div>
     <img src="/img/MermaidChart_Logo.png" alt="Mermaid Chart" class="w-60" />
   </div>
 
-  <div class="flex w-full flex-col items-center ">
-    <div class="w-full sm:w-1/3 pt-6">
+  <div class="flex flex-col items-center ">
+    <div class="sm:w-1/3 pt-6">
       <div class="text-md">
         {userMessage}
       </div>
