@@ -5,13 +5,13 @@ import type { MCDocument, MermaidChart } from '$lib/mermaidChartApi';
 
 interface MCDocumentDB {
   filterStr: string;
-  list: string[];
+  documentIds: string[];
   documents: Record<string, MCDocument>;
 }
 
 const defaultDB: MCDocumentDB = {
   filterStr: '',
-  list: [],
+  documentIds: [],
   documents: {}
 };
 
@@ -29,17 +29,17 @@ function createDocumentStore() {
       }
       
       const res = update((documentDB) => {
-        documentDB.list = [];
+        documentDB.documentIds = [];
         documentDB.documents = {};
         if(documents) {
           for (const document of documents) {
             if (document.code) {
               document.diagramType = getDiagramType(document.code);
               documentDB.documents[document.documentID] = document;
-              documentDB.list.push(document.documentID);
+              documentDB.documentIds.push(document.documentID);
             }
           }
-          documentDB.list.sort((a, b) => doSort(a, b, 'updatedAt', documentDB.documents, 'asc'));
+          documentDB.documentIds.sort((a, b) => doSort(a, b, 'updatedAt', documentDB.documents, 'asc'));
         }
 
         return { ...documentDB };

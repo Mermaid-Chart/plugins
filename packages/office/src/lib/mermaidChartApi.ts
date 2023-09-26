@@ -236,12 +236,12 @@ export class MermaidChart {
     return projects.data;
   }
 
-  // public async getDocument(documentID: string): Promise<MCDocument> {
-  //   const document = await this.axios.get<MCDocument[]>(
-  //     this.URLS.rest.documents.get(documentID)
-  //   );
-  //   return document.data;
-  // }
+  public async getDocument(documentID: string): Promise<MCDocument> {
+    const document = await this.axios.get<MCDocument>(
+      this.URLS.rest.documents.get(documentID)
+    );
+    return document.data;
+  }
 
   public getEditURL(
     document: Pick<MCDocument, "documentID" | "major" | "minor" | "projectID">

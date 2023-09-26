@@ -100,21 +100,16 @@
     for(let project of projects) {
       projectIds.push(project.id);
     }
-    await refreshDiagramList();
   };
 
   const refreshDiagramList = async () => {
     const documentList: MCDocument[] = [];
-    if(selectedProject === 'all') {
-      documentStore.fetchDocuments(projectIds, mermaidChartApi);
-    } else {
-      documentStore.fetchDocuments([selectedProject], mermaidChartApi);
-    }
+    documentStore.fetchDocuments([selectedProject], mermaidChartApi);
   };
 
   let innerWidth = 0;
   $: isMobile = innerWidth < 658;
-  $: documentIds = $documentStore.list;
+  $: documentIds = $documentStore.documentIds;
 </script>
 
 <svelte:window bind:innerWidth />
@@ -154,8 +149,8 @@
           id="projectSelectInput"
           class="select"
           bind:value={selectedProject}
-          on:change={async () => refreshDiagramList()}>
-          <option value="all">All</option>
+          on:change={async () => refreshDiagramList()}
+          placeholder="Select project">
           {#each projects as project}
             <option value={project.id}>{project.title}</option>
           {/each}

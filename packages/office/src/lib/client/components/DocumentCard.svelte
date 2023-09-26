@@ -5,7 +5,7 @@
   import EllipsisIcon from 'svelte-icons/fa/FaEllipsisV.svelte';
   import { popup, storePopup } from '@skeletonlabs/skeleton';
   import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
-    import { C } from '$lib/constants';
+  import { C } from '$lib/constants';
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
@@ -65,7 +65,6 @@
   };
 </script>
 
-<!-- <button on:click={() => doInsert()} class="card hover:shadow-lg p-3 cursor-pointer"> -->
   <div data-testid="diagram-title" class="mb-4 grid gap-2 text-center">
     {diagram.title || 'Untitled Diagram'}
   </div>
@@ -83,7 +82,6 @@
       <a on:click|stopPropagation class="ms-link" href={editUrl}>Open in Mermaid Chart</a>
     </div>
   </div>
-<!-- </button> -->
 
 <div data-popup="header-menu" class="z-20">
   <div class="flex flex-col gap-4 bg-neutral-100 rounded p-8">

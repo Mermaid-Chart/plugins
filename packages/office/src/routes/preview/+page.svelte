@@ -1,4 +1,4 @@
-<!-- <script lang="ts">
+<script lang="ts">
     import { C } from "$lib/constants";
     import { MermaidChart, type MCDocument } from "$lib/mermaidChartApi";
     import { authStore } from '$lib/client/stores/auth';
@@ -10,7 +10,7 @@
     const mermaidChartApi = new MermaidChart({
       clientID: C.ClientId,
       baseURL: C.MermaidChartBaseUrl,
-      redirectURI: C.oauthRedirect
+      redirectURI: `${C.mcOfficeBaseUrl}/auth`
     });
 
   let container: HTMLDivElement;
@@ -22,15 +22,8 @@
       const params = $page.url.searchParams;
       const documentId = params.get('id')
 
-      if (Office.context.roamingSettings) {
-        authToken = Office.context.roamingSettings.get(C.TokenSettingName) as string;
-      }
-      if (!authToken) {
-        authToken = authStore.accessKey();
-      }
-
+      authToken = authStore.accessKey();
       mermaidChartApi.setAccessToken(authToken);
-      
       if(documentId) {
         document = await mermaidChartApi.getDocument(documentId);
         await handleDiagramRendering();
@@ -95,4 +88,4 @@
   .hide {
     visibility: hidden;
   }
-</style> -->
+</style>
