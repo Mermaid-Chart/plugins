@@ -50,13 +50,13 @@ export const getDiagramType = (text: string): string => {
   return detectedDiagram || '';
 };
 
-export const fetchBase64Image = async (url: string, authToken:string) : Promise<string> => {
-  const response = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${authToken}`
-    },
-    mode: 'no-cors',})
-  const blob = await response.blob()
+export const fetchBase64Image = async (blob:Blob) : Promise<string> => {
+  // const response = await fetch(url, {
+  //   headers: {
+  //     Authorization: `Bearer ${authToken}`
+  //   },
+  //   mode: 'no-cors',})
+  // const blob = await response.blob()
   const imageBase64 = await blobToBase64(blob);
   return imageBase64.replace('data:image/png;base64,', '');
 }

@@ -254,10 +254,15 @@ export class MermaidChart {
     document: Pick<MCDocument, "documentID" | "major" | "minor">,
     theme: "light" | "dark"
   ) {
-    const png = await this.axios.get<string>(
-      this.URLS.raw(document, theme).png
-    );
-    return png.data;
+    const res = await this.axios.get(
+      this.URLS.raw(document, theme).png, {
+        responseType: "text",
+        responseEncoding: "base64",
+      });
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      const base64 = Buffer.from(res.data, "base64");
+      return base64.toString();
   }
 
   public async getRawDocument(

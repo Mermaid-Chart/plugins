@@ -11,6 +11,7 @@ export class WordService extends OfficeService {
   authToken = authStore.accessKey();
   
   public async insertDiagram(diagram: Diagram) {
+    OfficeExtension.config.extendedErrorLogging = true;
     await Word.run(async (context) => {
       const range = context.document.getSelection();
       range.insertBreak(Word.BreakType.line, Word.InsertLocation.after)
