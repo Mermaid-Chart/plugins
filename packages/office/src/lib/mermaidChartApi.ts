@@ -4,7 +4,6 @@ import defaultAxios, { type AxiosInstance } from "axios";
 // eslint-disable-next-line unicorn/prefer-node-protocol
 import {Buffer} from 'buffer';
 import { blobToBase64 } from "./utils";
-}
 
 const defaultBaseURL = "https://www.mermaidchart.com"; 
 const authorizationURLTimeout = 60_000;

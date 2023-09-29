@@ -87,8 +87,7 @@ export class WordService extends OfficeService {
 
   private async insertNewDiagram(tag: string) {
     const docDetails = splitReferenceToken(tag);
-    const base64Image = convertPngToBase64(await this.mermaidChartApi.getDocumentAsPng(docDetails, 'light'));
-    
+    const base64Image = await this.mermaidChartApi.fetchDocumentAsBase64(docDetails, 'light');
 
     try {
       await Word.run(async (context) => {
