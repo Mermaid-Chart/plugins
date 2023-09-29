@@ -3,6 +3,8 @@ import { v4 as uuid } from "uuid";
 import defaultAxios, { type AxiosInstance } from "axios";
 // eslint-disable-next-line unicorn/prefer-node-protocol
 import {Buffer} from 'buffer';
+import { blobToBase64 } from "./utils";
+}
 
 const defaultBaseURL = "https://www.mermaidchart.com"; 
 const authorizationURLTimeout = 60_000;
@@ -258,6 +260,21 @@ export class MermaidChart {
       this.URLS.raw(document, theme).png
     );
     return png.data;
+  }
+
+  public async fetchDocumentAsBase64(
+    document: Pick<MCDocument, "documentID" | "major" | "minor">,
+    theme: "light" | "dark") : Promise<string> {
+    const url = this.URLS.raw(document, theme).png;
+
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${this.accessToken}`
+      },
+      mode: 'no-cors',})
+    const blob = await response.blob()
+    const imageBase64 = await blobToBase64(blob);
+    return imageBase64.replace('data:image/png;base64,', '');
   }
 
   public async getRawDocument(

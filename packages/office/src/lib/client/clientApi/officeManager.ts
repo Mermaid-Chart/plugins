@@ -49,7 +49,7 @@ export class OfficeManager {
     loading.setState(true, 'Generating image');
       
     try {
-      base64Image = convertPngToBase64(await this.mermaidChartApi.getDocumentAsPng(mcDocument, 'light'));
+      base64Image = await this.mermaidChartApi.fetchDocumentAsBase64(mcDocument, 'light');
 
       const diagram = {
         base64Image: base64Image,

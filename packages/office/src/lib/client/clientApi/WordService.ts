@@ -138,5 +138,4 @@ export class WordService extends OfficeService {
       throw new RefreshError(`Error encountered when refreshing diagram: ${docDetails.documentID}`);
     }
   }
-
 }

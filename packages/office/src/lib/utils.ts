@@ -50,10 +50,12 @@ export const getDiagramType = (text: string): string => {
   return detectedDiagram || '';
 };
 
-export const convertPngToBase64 = (pngData:string) : string => {
-  const buffer = Buffer.from(pngData, 'binary');
-  const base64 = buffer.toString('base64');
-  return base64;
+export const blobToBase64 = async (blob: Blob) : Promise<string> => {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.addEventListener('load', () => resolve(reader.result?.toString() || ''));
+    reader.readAsDataURL(blob)
+  })
 }
 
 export const splitReferenceToken = (tag: string) => {
