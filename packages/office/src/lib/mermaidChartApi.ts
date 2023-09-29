@@ -264,6 +264,9 @@ export class MermaidChart {
   public async fetchDocumentAsBase64(
     document: Pick<MCDocument, "documentID" | "major" | "minor">,
     theme: "light" | "dark") : Promise<string> {
+    if(!this.accessToken) {
+      throw new Error("Missing access token");
+    }
     const url = this.URLS.raw(document, theme).png;
 
     const response = await fetch(url, {
@@ -273,7 +276,7 @@ export class MermaidChart {
       mode: 'no-cors',})
     const blob = await response.blob()
     const imageBase64 = await blobToBase64(blob);
-    return imageBase64.replace('data:image/png;base64,', '');
+    return imageBase64.replace('data:image/png;base64,', '').replace('data:text/html;base64,', '');
   }
 
   public async getRawDocument(
