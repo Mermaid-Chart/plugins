@@ -50,23 +50,10 @@ export const getDiagramType = (text: string): string => {
   return detectedDiagram || '';
 };
 
-export const fetchBase64Image = async (blob:Blob) : Promise<string> => {
-  // const response = await fetch(url, {
-  //   headers: {
-  //     Authorization: `Bearer ${authToken}`
-  //   },
-  //   mode: 'no-cors',})
-  // const blob = await response.blob()
-  const imageBase64 = await blobToBase64(blob);
-  return imageBase64.replace('data:image/png;base64,', '');
-}
-
-const blobToBase64 = async (blob: Blob) : Promise<string> => {
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.addEventListener('load', () => resolve(reader.result?.toString() || ''));
-    reader.readAsDataURL(blob)
-  })
+export const convertPngToBase64 = (pngData:string) : string => {
+  const buffer = Buffer.from(pngData, 'binary');
+  const base64 = buffer.toString('base64');
+  return base64;
 }
 
 export const splitReferenceToken = (tag: string) => {
