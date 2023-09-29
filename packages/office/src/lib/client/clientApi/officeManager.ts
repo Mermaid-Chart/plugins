@@ -1,5 +1,5 @@
 import { C } from '$lib/constants';
-import { fetchBase64Image} from '$lib/utils';
+import { convertPngToBase64} from '$lib/utils';
 import { loading } from '../stores/loading';
 import { showUserMessage } from '../stores/messaging';
 import type { MCDocument, MermaidChart } from '$lib/mermaidChartApi';
@@ -41,7 +41,6 @@ export class OfficeManager {
   }
 
   public async insertDiagram(mcDocument: MCDocument) {
-    const authToken = authStore.accessKey();
     const referenceToken = `${C.TokenSettingName}:${mcDocument.documentID}:${mcDocument.major}:${mcDocument.minor}`;
     const editUrl = this.mermaidChartApi.getEditURL(mcDocument);
     const docTitle = mcDocument.title || 'Untitled document';
@@ -50,7 +49,7 @@ export class OfficeManager {
     loading.setState(true, 'Generating image');
       
     try {
-      base64Image = await this.mermaidChartApi.getDocumentAsPng(mcDocument, 'light'); //await fetchBase64Image(this.mermaidChartApi.getDocumentAsPng(mcDocument, 'light'));
+      base64Image = convertPngToBase64(await this.mermaidChartApi.getDocumentAsPng(mcDocument, 'light'));
 
       const diagram = {
         base64Image: base64Image,
