@@ -65,8 +65,8 @@
   };
 </script>
 
-<div class="flex flex-nowrap gap-2">
-  <div data-testid="diagram-title" class="mb-4 grid gap-2 text-center">
+<div class="flex flex-nowrap gap-2 items-center">
+  <div data-testid="diagram-title" class="mb-4 grid gap-2">
     {diagram.title || 'Untitled Diagram'}
   </div>
   <button
@@ -76,11 +76,11 @@
     </button>
 </div>
 
-<div class="text-xs text-gray-500 dark:text-gray-400 my-2 text-center flex flex-col gap-1">
+<div class="text-xs text-gray-500 dark:text-gray-400 my-2 flex flex-col gap-1">
   <div>Last updated:</div>
   <div>{diagram?.updatedAt ? new Date(diagram?.updatedAt).toLocaleString() : 'na'}</div>
 </div>
-<div class="text-xs text-gray-500 dark:text-gray-400 p-2 text-center flex flex-col gap-1">
+<div class="text-xs text-gray-500 dark:text-gray-400 p-2 flex flex-col gap-1">
   <div>
     <a on:click|stopPropagation class="ms-link" href={editUrl}>Open in Mermaid Chart</a>
   </div>
