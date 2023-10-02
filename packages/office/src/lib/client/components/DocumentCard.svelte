@@ -65,6 +65,7 @@
   };
 </script>
 
+<div class="flex flex-nowrap gap-2">
   <div data-testid="diagram-title" class="mb-4 grid gap-2 text-center">
     {diagram.title || 'Untitled Diagram'}
   </div>
@@ -73,16 +74,19 @@
       class="p-2 rounded-full hover:bg-neutral-200">
       <div class="w-4 h-4"><EllipsisIcon /></div>
     </button>
-  <div class="text-xs text-gray-500 dark:text-gray-400 my-2 text-center flex flex-col gap-1">
-    <div>Last updated:</div>
-    <div>{diagram?.updatedAt ? new Date(diagram?.updatedAt).toLocaleString() : 'na'}</div>
-  </div>
-  <div class="text-xs text-gray-500 dark:text-gray-400 p-2 text-center flex flex-col gap-1">
-    <div>
-      <a on:click|stopPropagation class="ms-link" href={editUrl}>Open in Mermaid Chart</a>
-    </div>
-  </div>
+</div>
 
+<div class="text-xs text-gray-500 dark:text-gray-400 my-2 text-center flex flex-col gap-1">
+  <div>Last updated:</div>
+  <div>{diagram?.updatedAt ? new Date(diagram?.updatedAt).toLocaleString() : 'na'}</div>
+</div>
+<div class="text-xs text-gray-500 dark:text-gray-400 p-2 text-center flex flex-col gap-1">
+  <div>
+    <a on:click|stopPropagation class="ms-link" href={editUrl}>Open in Mermaid Chart</a>
+  </div>
+</div>
+
+<hr class="my-4" />
 <div data-popup="header-menu" class="z-20">
   <div class="flex flex-col gap-4 bg-neutral-100 rounded p-8">
     <button on:click={() => insertDiagram()} class="text-left">Insert</button>
