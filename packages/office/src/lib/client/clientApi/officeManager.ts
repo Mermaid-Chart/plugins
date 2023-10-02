@@ -1,5 +1,4 @@
 import { C } from '$lib/constants';
-import { convertPngToBase64} from '$lib/utils';
 import { loading } from '../stores/loading';
 import { showUserMessage } from '../stores/messaging';
 import type { MCDocument, MermaidChart } from '$lib/mermaidChartApi';
@@ -15,6 +14,7 @@ export interface Diagram {
   editUrl: string;
   tag: string;
 }
+
 export class OfficeManager {
   officeService: OfficeService;
   mermaidChartApi: MermaidChart;
@@ -64,8 +64,6 @@ export class OfficeManager {
         'Error generating image, or image not found. Please contact support',
         'error'
       );
-
-      console.error('Error generating image', error);
     } finally {
       loading.setState(false, '');
     }
@@ -80,8 +78,6 @@ export class OfficeManager {
           'Error refreshing diagrams. Please contact support',
           'error'
         );
-
-        console.error('Unable to refresh diagrams', error);
       } finally {
         loading.setState(false, '');
       }

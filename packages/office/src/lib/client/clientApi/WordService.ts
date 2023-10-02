@@ -1,5 +1,5 @@
 import { C } from '$lib/constants';
-import { convertPngToBase64, splitReferenceToken } from '$lib/utils';
+import { splitReferenceToken } from '$lib/utils';
 import { loading } from '../stores/loading';
 import { showUserMessage } from '../stores/messaging';
 import { DiagramNotFoundError, RefreshError } from '$lib/errors';

@@ -269,19 +269,9 @@ export class MermaidChart {
     }
     const url = this.URLS.raw(document, theme).png;
 
-    // const response = await fetch(url, {
-    //   headers: {
-    //     Authorization: `Bearer ${this.accessToken}`
-    //   },
-    //   mode: 'no-cors',})
-    // const blob = await response.blob();
-    // const imageBase64 = await blobToBase64(blob);
-    // return imageBase64.replace('data:image/png;base64,', '').replace('data:text/html;base64,', '');
     const response = await this.axios.get(url, { responseType: 'blob' });
-    //return window.URL.createObjectURL(response.data);
     const imageBase64 = await blobToBase64(response.data as Blob);
-    return imageBase64.replace('data:image/png;base64,', '').replace('data:text/html;base64,', '');
-     
+    return imageBase64.replace('data:image/png;base64,', '').replace('data:text/html;base64,', ''); 
   }
 
   public async getRawDocument(
