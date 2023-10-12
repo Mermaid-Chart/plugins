@@ -7,6 +7,10 @@ import { OfficeService } from './OfficeService';
 
 export class PowerPointService extends OfficeService {
   authToken = authStore.accessKey();
+
+  public getAuthToken(): string {
+    return this.authToken;
+  }
   
   public async insertDiagram(diagram: Diagram): Promise<void> {
     const currentSlide = Office.context.document.getSelectedDataAsync(Office.CoercionType.SlideRange);

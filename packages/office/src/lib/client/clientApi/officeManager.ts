@@ -40,6 +40,10 @@ export class OfficeManager {
     }
   }
 
+  public getAuthToken(): string {
+    return this.officeService.getAuthToken();
+  }
+
   public async insertDiagram(mcDocument: MCDocument) {
     const referenceToken = `${C.TokenSettingName}:${mcDocument.documentID}:${mcDocument.major}:${mcDocument.minor}`;
     const editUrl = this.mermaidChartApi.getEditURL(mcDocument);

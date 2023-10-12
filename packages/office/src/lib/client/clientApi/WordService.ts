@@ -9,6 +9,10 @@ import { OfficeService } from './OfficeService';
 
 export class WordService extends OfficeService {
   authToken = authStore.accessKey();
+
+  public getAuthToken(): string {
+    return this.authToken;
+  }
   
   public async insertDiagram(diagram: Diagram) {
     OfficeExtension.config.extendedErrorLogging = true;

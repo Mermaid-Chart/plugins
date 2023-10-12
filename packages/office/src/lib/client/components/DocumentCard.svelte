@@ -37,7 +37,7 @@
 
   const previewDiagram = () => {
     if (isOfficeInitialized) {
-      localStorage.setItem(C.TokenSettingName, officeManager.mermaidChartApi.getAccessToken());
+      localStorage.setItem(C.TokenSettingName, officeManager.getAuthToken());
       loading.setState(true, 'Displaying preview');
       Office.context.ui.displayDialogAsync(
         `${C.mcOfficeBaseUrl}/preview?id=${documentID}`,
