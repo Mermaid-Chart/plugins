@@ -65,8 +65,8 @@
   };
 </script>
 
-<div class="space-y-6">
-  <div class="flex flex-col space-y-4">
+<div class="space-y-4">
+  <div class="flex flex-col space-y-2">
     <div data-testid="diagram-title" class="text-left">
       {diagram.title || 'Untitled Diagram'}
     </div>
@@ -78,7 +78,7 @@
   </div>
 </div>
 
-<div class="flex gap-4 items-center">
+<div class="flex gap-4 items-center pb-4">
   <button on:click={() => insertDiagram()} class="text-sm">Insert</button>
   <span class="divider-vertical h-4" />
   <button on:click={() => previewDiagram()} class="text-sm">Preview</button>
@@ -86,7 +86,7 @@
   <button on:click|stopPropagation={() => editDiagram()} class="text-sm">Edit</button>
 </div>
 
-<hr />
+<hr class="p-4"/>
 
 <svelte:head>
   <link
