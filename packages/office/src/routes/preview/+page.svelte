@@ -4,7 +4,6 @@
     import { showUserMessage } from "$lib/client/stores/messaging";
     import { onMount } from "svelte";
     import { page } from "$app/stores";
-    import { C } from '$lib/constants';
 
     const mermaidChartApi = new MermaidChart({
       clientID: C.ClientId,
