@@ -10,6 +10,7 @@
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
   export let documentID: string;
+  export let authToken: string
   export let isOfficeInitialized: boolean;
   export let officeManager: OfficeManager;
   export let editUrl: string;
@@ -26,8 +27,8 @@
         function (asyncResult) {
           const dialog = asyncResult.value;
           dialog.addEventHandler(Office.EventType.DialogMessageReceived, (arg) => {
-            dialog.close();
             loading.setState(false, '');
+            dialog.close();
             void editFinished();
           });
         }
@@ -37,7 +38,7 @@
 
   const previewDiagram = () => {
     if (isOfficeInitialized) {
-      localStorage.setItem(C.TokenSettingName, officeManager.getAuthToken());
+      localStorage.setItem(C.TokenSettingName, authToken);
       loading.setState(true, 'Displaying preview');
       Office.context.ui.displayDialogAsync(
         `${C.mcOfficeBaseUrl}/preview?id=${documentID}`,
@@ -45,8 +46,8 @@
         function (asyncResult) {
           const dialog = asyncResult.value;
           dialog.addEventHandler(Office.EventType.DialogMessageReceived, (arg) => {
-            dialog.close();
             loading.setState(false, '');
+            dialog.close();
             void processPreviewResponse(arg);
           });
         }
