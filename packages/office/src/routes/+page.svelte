@@ -167,7 +167,7 @@
           </div>
         </div>
       {:else}
-        <div class={isMobile ? 'flex flex-col' : 'grid grid-cols-2 p-10 gap-3'}>
+        <div class={isMobile ? 'flex flex-col w-screen px-5' : 'grid grid-cols-2 p-10 gap-3'}>
           {#if documentIds.length < 0}
             No diagrams found
           {:else}

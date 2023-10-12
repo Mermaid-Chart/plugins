@@ -271,7 +271,7 @@ export class MermaidChart {
 
     const response = await this.axios.get(url, { responseType: 'blob' });
     const imageBase64 = await blobToBase64(response.data as Blob);
-    return imageBase64.replace('data:image/png;base64,', '').replace('data:text/html;base64,', ''); 
+    return imageBase64.replace('data:image/png;base64,', ''); 
   }
 
   public async getRawDocument(
