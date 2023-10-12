@@ -20,7 +20,7 @@
       const params = $page.url.searchParams;
       const documentId = params.get('id')
 
-      const authToken = localStorage.getItem("clientID") ?? '';
+      const authToken = localStorage.getItem(C.TokenSettingName) ?? '';
       mermaidChartApi.setAccessToken(authToken);
       if(documentId) {
         document = await mermaidChartApi.getDocument(documentId);
