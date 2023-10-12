@@ -65,13 +65,13 @@
 </script>
 
 <div class="space-y-4">
-  <div class="flex flex-col space-y-2">
+  <div class="flex flex-col space-y-2 pt-4">
     <div data-testid="diagram-title" class="text-left">
       {diagram.title || 'Untitled Diagram'}
     </div>
   </div>
 
-  <div class="flex text-xs text-gray-500 dark:text-gray-400 gap-2 py-2">
+  <div class="flex text-xs text-gray-500 dark:text-gray-400 gap-2 pb-2">
     <div>Last updated:</div>
     <div>{diagram?.updatedAt ? new Date(diagram?.updatedAt).toLocaleString() : 'na'}</div>
   </div>
