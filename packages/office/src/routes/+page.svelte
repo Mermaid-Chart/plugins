@@ -175,6 +175,7 @@
               {#if $documentStore.documents[documentID].code !== null}
                 <DocumentCard
                   {documentID}
+                  {isOfficeInitialized}
                   {officeManager}
                   editUrl = {mermaidChartApi.getEditURL($documentStore.documents[documentID])}
                   on:editFinished={refreshDiagramList} />

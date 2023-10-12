@@ -2,15 +2,14 @@
   import type { OfficeManager } from '$lib/client/clientApi/officeManager';
   import { createEventDispatcher } from 'svelte';
   import { documentStore } from '../stores/documents';
-  import EllipsisIcon from 'svelte-icons/fa/FaEllipsisV.svelte';
-  import { popup, storePopup } from '@skeletonlabs/skeleton';
+  import { storePopup } from '@skeletonlabs/skeleton';
   import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
     import { C } from '$lib/constants';
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
   export let documentID: string;
-  export let isOfficeInitialized = false;
+  export let isOfficeInitialized: boolean;
   export let officeManager: OfficeManager;
   export let editUrl: string;
   
@@ -66,13 +65,13 @@
 </script>
 
 <div class="space-y-4">
-  <div class="flex flex-col space-y-2">
+  <div class="flex flex-col space-y-2 py-2">
     <div data-testid="diagram-title" class="text-left">
       {diagram.title || 'Untitled Diagram'}
     </div>
   </div>
 
-  <div class="flex text-xs text-gray-500 dark:text-gray-400 gap-2">
+  <div class="flex text-xs text-gray-500 dark:text-gray-400 gap-2 py-2">
     <div>Last updated:</div>
     <div>{diagram?.updatedAt ? new Date(diagram?.updatedAt).toLocaleString() : 'na'}</div>
   </div>
