@@ -15,6 +15,7 @@
   let officeManager: OfficeManager;
   let projects: MCProject[] = [];
   let projectIds: string[] = [];
+  let isPowerpoint: boolean;
 
   const mermaidChartApi = new MermaidChart({
     clientID: C.ClientId,
@@ -25,6 +26,7 @@
   onMount(() => {
     const Office = window.Office;
     Office.onReady(async (info) => {
+      isPowerpoint = info.host === Office.HostType.PowerPoint;
       isOfficeInitialized = true;
       officeManager = new OfficeManager(info.host, mermaidChartApi);
 
@@ -136,13 +138,15 @@
         Don't have an account? <a href="https://www.mermaidchart.com/app/sign-up">Sign up</a>
       </div>
     {:else}
-      <div class="p-4">
-        <button
-          type="button"
-          class="btn bg-[#FF3570] text-white tracking-wide"
-          on:click={() => syncDiagramsInDocument()}>
-          Sync diagrams</button>
-      </div>
+      {#if isPowerpoint}
+        <div class="p-4">
+          <button
+            type="button"
+            class="btn bg-[#FF3570] text-white tracking-wide"
+            on:click={() => syncDiagramsInDocument()}>
+            Sync diagrams</button>
+        </div>
+      {/if}
       <div class="px-4 py-6 sticky top-14 z-10 bg-neutral-50 w-screen shadow-sm">
         <div class="pb-2">Select project</div>
         <select

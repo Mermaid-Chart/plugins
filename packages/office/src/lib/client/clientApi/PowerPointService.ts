@@ -13,22 +13,13 @@ export class PowerPointService extends OfficeService {
   }
   
   public async insertDiagram(diagram: Diagram): Promise<void> {
-    const currentSlide = Office.context.document.getSelectedDataAsync(Office.CoercionType.SlideRange);
-
-        // Insert the image
-        Office.context.document.setSelectedDataAsync(diagram.base64Image, {
-            coercionType: Office.CoercionType.Image,
-            imageLeft: 50,  // X position (in points)
-            imageTop: 50,   // Y position (in points)
-            imageWidth: 100, // Width (in points)
-            imageHeight: 100 // Height (in points)
-        }, function (asyncResult) {
-            if (asyncResult.status === Office.AsyncResultStatus.Failed) {
-                console.error('Failed to insert image. Error:', asyncResult.error.message);
-            } else {
-                console.log('Image inserted successfully.');
-            }
-        });
+    Office.context.document.setSelectedDataAsync(diagram.base64Image, {coercionType: Office.CoercionType.Image }, function (asyncResult) {
+        if (asyncResult.status === Office.AsyncResultStatus.Failed) {
+            console.error('Failed to insert image. Error:', asyncResult.error.message);
+        } else {
+            console.log('Image inserted successfully.');
+        }
+    });
   }
 
   public async syncDiagrams(): Promise<void> {

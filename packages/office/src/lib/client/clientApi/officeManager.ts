@@ -2,7 +2,6 @@ import { C } from '$lib/constants';
 import { loading } from '../stores/loading';
 import { showUserMessage } from '../stores/messaging';
 import type { MCDocument, MermaidChart } from '$lib/mermaidChartApi';
-import { authStore } from '../stores/auth';
 import { type OfficeService, NullService } from './OfficeService';
 import { OneNoteService } from './OneNoteService';
 import { PowerPointService } from './PowerPointService';
