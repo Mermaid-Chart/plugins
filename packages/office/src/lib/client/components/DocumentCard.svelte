@@ -65,25 +65,25 @@
   };
 </script>
 
-<div class="flex flex-nowrap gap-2">
-  <div class="flex flex-nowrap gap-2">
-    <div data-testid="diagram-title" class="mb-4 grid gap-2">
+<div class="space-y-6">
+  <div class="flex flex-col space-y-4">
+    <div data-testid="diagram-title">
       {diagram.title || 'Untitled Diagram'}
     </div>
   </div>
 
-  <div class="text-xs text-gray-500 dark:text-gray-400 my-2 flex flex-col gap-1">
+  <div class="flex text-xs text-gray-500 dark:text-gray-400 gap-2">
     <div>Last updated:</div>
     <div>{diagram?.updatedAt ? new Date(diagram?.updatedAt).toLocaleString() : 'na'}</div>
   </div>
-  
-  <div class="flex flex-col gap-4 bg-neutral-100 rounded p-8">
-    <button on:click={() => insertDiagram()}>Insert</button>
-    <hr />
-    <button on:click={() => previewDiagram()}>Preview</button>
-    <hr />
-    <button on:click|stopPropagation={() => editDiagram()}>Edit</button>
-  </div>
+</div>
+
+<div class="flex gap-4 items-center">
+  <button on:click={() => insertDiagram()}>Insert</button>
+  <span class="divider-vertical h-4" />
+  <button on:click={() => previewDiagram()}>Preview</button>
+  <span class="divider-vertical h-4" />
+  <button on:click|stopPropagation={() => editDiagram()}>Edit</button>
 </div>
 
 <svelte:head>
