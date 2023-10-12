@@ -4,7 +4,8 @@
   import { documentStore } from '../stores/documents';
   import { storePopup } from '@skeletonlabs/skeleton';
   import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
-    import { C } from '$lib/constants';
+  import { C } from '$lib/constants';
+  import { loading } from '../stores/loading';
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
@@ -18,6 +19,7 @@
 
   const editDiagram = () => {
     if (isOfficeInitialized) {
+      loading.setState(true, 'Loading diagram for edit');
       Office.context.ui.displayDialogAsync(
         editUrl,
         { height: 300, width: 600 },
@@ -25,6 +27,7 @@
           const dialog = asyncResult.value;
           dialog.addEventHandler(Office.EventType.DialogMessageReceived, (arg) => {
             dialog.close();
+            loading.setState(false, '');
             void editFinished();
           });
         }
@@ -34,6 +37,8 @@
 
   const previewDiagram = () => {
     if (isOfficeInitialized) {
+      localStorage.setItem(C.TokenSettingName, officeManager.mermaidChartApi.getAccessToken());
+      loading.setState(true, 'Displaying preview');
       Office.context.ui.displayDialogAsync(
         `${C.mcOfficeBaseUrl}/preview?id=${documentID}`,
         { height: 300, width: 600 },
@@ -41,6 +46,7 @@
           const dialog = asyncResult.value;
           dialog.addEventHandler(Office.EventType.DialogMessageReceived, (arg) => {
             dialog.close();
+            loading.setState(false, '');
             void processPreviewResponse(arg);
           });
         }

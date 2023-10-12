@@ -1,12 +1,11 @@
 <script lang="ts">
     import { C } from "$lib/constants";
     import { MermaidChart, type MCDocument } from "$lib/mermaidChartApi";
-    import { authStore } from '$lib/client/stores/auth';
     import { showUserMessage } from "$lib/client/stores/messaging";
     import { onMount } from "svelte";
     import { page } from "$app/stores";
+    import { C } from '$lib/constants';
 
-    let authToken: string | undefined;
     const mermaidChartApi = new MermaidChart({
       clientID: C.ClientId,
       baseURL: C.MermaidChartBaseUrl,
@@ -22,7 +21,7 @@
       const params = $page.url.searchParams;
       const documentId = params.get('id')
 
-      authToken = authStore.accessKey();
+      const authToken = localStorage.getItem("clientID") ?? '';
       mermaidChartApi.setAccessToken(authToken);
       if(documentId) {
         document = await mermaidChartApi.getDocument(documentId);
@@ -43,7 +42,6 @@
   const handleDiagramRendering = async() => {
     try {
       if (container) {
-        
         const svgCode  = await mermaidChartApi.getRawDocument(document, 'light')
         container.innerHTML = svgCode;
       } 
