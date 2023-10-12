@@ -521,6 +521,7 @@ packages:
   /@azure/identity@3.3.0:
     resolution: {integrity: sha512-gISa/dAAxrWt6F2WiDXZY0y2xY4MLlN2wkNW4cPuq5OgPQKLSkxLc4I2WR04puTfZyQZnpXbAapAMEj1b96fgg==}
     engines: {node: '>=14.0.0'}
+    deprecated: Please upgrade to the latest version of this package to get necessary fixes
     dependencies:
       '@azure/abort-controller': 1.1.0
       '@azure/core-auth': 1.5.0
