@@ -114,7 +114,7 @@
 
 <svelte:window bind:innerWidth />
 
-<div class="flex flex-col items-center gap-6 p-16 w-full text-center">
+<div class="flex flex-col items-center gap-6 p-4 w-full text-center">
   <div>
     <img src="/img/MermaidChart_Logo.png" alt="Mermaid Chart" class="w-60" />
   </div>
@@ -128,7 +128,7 @@
         </div>
       </div>
 
-      <div>
+      <div class="p-4">
         <button type="button" class="btn bg-[#FF3570] text-white" on:click={() => authenticate()}>
           Connect</button>
       </div>
