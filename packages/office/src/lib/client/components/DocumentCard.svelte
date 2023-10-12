@@ -37,9 +37,8 @@
   </div>
   <div class="diagram-thumbnail flex justify-center w-full items-center">
     {#key code}
-      <RawView bind:code viewId={`diagram-${diagram.documentID}`} />
+      <RawView bind:code viewId={`diagram-${diagram.documentID}`} insertHandler={insertDiagram} />
     {/key}
-    <!-- {@html svgCode} -->
   </div>
 
   <div class="flex text-xs text-gray-500 dark:text-gray-400 gap-2 pb-2">
@@ -57,7 +56,7 @@
 
   <span class="divider-vertical h-4" />
   <button class="btn border border-slate-300 text-primary-500 gap-1 hover:bg-primary-300 mr-3"
-  on:click={() => editDiagram()}>Open in Mermaid Chart</button>
+  on:click={() => editDiagram()}>Edit</button>
 </div>
 
 <hr class="p-4"/>
@@ -104,7 +103,6 @@
   }
   .diagram-thumbnail {
     width: 100%;
-    aspect-ratio: 1/1;
   }
 
   .thumbnail {

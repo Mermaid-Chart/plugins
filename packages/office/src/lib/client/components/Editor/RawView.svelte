@@ -4,6 +4,7 @@
 
   export let viewId = '';
   export let code = '';
+  export let insertHandler = () => {};
 
   let container: HTMLDivElement;
   let hide = false;
@@ -26,11 +27,13 @@
 </script>
 
 <div>
-  <div
-    id="container"
-    bind:this={container}
-    class="flex justify-center w-full overflow-hidden h-full"
-    class:hide />
+  <button on:click={insertHandler}>
+    <div
+      id="container"
+      bind:this={container}
+      class="flex justify-center w-full overflow-hidden h-full"
+      class:hide />
+    </button>
 </div>
 
 <svelte:head>
