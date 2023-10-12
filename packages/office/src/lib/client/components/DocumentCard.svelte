@@ -11,61 +11,17 @@
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
   export let documentID: string;
-  export let authToken: string
   export let isOfficeInitialized: boolean;
   export let officeManager: OfficeManager;
   export let editUrl: string;
   
-  const dispatch = createEventDispatcher();
   const diagram = $documentStore.documents[documentID];
   let code = diagram.code;
 
   const editDiagram = () => {
     if (isOfficeInitialized) {
-      loading.setState(true, 'Loading diagram for edit');
-      Office.context.ui.displayDialogAsync(
-        editUrl,
-        { height: 300, width: 600 },
-        function (asyncResult) {
-          const dialog = asyncResult.value;
-          dialog.addEventHandler(Office.EventType.DialogMessageReceived, (arg) => {
-            loading.setState(false, '');
-            dialog.close();
-            void editFinished();
-          });
-        }
-      );
+      Office.context.ui.openBrowserWindow(editUrl);
     }
-  };
-
-  const previewDiagram = () => {
-    if (isOfficeInitialized) {
-      localStorage.setItem(C.TokenSettingName, authToken);
-      loading.setState(true, 'Displaying preview');
-      Office.context.ui.displayDialogAsync(
-        `${C.mcOfficeBaseUrl}/preview?id=${documentID}`,
-        { height: 300, width: 600 },
-        function (asyncResult) {
-          const dialog = asyncResult.value;
-          dialog.addEventHandler(Office.EventType.DialogMessageReceived, (arg) => {
-            loading.setState(false, '');
-            dialog.close();
-            void processPreviewResponse(arg);
-          });
-        }
-      );
-    }
-  };
-
-  const processPreviewResponse = async (arg) => {
-    const response = JSON.parse(arg.message);
-    if(response) {
-      await officeManager.insertDiagram(diagram);
-    }
-  };
-
-  const editFinished = () => {
-    dispatch('editFinished');
   };
 
   const insertDiagram = async () => {
@@ -75,7 +31,7 @@
 
 <div class="space-y-4">
   <div class="flex flex-col space-y-2 pt-4">
-    <div data-testid="diagram-title" class="text-left">
+    <div class="text-left">
       {diagram.title || 'Untitled Diagram'}
     </div>
   </div>
@@ -93,11 +49,15 @@
 </div>
 
 <div class="flex gap-4 items-center pb-4">
-  <button on:click={() => insertDiagram()} class="text-sm">Insert</button>
-  <!-- <span class="divider-vertical h-4" />
-  <button on:click={() => previewDiagram()} class="text-sm">Preview</button> -->
+  <button
+        class="btn border border-slate-300 text-primary-500 gap-1 hover:bg-primary-300 mr-3"
+        on:click={() => insertDiagram()}>
+        Insert
+      </button>
+
   <span class="divider-vertical h-4" />
-  <button on:click|stopPropagation={() => editDiagram()} class="text-sm">Edit</button>
+  <button class="btn border border-slate-300 text-primary-500 gap-1 hover:bg-primary-300 mr-3"
+  on:click={() => editDiagram()}>Open in Mermaid Chart</button>
 </div>
 
 <hr class="p-4"/>
