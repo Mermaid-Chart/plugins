@@ -6,6 +6,7 @@
   import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
   import { C } from '$lib/constants';
   import { loading } from '../stores/loading';
+    import RawView from './Editor/RawView.svelte';
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
@@ -17,6 +18,7 @@
   
   const dispatch = createEventDispatcher();
   const diagram = $documentStore.documents[documentID];
+  let code = diagram.code;
 
   const editDiagram = () => {
     if (isOfficeInitialized) {
@@ -77,6 +79,12 @@
       {diagram.title || 'Untitled Diagram'}
     </div>
   </div>
+  <div class="diagram-thumbnail flex justify-center w-full items-center">
+    {#key code}
+      <RawView bind:code viewId={`diagram-${diagram.documentID}`} />
+    {/key}
+    <!-- {@html svgCode} -->
+  </div>
 
   <div class="flex text-xs text-gray-500 dark:text-gray-400 gap-2 pb-2">
     <div>Last updated:</div>
@@ -86,8 +94,8 @@
 
 <div class="flex gap-4 items-center pb-4">
   <button on:click={() => insertDiagram()} class="text-sm">Insert</button>
-  <span class="divider-vertical h-4" />
-  <button on:click={() => previewDiagram()} class="text-sm">Preview</button>
+  <!-- <span class="divider-vertical h-4" />
+  <button on:click={() => previewDiagram()} class="text-sm">Preview</button> -->
   <span class="divider-vertical h-4" />
   <button on:click|stopPropagation={() => editDiagram()} class="text-sm">Edit</button>
 </div>
