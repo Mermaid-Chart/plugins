@@ -8,7 +8,7 @@
   <Description DefaultValue="Access your mermaid diagrams from Mermaid Chart"/>
   <IconUrl DefaultValue="https://office.mermaidchart.com/img/icon-32.png"/>
   <HighResolutionIconUrl DefaultValue="https://office.mermaidchart.com/img/icon-64.png"/>
-  <SupportUrl DefaultValue="https://www.mermaidchart.com/contact-us"/>
+  <SupportUrl DefaultValue="https://www.mermaidchart.com/contact.htm"/>
   <AppDomains>
     <AppDomain>https://www.mermaidchart.com</AppDomain>
     <AppDomain>https://mermaidchart.com</AppDomain>
