@@ -138,7 +138,7 @@
         Don't have an account? <a href="https://www.mermaidchart.com/app/sign-up">Sign up</a>
       </div>
     {:else}
-      {#if isPowerpoint}
+      {#if !isPowerpoint}
         <div class="p-4">
           <button
             type="button"
