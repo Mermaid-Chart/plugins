@@ -19,12 +19,20 @@ export class WordService extends OfficeService {
     await Word.run(async (context) => {
       const range = context.document.getSelection();
 
-      range.load('parentContentControl');
-      await context.sync();
-      if(range.parentContentControl) {
-        const ccRange = range.parentContentControl.getRange(Word.RangeLocation.after);
-        ccRange.select();
-      } 
+      try {
+        const surroundingContentControls = range.contentControls;
+        surroundingContentControls.load('items');
+        await context.sync();
+
+        if (surroundingContentControls.items.length > 0) {
+            // The range is inside a content control
+            const parentContentControl = surroundingContentControls.items[0];
+            const ccRange = parentContentControl.getRange(Word.RangeLocation.after);
+            ccRange.select();
+            await context.sync();
+        }
+      } catch {
+      }
 
       range.insertBreak(Word.BreakType.line, Word.InsertLocation.after)
       
