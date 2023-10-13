@@ -25,10 +25,9 @@ export class WordService extends OfficeService {
         await context.sync();
 
         if (surroundingContentControls.items.length > 0) {
-            // The range is inside a content control
             const parentContentControl = surroundingContentControls.items[0];
             range = parentContentControl.getRange(Word.RangeLocation.after);
-            range.select();
+            //range.select();
             await context.sync();
         }
       } catch {
