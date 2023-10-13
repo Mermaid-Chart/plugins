@@ -13,6 +13,7 @@ export interface Diagram {
   title: string;
   editUrl: string;
   tag: string;
+  updatedDate: string;
 }
 
 export class OfficeManager {
@@ -59,7 +60,8 @@ export class OfficeManager {
         base64Image: base64Image,
         editUrl: editUrl,
         title: docTitle,
-        tag: referenceToken
+        tag: referenceToken,
+        updatedDate: mcDocument.updatedAt.getUTCDate().toString()
       };
 
       await this.officeService.insertDiagram(diagram);

@@ -18,6 +18,14 @@ export class WordService extends OfficeService {
     OfficeExtension.config.extendedErrorLogging = true;
     await Word.run(async (context) => {
       const range = context.document.getSelection();
+
+      range.load('parentContentControl');
+      await context.sync();
+      if(range.parentContentControl) {
+        const ccRange = range.parentContentControl.getRange(Word.RangeLocation.after);
+        ccRange.select();
+      } 
+
       range.insertBreak(Word.BreakType.line, Word.InsertLocation.after)
       
       const paragraph = range.insertParagraph('', 'After');
@@ -28,7 +36,7 @@ export class WordService extends OfficeService {
   
       paragraph.insertBreak(Word.BreakType.line, Word.InsertLocation.after)
       
-      const captionText = `${diagram.title}`;
+      const captionText = `${diagram.title} - last updated on ${diagram.updatedDate}`;
       const caption = paragraph.insertText(captionText, Word.InsertLocation.end);
       caption.font.italic = true;
       caption.font.color = "#888888";
@@ -43,6 +51,10 @@ export class WordService extends OfficeService {
         tag: diagram.tag,
         appearance: Word.ContentControlAppearance.boundingBox
       });
+
+      await context.sync();
+      
+      Word.SelectionMode.end
     });
   }
 
@@ -104,6 +116,7 @@ export class WordService extends OfficeService {
 
   private async replaceExistingDiagram(tag: string) {
     const docDetails = splitReferenceToken(tag);
+    const diagram = await this.mermaidChartApi.getDocument(docDetails.documentID);
     const base64Image = await this.mermaidChartApi.fetchDocumentAsBase64(docDetails, 'light');
 
     try {
@@ -121,7 +134,6 @@ export class WordService extends OfficeService {
         await context.sync();
         
         const editUrl = existingDiagram.hyperlink;
-        const docTitle = contentControl.title;
         const range = contentControl.getRange();
         await context.sync();
         contentControl.delete(false);
@@ -133,7 +145,7 @@ export class WordService extends OfficeService {
   
         newParagraph.insertBreak(Word.BreakType.line, Word.InsertLocation.after)
           
-        const captionText = docTitle;
+        const captionText = `${diagram.title} - last updated on ${diagram.updatedAt.getUTCDate().toString()}`;
         const caption = newParagraph.insertText(captionText, Word.InsertLocation.end);
         caption.font.italic = true;
         caption.font.color = "#888888";
@@ -144,13 +156,13 @@ export class WordService extends OfficeService {
 
         const newContentControl = newParagraph.insertContentControl();
         newContentControl.set({
-          title: docTitle,
+          title: diagram.title,
           tag: tag,
           appearance: Word.ContentControlAppearance.boundingBox
         });
       });
     } catch (error) {
-      throw new RefreshError(`Error encountered when updating diagram: ${docDetails.documentID}`, error as Error);
+      throw new RefreshError(`Error encountered while updating diagram: ${docDetails.documentID}`, error as Error);
     }
   }
 }
