@@ -45,7 +45,10 @@ export class WordService extends OfficeService {
         appearance: Word.ContentControlAppearance.boundingBox
       });
 
-      contentControl.insertBreak(Word.BreakType.line, Word.InsertLocation.after)
+      const ccRange = contentControl.getRange(Word.RangeLocation.after);
+      ccRange.select();
+
+      ccRange.insertBreak(Word.BreakType.line, Word.InsertLocation.after)
       await context.sync();
     });
   }
