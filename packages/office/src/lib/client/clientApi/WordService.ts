@@ -17,21 +17,7 @@ export class WordService extends OfficeService {
   public async insertDiagram(diagram: Diagram) {
     OfficeExtension.config.extendedErrorLogging = true;
     await Word.run(async (context) => {
-      let range = context.document.getSelection();
-
-      try {
-        const surroundingContentControls = range.contentControls;
-        surroundingContentControls.load('items');
-        await context.sync();
-
-        if (surroundingContentControls.items.length > 0) {
-            const parentContentControl = surroundingContentControls.items[0];
-            range = parentContentControl.getRange(Word.RangeLocation.after);
-            //range.select();
-            await context.sync();
-        }
-      } catch {
-      }
+      const range = context.document.getSelection();
 
       range.insertBreak(Word.BreakType.line, Word.InsertLocation.after)
       
@@ -59,9 +45,8 @@ export class WordService extends OfficeService {
         appearance: Word.ContentControlAppearance.boundingBox
       });
 
+      contentControl.insertBreak(Word.BreakType.line, Word.InsertLocation.after)
       await context.sync();
-      
-      Word.SelectionMode.end
     });
   }
 
