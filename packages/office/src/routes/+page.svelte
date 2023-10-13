@@ -9,7 +9,7 @@
   import { showUserMessage } from '$lib/client/stores/messaging';
   import { MermaidChart, type MCProject, type MCDocument } from '$lib/mermaidChartApi';
 
-  let selectedProject = 'all';
+  let selectedProject = 'personal';
   let authToken: string | undefined;
   let isOfficeInitialized = false;
   let officeManager: OfficeManager;
@@ -102,6 +102,7 @@
     for(let project of projects) {
       projectIds.push(project.id);
     }
+    await refreshDiagramList();
   };
 
   const refreshDiagramList = async () => {
@@ -181,8 +182,7 @@
                   {documentID}
                   {isOfficeInitialized}
                   {officeManager}
-                  editUrl = {mermaidChartApi.getEditURL($documentStore.documents[documentID])}
-                  on:editFinished={refreshDiagramList} />
+                  editUrl = {mermaidChartApi.getEditURL($documentStore.documents[documentID])} />
               {/if}
             {/each}
           {/if}

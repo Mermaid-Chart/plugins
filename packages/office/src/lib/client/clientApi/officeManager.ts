@@ -85,4 +85,26 @@ export class OfficeManager {
         loading.setState(false, '');
       }
   }
+
+  public async countOfDiagramsInDocument() {
+    let documentCount = 0;
+    try {
+      await Word.run(async (context) => {
+        const contentControls = context.document.contentControls.load("items");
+        
+        return context.sync()
+        .then(() => {
+            for (const contentControl of contentControls.items) {
+              if(contentControl.tag.startsWith(C.TokenSettingName)) {
+                documentCount++;
+              }
+          } 
+        })
+      });
+    } catch (error) {
+      throw new Error('unknown error getting content controls');
+    }
+
+    return documentCount
+  }
 }
