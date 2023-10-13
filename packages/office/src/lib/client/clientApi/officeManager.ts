@@ -6,6 +6,7 @@ import { type OfficeService, NullService } from './OfficeService';
 import { OneNoteService } from './OneNoteService';
 import { PowerPointService } from './PowerPointService';
 import { WordService } from './WordService';
+import { InvalidTokenError } from '$lib/errors';
 
 export interface Diagram {
   base64Image: string;
@@ -63,10 +64,17 @@ export class OfficeManager {
 
       await this.officeService.insertDiagram(diagram);
     } catch (error) {
-      showUserMessage(
-        'Error generating image, or image not found. Please contact support',
-        'error'
-      );
+        if(error instanceof InvalidTokenError) {
+          showUserMessage(
+            'Auth token invalid or not found, please make sure that you are authenticated, or contact support',
+            'error'
+          );
+        } else {
+          showUserMessage(
+            'Error generating image, or image not found. Please contact support',
+            'error'
+          );
+        }
     } finally {
       loading.setState(false, '');
     }
@@ -76,7 +84,7 @@ export class OfficeManager {
       try {
         loading.setState(true, 'Syncing diagrams in document...');
         await this.officeService.syncDiagrams();
-      } catch (error) {
+      } catch {
         showUserMessage(
           'Error refreshing diagrams. Please contact support',
           'error'
@@ -84,27 +92,5 @@ export class OfficeManager {
       } finally {
         loading.setState(false, '');
       }
-  }
-
-  public async countOfDiagramsInDocument() {
-    let documentCount = 0;
-    try {
-      await Word.run(async (context) => {
-        const contentControls = context.document.contentControls.load("items");
-        
-        return context.sync()
-        .then(() => {
-            for (const contentControl of contentControls.items) {
-              if(contentControl.tag.startsWith(C.TokenSettingName)) {
-                documentCount++;
-              }
-          } 
-        })
-      });
-    } catch (error) {
-      throw new Error('unknown error getting content controls');
-    }
-
-    return documentCount
   }
 }

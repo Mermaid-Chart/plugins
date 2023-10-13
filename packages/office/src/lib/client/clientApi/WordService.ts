@@ -2,7 +2,7 @@ import { C } from '$lib/constants';
 import { splitReferenceToken } from '$lib/utils';
 import { loading } from '../stores/loading';
 import { showUserMessage } from '../stores/messaging';
-import { DiagramNotFoundError, RefreshError } from '$lib/errors';
+import { ContentControlsNotFoundError, DiagramNotFoundError, RefreshError } from '$lib/errors';
 import type { Diagram } from './officeManager';
 import { authStore } from '../stores/auth';
 import { OfficeService } from './OfficeService';
@@ -47,49 +47,62 @@ export class WordService extends OfficeService {
   }
 
   public async syncDiagrams() {
-    const contentControlsToUpdate = await this.getContentControls();
-
-    try {
-      for (const control of contentControlsToUpdate) {
-        await this.insertNewDiagram(control.tag);
+    const contentControlsToUpdate = await this.getContentControls().catch((error) => {
+      if(error instanceof ContentControlsNotFoundError) {
+        showUserMessage(
+          'No diagrams found in document',
+          'info'
+        );
       }
-    } catch (error) {
-      showUserMessage(
-        'Error refreshing diagrams. Please contact support',
-        'error'
-      );
+    });
 
-      console.error('Unable to refresh diagrams', error);
-    } finally {
-      loading.setState(false, '');
+    if(contentControlsToUpdate) {
+      try {
+        for (const control of contentControlsToUpdate) {
+          await this.replaceExistingDiagram(control);
+        }
+      } catch (error){
+        if(error instanceof RefreshError) {
+          showUserMessage(
+            'Error refreshing diagrams. Please contact support',
+            'error'
+          );
+        }
+      } finally {
+        loading.setState(false, '');
+      }
     }
   }
 
   private async getContentControls() {
-    const contentControlsToUpdate: Word.ContentControl[] = [];
+    const contentControlsList: string[] = [];
 
     try {
       await Word.run(async (context) => {
-        const contentControls = context.document.contentControls.load("items");
+        const contentControls = context.document.contentControls;
         
-        return context.sync()
-        .then(() => {
-            for (const contentControl of contentControls.items) {
-              if(contentControl.tag.startsWith(C.TokenSettingName)) {
-                contentControlsToUpdate.push(contentControl);
-              }
-          } 
-        })
+        context.load(contentControls, 'tag');
+        return context.sync().then(function() {
+          for (let i = 0; i < contentControls.items.length; i++) {
+            const tag = contentControls.items[i].tag;
+            if(tag.startsWith(C.TokenSettingName)) {
+              contentControlsList.push(contentControls.items[i].tag);
+            }
+          }
+        });
       });
-    } catch (error) {
-      console.error('unknown error getting content controls', error);
+    } catch {
       throw new Error('unknown error getting content controls');
     }
 
-    return contentControlsToUpdate;
+    if(contentControlsList.length === 0) {
+      throw new ContentControlsNotFoundError();
+    }
+
+    return contentControlsList;
   }
 
-  private async insertNewDiagram(tag: string) {
+  private async replaceExistingDiagram(tag: string) {
     const docDetails = splitReferenceToken(tag);
     const base64Image = await this.mermaidChartApi.fetchDocumentAsBase64(docDetails, 'light');
 
@@ -137,8 +150,7 @@ export class WordService extends OfficeService {
         });
       });
     } catch (error) {
-      console.error(`Error encountered when refreshing diagram: ${docDetails.documentID}`, error);
-      throw new RefreshError(`Error encountered when refreshing diagram: ${docDetails.documentID}`);
+      throw new RefreshError(`Error encountered when updating diagram: ${docDetails.documentID}`, error as Error);
     }
   }
 }
