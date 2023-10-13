@@ -327,8 +327,8 @@ export class MermaidChart {
       const base = `/app/projects/${d.projectID}/diagrams/${d.documentID}/version/v${d.major}.${d.minor}`;
       return {
         self: base,
-        edit: `/diagrams/${d.documentID}/`,
-        view: base + "/view",
+        edit: base + '/edit',
+        view: base + '/view',
       } as const;
     },
   } as const;
