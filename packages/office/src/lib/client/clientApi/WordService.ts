@@ -17,7 +17,7 @@ export class WordService extends OfficeService {
   public async insertDiagram(diagram: Diagram) {
     OfficeExtension.config.extendedErrorLogging = true;
     await Word.run(async (context) => {
-      const range = context.document.getSelection();
+      let range = context.document.getSelection();
 
       try {
         const surroundingContentControls = range.contentControls;
@@ -27,8 +27,8 @@ export class WordService extends OfficeService {
         if (surroundingContentControls.items.length > 0) {
             // The range is inside a content control
             const parentContentControl = surroundingContentControls.items[0];
-            const ccRange = parentContentControl.getRange(Word.RangeLocation.after);
-            ccRange.select();
+            range = parentContentControl.getRange(Word.RangeLocation.after);
+            range.select();
             await context.sync();
         }
       } catch {
