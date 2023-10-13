@@ -93,6 +93,7 @@
   };
 
   export async function syncDiagramsInDocument(): Promise<void> {
+    loadProjects();
     await officeManager.syncDiagramsInDocument();
   }
 
