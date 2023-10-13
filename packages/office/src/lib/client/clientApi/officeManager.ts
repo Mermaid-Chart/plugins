@@ -61,7 +61,7 @@ export class OfficeManager {
         editUrl: editUrl,
         title: docTitle,
         tag: referenceToken,
-        updatedDate: mcDocument.updatedAt.getUTCDate().toString()
+        updatedDate: mcDocument.updatedAt.toLocaleString()
       };
 
       await this.officeService.insertDiagram(diagram);

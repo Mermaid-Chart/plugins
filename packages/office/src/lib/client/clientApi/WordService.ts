@@ -145,7 +145,7 @@ export class WordService extends OfficeService {
   
         newParagraph.insertBreak(Word.BreakType.line, Word.InsertLocation.after)
           
-        const captionText = `${diagram.title} - last updated on ${diagram.updatedAt.getUTCDate().toString()}`;
+        const captionText = `${diagram.title} - last updated on ${diagram.updatedAt.toLocaleString()}`;
         const caption = newParagraph.insertText(captionText, Word.InsertLocation.end);
         caption.font.italic = true;
         caption.font.color = "#888888";
