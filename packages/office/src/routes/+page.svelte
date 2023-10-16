@@ -9,7 +9,7 @@
   import { showUserMessage } from '$lib/client/stores/messaging';
   import { MermaidChart, type MCProject, type MCDocument } from '$lib/mermaidChartApi';
 
-  let selectedProject = 'personal';
+  let selectedProject: string = '';
   let authToken: string | undefined;
   let isOfficeInitialized = false;
   let officeManager: OfficeManager;
@@ -102,6 +102,9 @@
     projectIds = [];
     for(let project of projects) {
       projectIds.push(project.id);
+      if(project.title === 'personal') {
+        selectedProject = project.id;
+      }
     }
     await refreshDiagramList();
   };
