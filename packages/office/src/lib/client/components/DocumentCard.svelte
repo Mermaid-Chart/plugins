@@ -20,6 +20,9 @@
 
   const editDiagram = () => {
     if (isOfficeInitialized) {
+      if (Office.context.requirements.isSetSupported('Office.Extensibility.HostName')) {
+        window.open(editUrl, '_blank');
+      }
       Office.context.ui.openBrowserWindow(editUrl);
     }
   };

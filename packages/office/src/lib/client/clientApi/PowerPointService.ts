@@ -13,13 +13,21 @@ export class PowerPointService extends OfficeService {
   }
   
   public async insertDiagram(diagram: Diagram): Promise<void> {
-    Office.context.document.setSelectedDataAsync(diagram.base64Image, {coercionType: Office.CoercionType.Image }, function (asyncResult) {
+    await PowerPoint.run(async (context) => {
+      Office.context.document.setSelectedDataAsync(diagram.base64Image, {coercionType: Office.CoercionType.Image }, function (asyncResult) {
         if (asyncResult.status === Office.AsyncResultStatus.Failed) {
-            console.error('Failed to insert image. Error:', asyncResult.error.message);
-        } else {
-            console.log('Image inserted successfully.');
-        }
+          showUserMessage(
+            'Error generating image, or image not found. Please contact support',
+            'error'
+          );
+      }
     });
+    
+    await context.sync();
+  });
+
+    
+        
   }
 
   public async syncDiagrams(): Promise<void> {
