@@ -31,8 +31,8 @@ export class OfficeManager {
         this.officeService = new PowerPointService(this.mermaidChartApi);
         break;
       }
-      case Office.HostType.OneNote: {
-        this.officeService = new OneNoteService(this.mermaidChartApi);
+      case Office.HostType.Excel: {
+        this.officeService = new ExcelService(this.mermaidChartApi);
         break;
       }
       default: {

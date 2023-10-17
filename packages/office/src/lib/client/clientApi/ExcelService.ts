@@ -6,7 +6,7 @@ import { authStore } from '../stores/auth';
 import { OfficeService } from './OfficeService';
 
 
-export class PowerPointService extends OfficeService {
+export class ExcelService extends OfficeService {
   authToken = authStore.accessKey();
 
   public getAuthToken(): string {
@@ -53,7 +53,7 @@ export class PowerPointService extends OfficeService {
     if(!diagram) {
       throw new DiagramNotFoundError(docDetails.documentID);
     }
-    
+
     const base64Image = await this.mermaidChartApi.fetchDocumentAsBase64(docDetails, 'light');
 
     try {
