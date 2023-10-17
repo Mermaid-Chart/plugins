@@ -33,7 +33,8 @@ export class ExcelService extends OfficeService {
         await context.sync();
 
         for (let shapeIndex = 0; shapeIndex < shapes.items.length; shapeIndex++) {
-          const shape = shapes.items[shapeIndex];
+          const shape = shapes.items[shapeIndex].load('altTextDescription');
+          await context.sync();
           const tag = shape.altTextDescription;
           if (tag.startsWith(C.TokenSettingName)) {
             shape.delete();
