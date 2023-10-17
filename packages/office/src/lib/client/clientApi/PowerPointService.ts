@@ -26,6 +26,7 @@ export class PowerPointService extends OfficeService {
       await context.sync();
       // after inserting an image with setSelectedDataAsync, the shape will be the selected item
       const selectedShapes = context.presentation.getSelectedShapes().load('items');
+      await context.sync();
       if(selectedShapes.items.length > 0) {
         const shape = selectedShapes.items[0];
         shape.tags.add(C.TokenSettingName, diagram.tag);

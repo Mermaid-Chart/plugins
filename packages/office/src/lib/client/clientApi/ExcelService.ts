@@ -15,7 +15,9 @@ export class ExcelService extends OfficeService {
   public async insertDiagram(diagram: Diagram) {
     await Excel.run(async (context) => {
       const worksheet = context.workbook.worksheets.getActiveWorksheet();
+      
       const image = worksheet.shapes.addImage(diagram.base64Image);
+      image.scaleWidth(.75, Excel.ShapeScaleType.originalSize)
       image.name = diagram.title;
       image.altTextDescription = diagram.tag;
       await context.sync();
