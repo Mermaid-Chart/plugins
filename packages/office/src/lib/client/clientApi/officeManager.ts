@@ -3,10 +3,10 @@ import { loading } from '../stores/loading';
 import { showUserMessage } from '../stores/messaging';
 import type { MCDocument, MermaidChart } from '$lib/mermaidChartApi';
 import { type OfficeService, NullService } from './OfficeService';
-import { OneNoteService } from './OneNoteService';
 import { PowerPointService } from './PowerPointService';
 import { WordService } from './WordService';
 import { InvalidTokenError } from '$lib/errors';
+import { ExcelService } from './ExcelService';
 
 export interface Diagram {
   base64Image: string;
