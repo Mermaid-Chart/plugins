@@ -1,10 +1,10 @@
-import { loading } from '../stores/loading';
+import { C } from '$lib/constants';
+import { splitReferenceToken } from '$lib/utils';
+import { DiagramNotFoundError, RefreshError } from '$lib/errors';
 import { showUserMessage } from '../stores/messaging';
 import type { Diagram } from './officeManager';
 import { authStore } from '../stores/auth';
 import { OfficeService } from './OfficeService';
-
-
 export class PowerPointService extends OfficeService {
   authToken = authStore.accessKey();
 
@@ -20,26 +20,63 @@ export class PowerPointService extends OfficeService {
             'Error generating image, or image not found. Please contact support',
             'error'
           );
-      }
-    });
-    
-    await context.sync();
-  });
+        }
+      });
 
-    
-        
+      await context.sync();
+      // after inserting an image with setSelectedDataAsync, the shape will be the selected item
+      const selectedShapes = context.presentation.getSelectedShapes().load('items');
+      if(selectedShapes.items.length > 0) {
+        const shape = selectedShapes.items[0];
+        shape.tags.add(C.TokenSettingName, diagram.tag);
+      }      
+    });
   }
 
   public async syncDiagrams(): Promise<void> {
-    // for (const slide of Office.context.document.) {
-    //     // Iterate over shapes in the slide
-    //     for (let shape of slide.shapes) {
-    //         // Check if the shape is an image with the altTextTitle set to "ExternalImage"
-    //         if (shape.type === "Image" && shape.altTextTitle === "ExternalImage") {
-    //             // Update the image data
-    //             shape.imageData = latestImageBase64;
-    //         }
-    //     }
-    // }
+    await PowerPoint.run(async (context) => {
+      const presentation = context.presentation;
+      const slides = presentation.slides.load("items");
+      await context.sync();
+
+      for(let slideIndex = 0; slideIndex < slides.items.length; slideIndex++) {
+        const slide = slides.items[slideIndex];
+        const shapes = slide.shapes.load("items");
+        
+        await context.sync();
+
+        for (let shapeIndex = 0; shapeIndex < shapes.items.length; shapeIndex++) {
+          const shape = shapes.items[shapeIndex];
+          const tag = shape.tags.getItemOrNullObject(C.TokenSettingName);
+          if (!tag.isNullObject) {
+            shape.delete();
+            await this.replaceExistingDiagram(tag.value);
+          }
+        }
+      }
+    });
+  }
+
+  private async replaceExistingDiagram(tag: string) {
+    const docDetails = splitReferenceToken(tag);
+    const document = await this.mermaidChartApi.getDocument(docDetails.documentID);
+    if(!document) {
+      throw new DiagramNotFoundError(docDetails.documentID);
+    }
+
+    const base64Image = await this.mermaidChartApi.fetchDocumentAsBase64(docDetails, 'light');
+    const diagram = {
+      base64Image: base64Image,
+      editUrl: this.mermaidChartApi.getEditURL(document),
+      title: document.title,
+      tag: tag,
+      updatedDate: document.updatedAt.toLocaleString()
+    };
+    
+    try {
+      await this.insertDiagram(diagram);
+    } catch (error) {
+      throw new RefreshError(`Error encountered while updating diagram: ${docDetails.documentID}`, error as Error);
+    }
   }
 }

@@ -5,7 +5,6 @@ import type { Diagram } from './officeManager';
 import { authStore } from '../stores/auth';
 import { OfficeService } from './OfficeService';
 
-
 export class ExcelService extends OfficeService {
   authToken = authStore.accessKey();
 
@@ -25,7 +24,7 @@ export class ExcelService extends OfficeService {
 
   public async syncDiagrams(): Promise<void> {
     await Excel.run(async (context) => {
-      const worksheets = context.workbook.worksheets;
+      const worksheets = context.workbook.worksheets.load('items');
       await context.sync();
       for(let worksheetIndex = 0; worksheetIndex < worksheets.items.length; worksheetIndex++) {
         const sheet = worksheets.items[worksheetIndex];
@@ -49,21 +48,23 @@ export class ExcelService extends OfficeService {
 
   private async replaceExistingDiagram(worksheet: Excel.Worksheet, tag: string) {
     const docDetails = splitReferenceToken(tag);
-    const diagram = await this.mermaidChartApi.getDocument(docDetails.documentID);
-    if(!diagram) {
+    const document = await this.mermaidChartApi.getDocument(docDetails.documentID);
+    if(!document) {
       throw new DiagramNotFoundError(docDetails.documentID);
     }
 
     const base64Image = await this.mermaidChartApi.fetchDocumentAsBase64(docDetails, 'light');
 
+    const diagram = {
+      base64Image: base64Image,
+      editUrl: this.mermaidChartApi.getEditURL(document),
+      title: document.title,
+      tag: tag,
+      updatedDate: document.updatedAt.toLocaleString()
+    };
+    
     try {
-      await Excel.run(async (context) => {
-        const image = worksheet.shapes.addImage(base64Image);
-        image.name = diagram.title;
-        image.altTextDescription = tag;
-        await context.sync();
-
-      });
+      await this.insertDiagram(diagram);
     } catch (error) {
       throw new RefreshError(`Error encountered while updating diagram: ${docDetails.documentID}`, error as Error);
     }
