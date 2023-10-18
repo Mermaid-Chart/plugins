@@ -17,7 +17,7 @@ export class ExcelService extends OfficeService {
       const worksheet = context.workbook.worksheets.getActiveWorksheet();
       
       const image = worksheet.shapes.addImage(diagram.base64Image);
-      image.scaleWidth(.75, Excel.ShapeScaleType.originalSize)
+      image.scaleWidth(.65, Excel.ShapeScaleType.originalSize)
       image.name = diagram.title;
       image.altTextDescription = diagram.tag;
       await context.sync();
