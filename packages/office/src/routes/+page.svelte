@@ -5,9 +5,12 @@
   import { authStore } from '$lib/client/stores/auth';
   import DocumentCard from '$components/DocumentCard.svelte';
   import { documentStore } from '$lib/client/stores/documents';
+  import EllipsisIcon from 'svelte-icons/fa/FaEllipsisV.svelte';
+
   import { loading } from '$lib/client/stores/loading';
   import { showUserMessage } from '$lib/client/stores/messaging';
   import { MermaidChart, type MCProject, type MCDocument } from '$lib/mermaidChartApi';
+    import { popup } from '@skeletonlabs/skeleton';
 
   let selectedProject: string = '';
   let authToken: string | undefined;
@@ -97,6 +100,11 @@
     await officeManager.syncDiagramsInDocument();
   }
 
+  const logout = async () => {
+    mermaidChartApi.resetAccessToken();
+    authToken = '';
+  };
+
   const loadProjects = async () => {
     projects = await mermaidChartApi.getProjects();
     projectIds = [];
@@ -124,8 +132,23 @@
 <div class="flex flex-col items-center gap-6 p-4 w-full text-center">
   <div>
     <img src="/img/MermaidChart_Logo.png" alt="Mermaid Chart" class="w-60" />
+    <button
+      use:popup={{ event: 'click', target: 'header-menu' }}
+      class="p-2 rounded-full hover:bg-neutral-200">
+      <div class="w-4 h-4"><EllipsisIcon /></div>
+    </button>
   </div>
-
+  <div data-popup="header-menu" class="z-20">
+    <div class="flex flex-col gap-4 bg-neutral-100 rounded p-8">
+      {#if !authToken}
+        <button on:click={() => authenticate()} class="text-left">Connect</button>
+      {:else}
+        <button on:click={() => syncDiagramsInDocument()} class="text-left">Sync diagrams</button>
+        <hr />
+        <button on:click={() => logout()} class="text-left">Log out</button>
+      {/if}
+    </div>
+  </div>
   <div class="flex w-full flex-col items-center ">
     {#if !authToken}
       <div class="w-full sm:w-1/3 pt-6">
