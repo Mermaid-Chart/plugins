@@ -10,7 +10,7 @@
   import { loading } from '$lib/client/stores/loading';
   import { showUserMessage } from '$lib/client/stores/messaging';
   import { MermaidChart, type MCProject, type MCDocument } from '$lib/mermaidChartApi';
-    import { popup } from '@skeletonlabs/skeleton';
+    import { AppBar, popup } from '@skeletonlabs/skeleton';
 
   let selectedProject: string = '';
   let authToken: string | undefined;
@@ -29,7 +29,6 @@
   onMount(() => {
     const Office = window.Office;
     Office.onReady(async (info) => {
-      isPowerpoint = info.host === Office.HostType.PowerPoint;
       isOfficeInitialized = true;
       officeManager = new OfficeManager(info.host, mermaidChartApi);
 
@@ -77,6 +76,8 @@
           });
         }
       );
+    } else {
+      showUserMessage('Office environment unable to start', 'error');
     }
   };
 
@@ -118,7 +119,6 @@
   };
 
   const refreshDiagramList = async () => {
-    const documentList: MCDocument[] = [];
     documentStore.fetchDocuments([selectedProject], mermaidChartApi);
   };
 
@@ -131,12 +131,15 @@
 
 <div class="flex flex-col items-center gap-6 p-4 w-full text-center">
   <div>
-    <img src="/img/MermaidChart_Logo.png" alt="Mermaid Chart" class="w-60" />
-    <button
+    <AppBar gridColumns="grid-cols-3" slotDefault="place-self-center" slotTrail="place-content-end">
+      <svelte:fragment slot="lead"><img src="/img/MermaidChart_Logo.png" alt="Mermaid Chart" class="w-60" /></svelte:fragment>
+      <svelte:fragment slot="trail">
+        <button
       use:popup={{ event: 'click', target: 'header-menu' }}
       class="p-2 rounded-full hover:bg-neutral-200">
       <div class="w-4 h-4"><EllipsisIcon /></div>
-    </button>
+    </button></svelte:fragment>
+    </AppBar>
   </div>
   <div data-popup="header-menu" class="z-20">
     <div class="flex flex-col gap-4 bg-neutral-100 rounded p-8">
@@ -166,7 +169,6 @@
         Don't have an account? <a href="https://www.mermaidchart.com/app/sign-up">Sign up</a>
       </div>
     {:else}
-      {#if !isPowerpoint}
         <div class="p-4">
           <button
             type="button"
@@ -174,7 +176,6 @@
             on:click={() => syncDiagramsInDocument()}>
             Sync diagrams</button>
         </div>
-      {/if}
       <div class="px-4 py-6 sticky top-14 z-10 bg-neutral-50 w-screen shadow-sm">
         <div class="pb-2">Select project</div>
         <select
