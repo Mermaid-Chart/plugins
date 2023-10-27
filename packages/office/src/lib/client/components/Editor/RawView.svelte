@@ -9,19 +9,18 @@
   let container: HTMLDivElement;
   let hide = false;
 
-  const handleDiagramRendering = async() => {
+  async function handleDiagramRendering() {
     try {
       if (container && code) {
         const { svgCode } = await populateSvgCode(code, viewId);
         container.innerHTML = svgCode;
       } 
     } catch (error) {
-      console.log(error);      //log.info(error);
+      console.log(error);
     }
   };
 
-  onMount(async() => {
-    
+  onMount(async function() {
     await handleDiagramRendering();
   });
 </script>

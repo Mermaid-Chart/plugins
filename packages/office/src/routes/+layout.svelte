@@ -5,40 +5,9 @@
   import '../app.postcss';
   import { navigating } from '$app/stores';
   import { AppBar, popup, storePopup, Toast } from '@skeletonlabs/skeleton';
-  import EllipsisIcon from 'svelte-icons/fa/FaEllipsisV.svelte';
-  import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
-
-  // storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
   let syncDiagramsInDocument: () => Promise<void>;
 </script>
-
-<!-- <AppBar
-  gridColumns="grid-cols-3"
-  class="shadow shadow-slate-500/10 w-screen sticky top-0 z-20"
-  slotDefault="place-self-center"
-  slotTrail="place-content-end">
-  <svelte:fragment slot="lead">
-    <a href="/" class="whitespace-nowrap no-underline"> Mermaid Chart </a>
-  </svelte:fragment>
-  <svelte:fragment slot="trail">
-    <button
-      use:popup={{ event: 'click', target: 'header-menu' }}
-      class="p-2 rounded-full hover:bg-neutral-200">
-      <div class="w-4 h-4"><EllipsisIcon /></div>
-    </button>
-  </svelte:fragment>
-</AppBar> -->
-
-<!-- <div data-popup="header-menu" class="z-20">
-  <div class="flex flex-col gap-4 bg-neutral-100 rounded p-8">
-    <a href="/diagrams">Diagrams</a>
-    <hr />
-    <button on:click={() => syncDiagramsInDocument()} class="text-left">Sync</button>
-    <hr />
-    <a href="/settings" class="no-underline">Settings</a>
-  </div>
-</div> -->
 
 <Toast position="t" />
 
