@@ -9,6 +9,7 @@
   import { loading } from '$lib/client/stores/loading';
   import { showUserMessage } from '$lib/client/stores/messaging';
   import { MermaidChart, type MCProject, type MCDocument } from '$lib/mermaidChartApi';
+    import { AppBar } from '@skeletonlabs/skeleton';
   
   let authToken: string | undefined;
   
@@ -129,7 +130,22 @@
 <svelte:window bind:innerWidth />
 
 <div class="flex flex-col items-center gap-6 p-4 w-full text-center">
+  <div>
+    <AppBar gridColumns="grid-cols-3" slotDefault="place-self-center" slotTrail="place-content-end">
+      <svelte:fragment slot="lead"></svelte:fragment>
+      <svelte:fragment slot="trail">
+        {#if authToken}
+          <button class="btn border border-slate-300 text-primary-500 gap-1 hover:bg-primary-300 mr-3" on:click={() => logout()}>Logout</button>
+        {:else}
+          <button class="btn border border-slate-300 text-primary-500 gap-1 hover:bg-primary-300 mr-3" on:click={() => authenticate()}>Login</button>
+        {/if}
+      </svelte:fragment>
+    </AppBar>
+    </div>
   <div class="flex w-full flex-col items-center ">
+    <div>
+      <img src="/img/MermaidChart_Logo.png" alt="Mermaid Chart" class="w-60" />
+    </div>
     {#if !authToken}
       <div class="w-full sm:w-1/3 pt-6">
         <div class="text-md">
@@ -146,10 +162,6 @@
         Don't have an account? <a href="https://www.mermaidchart.com/app/sign-up">Sign up</a>
       </div>
     {:else}
-    <div class="p-4 w-full text-right items-right">
-      <button
-        class="btn border border-slate-300 text-primary-500 gap-1 hover:bg-primary-300 mr-3" on:click={() => logout()}>Logout</button>
-    </div>
         <div class="p-4">
           <button
             type="button"

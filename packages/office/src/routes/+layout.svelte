@@ -4,7 +4,7 @@
   import '../theme.postcss';
   import '../app.postcss';
   import { navigating } from '$app/stores';
-  import { AppBar, popup, storePopup, Toast } from '@skeletonlabs/skeleton';
+  import { Toast } from '@skeletonlabs/skeleton';
 
   let syncDiagramsInDocument: () => Promise<void>;
 </script>
