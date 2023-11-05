@@ -1,0 +1,231 @@
+openapi: 3.0.0
+info:
+  title: Mermaid Chart
+  description: |
+    These are the subset of MermaidChart APIs that's required to create plugins to display diagrams for users.
+
+    User authentication SHOULD be done using OAuth, with the PKCE flow.
+
+    The clientID and redirectURL should be registered by submitting a request to the MermaidChart team.
+  version: 0.1.0
+tags:
+  - name: user
+    description: User details
+  - name: project
+    description: Project details
+  - name: document
+    description: Document details
+servers:
+  - url: https://mermaidchart.com
+  - url: https://stage.mermaidchart.com
+
+security:
+  - mermaidchart_auth:
+      - read
+  - bearer_auth: []
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        fullName:
+          type: string
+        emailAddress:
+          type: string
+      required:
+        - fullName
+        - emailAddress
+    Project:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+      required:
+        - id
+        - title
+    Document:
+      type: object
+      properties:
+        documentID:
+          type: string
+        projectID:
+          type: string
+        major:
+          type: string
+        minor:
+          type: string
+        title:
+          type: string
+      required:
+        - documentID
+        - projectID
+        - major
+        - minor
+        - title
+
+  securitySchemes:
+    bearer_auth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    mermaidchart_auth:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: /oauth/authorize
+          tokenUrl: /oauth/token
+          scopes:
+            read: Read data
+
+paths:
+  /rest-api/users/me:
+    get:
+      tags:
+        - user
+      summary: Get details of the user
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /rest-api/projects:
+    get:
+      tags:
+        - project
+      summary: Get projects for the user
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+  /rest-api/projects/{projectID}/documents:
+    get:
+      tags:
+        - project
+      summary: Get documents for a project
+      parameters:
+        - name: projectID
+          in: path
+          required: true
+          description: The ID of the project to get documents for
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Document'
+  /app/projects/{projectID}/diagrams/{documentID}/version/{version}:
+    get:
+      tags:
+        - document
+      summary: Get details for a document
+      parameters:
+        - name: projectID
+          in: path
+          required: true
+          description: The ID of the project to get diagram data for
+          schema:
+            type: string
+        - name: documentID
+          in: path
+          required: true
+          description: The ID of the document to get diagram data for
+          schema:
+            type: string
+        - name: version
+          in: path
+          required: true
+          description: The version of the document to get diagram data for
+          schema:
+            type: string
+          example: v0.1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+  /raw/{documentID}:
+    get:
+      tags:
+        - document
+      summary: Get raw diagram data in SVG or PNG format
+      parameters:
+        - name: documentID
+          in: path
+          required: true
+          description: The ID of the document to get raw data for
+          schema:
+            type: string
+        - name: version
+          in: query
+          required: true
+          description: The version of the document to get raw data for
+          schema:
+            type: string
+          example: v0.1
+        - name: theme
+          in: query
+          required: true
+          description: The theme to use for the raw data
+          schema:
+            type: string
+            enum:
+              - light
+              - dark
+        - name: format
+          in: query
+          required: true
+          description: The format of the raw data to return
+          schema:
+            type: string
+            enum:
+              - svg
+              - png
+      responses:
+        '200':
+          description: OK
+
+  /app/projects/{projectID}/diagrams/{documentID}/version/{version}/edit:
+    get:
+      tags:
+        - document
+      summary: Edior URL to edit the diagram in the browser.
+      parameters:
+        - name: projectID
+          in: path
+          required: true
+          description: The ID of the project to get diagram data for
+          schema:
+            type: string
+        - name: documentID
+          in: path
+          required: true
+          description: The ID of the document to get diagram data for
+          schema:
+            type: string
+        - name: version
+          in: path
+          required: true
+          description: The version of the document to get diagram data for
+          schema:
+            type: string
+          example: v0.1
+      responses:
+        '200':
+          description: OK

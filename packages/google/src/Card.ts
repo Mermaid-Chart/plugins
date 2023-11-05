@@ -24,7 +24,7 @@ export function createCard(e: any, selectedProject?: string) {
         ? 'Select a project to continue.'
         : 'No projects found. Create a project in Mermaid Chart to continue.';
     builder.addSection(
-      CardService.newCardSection().addWidget(CardService.newTextParagraph().setText(text))
+      CardService.newCardSection().addWidget(CardService.newTextParagraph().setText(text)),
     );
     return builder.build();
   }
@@ -32,7 +32,7 @@ export function createCard(e: any, selectedProject?: string) {
   const documents = getDocuments(idToSelect);
   const documentSection = CardService.newCardSection().setHeader('Diagrams');
   documentSection.addWidget(
-    CardService.newTextParagraph().setText('Click on a diagram to insert it into your document.')
+    CardService.newTextParagraph().setText('Click on a diagram to insert it into your document.'),
   );
   for (const document of documents) {
     const { title, documentID, updatedAt } = document;
@@ -42,15 +42,15 @@ export function createCard(e: any, selectedProject?: string) {
         .setBottomLabel('Last Updated: ' + new Date(updatedAt).toLocaleString())
         .setOnClickAction(
           CardService.newAction().setFunctionName('injectImageIntoDocument').setParameters({
-            documentID
-          })
+            documentID,
+          }),
         )
         .setButton(
           CardService.newImageButton()
-            .setIconUrl('https://www.mermaidchart.com/img/mermaid-chart-48.png')
+            .setIconUrl(URLS.image.logo.square['48'])
             .setOpenLink(CardService.newOpenLink().setUrl(baseURL + URLS.diagram(document).edit))
-            .setAltText('Open in Mermaid Chart')
-        )
+            .setAltText('Open in Mermaid Chart'),
+        ),
     );
   }
   builder.addSection(documentSection);
@@ -59,13 +59,13 @@ export function createCard(e: any, selectedProject?: string) {
       .setPrimaryButton(
         CardService.newTextButton()
           .setText('Logout')
-          .setOnClickAction(CardService.newAction().setFunctionName('resetOAuth'))
+          .setOnClickAction(CardService.newAction().setFunctionName('resetOAuth')),
       )
       .setSecondaryButton(
         CardService.newTextButton()
           .setText('Sync Diagrams')
-          .setOnClickAction(CardService.newAction().setFunctionName('refreshAllImagesInDocument'))
-      )
+          .setOnClickAction(CardService.newAction().setFunctionName('refreshAllImagesInDocument')),
+      ),
   );
   return builder.build();
 }

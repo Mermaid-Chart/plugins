@@ -20,7 +20,7 @@ export const baseURL = 'https://www.mermaidchart.com';
 export function accessProtectedResource(
   url: string,
   method: GoogleAppsScript.URL_Fetch.HttpMethod = 'get',
-  headers: GoogleAppsScript.URL_Fetch.HttpHeaders = {}
+  headers: GoogleAppsScript.URL_Fetch.HttpHeaders = {},
 ) {
   if (!url.startsWith('http')) {
     url = baseURL + url;
@@ -37,7 +37,7 @@ export function accessProtectedResource(
     const resp = UrlFetchApp.fetch(url, {
       headers: headers,
       method: method,
-      muteHttpExceptions: true // Prevents thrown HTTP exceptions.
+      muteHttpExceptions: true, // Prevents thrown HTTP exceptions.
     });
 
     const code = resp.getResponseCode();
@@ -124,7 +124,7 @@ export function authCallback(callbackRequest: any) {
   const authorized = getOAuthService().handleCallback(callbackRequest);
   if (authorized) {
     return HtmlService.createHtmlOutput(
-      'Success! You can close this tab now. <script>setTimeout(function() { top.window.close() }, 1);</script>'
+      'Success! You can close this tab now. <script>setTimeout(function() { top.window.close() }, 1);</script>',
     );
   } else {
     return HtmlService.createHtmlOutput('Denied');
@@ -132,7 +132,7 @@ export function authCallback(callbackRequest: any) {
 }
 
 /**
- * Unauthorizes the non-Google service. This is useful for OAuth
+ * Unauthorize the non-Google service. This is useful for OAuth
  * development/testing.  Run this method (Run > resetOAuth in the script
  * editor) to reset OAuth to re-prompt the user for OAuth.
  */
@@ -162,7 +162,7 @@ export function getDocuments(projectID: string): MCDocument[] {
   return cachedFetch(
     CacheKeys.documents(projectID),
     URLS.rest.projects.get(projectID).documents,
-    TimeInSeconds.minutes(5)
+    TimeInSeconds.minutes(5),
   );
 }
 
@@ -189,7 +189,7 @@ function pkceChallengeVerifier() {
     const sha256Hash = Utilities.computeDigest(
       Utilities.DigestAlgorithm.SHA_256,
       verifier,
-      Utilities.Charset.US_ASCII
+      Utilities.Charset.US_ASCII,
     );
     let challenge = Utilities.base64EncodeWebSafe(sha256Hash);
     challenge = challenge.slice(0, challenge.indexOf('='));
