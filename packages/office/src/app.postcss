@@ -1,0 +1,105 @@
+/* Write your global styles here, in PostCSS syntax */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@tailwind variants;
+
+/* Global Base Styles */
+
+h1 {
+  @apply text-4xl;
+  font-weight: bold;
+}
+h2 {
+  @apply text-3xl;
+  font-weight: 600;
+}
+h3 {
+  @apply text-2xl;
+}
+
+h4 {
+  @apply text-xl;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Urbanist', sans-serif;
+  @apply mb-4;
+}
+
+a {
+  @apply text-primary-700 dark:text-primary-500 underline underline-offset-4 decoration-dotted decoration-primary-500/20 hover:decoration-primary-500;
+}
+
+body {
+  font-family: 'Commissioner', sans-serif;
+}
+html,
+body {
+  height: 100%;
+  width: 100%;
+}
+/* Variables */
+:root {
+  --primary-color: #ff3670;
+  --secondary-color: #ff6136;
+  --secondary-color-dark: #bf4928;
+  --tertiary-color: #ff36d4;
+  --primary-inverted: #36ffc5;
+  --primary-color-bg: #ffe9e3;
+
+  --dark-mode-primary-color-bg: #4b1113;
+  --dark-mode-secondary-color: #ff6136;
+  --dark-mode-secondary-color-dark: #bf4928;
+  --dark-mode-tertiary-color: #ff36d4;
+  --dark-mode-primary-inverted: #36ffc5;
+}
+
+/* Global Components */
+.container {
+  max-width: 1200px;
+}
+
+.primary {
+  @apply bg-primary-500 dark:bg-primary-600;
+  @apply text-white;
+}
+
+.secondary {
+  @apply bg-primary-500 dark:bg-primary-600;
+  @apply text-white;
+}
+
+.accent {
+  @apply bg-secondary-300 dark:bg-secondary-600;
+  @apply text-black dark:text-white;
+}
+
+.slide-toggle-thumb {
+  @apply bg-white;
+}
+
+.btn-round {
+  @apply rounded-full;
+  padding-left: 9px;
+  padding-right: 9px;
+}
+
+.btn-square {
+  padding-left: 9px;
+  padding-right: 9px;
+}
+
+.variant-filled-primary {
+  @apply bg-primary-500 dark:bg-primary-600;
+  @apply text-white;
+}
+
+[id|='diagram'] {
+  max-width: 100%;
+}

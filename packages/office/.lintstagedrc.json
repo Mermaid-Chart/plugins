@@ -1,0 +1,4 @@
+{
+  "*.{ts,js,html,md,mts,svelte}": ["eslint --fix", "prettier --write", "pnpm check"],
+  "*.sql": ["pnpm rls"]
+}
