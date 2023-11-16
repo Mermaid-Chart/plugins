@@ -17,7 +17,8 @@ export class PowerPointService extends OfficeService {
       Office.context.document.setSelectedDataAsync(diagram.base64Image, {coercionType: Office.CoercionType.Image }, function (asyncResult) {
         if (asyncResult.status === Office.AsyncResultStatus.Failed) {
           showUserMessage(
-            'Error generating image, or image not found. Please contact support',
+            //'Error generating image, or image not found. Please contact support',
+            asyncResult.error.message,
             'error'
           );
         }
