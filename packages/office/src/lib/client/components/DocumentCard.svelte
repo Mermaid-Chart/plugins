@@ -18,15 +18,16 @@
   const diagram = $documentStore.documents[documentID];
   let code = diagram.code;
 
-  const editDiagram = () => {
+  const openBrowserWindow = (url: string) => {
     if (isOfficeInitialized) {
-      if (Office.context.requirements.isSetSupported('Office.Extensibility.HostName')) {
-        window.open(editUrl, '_blank');
+      if (Office.context.requirements.isSetSupported('OpenBrowserWindowApi', '1.1')) {
+        Office.context.ui.openBrowserWindow(url);
+      } else {
+        window.open(url, '_blank');
       }
-      Office.context.ui.openBrowserWindow(editUrl);
     }
   };
-
+  
   const insertDiagram = async () => {
     await officeManager.insertDiagram(diagram);
   };
@@ -59,7 +60,7 @@
 
   <span class="divider-vertical h-4" />
   <button class="btn border border-slate-300 text-primary-500 gap-1 hover:bg-primary-300 mr-3"
-  on:click={() => editDiagram()}>Edit</button>
+  on:click={() => openBrowserWindow(editUrl)}>Edit</button>
 </div>
 
 <hr class="p-4"/>

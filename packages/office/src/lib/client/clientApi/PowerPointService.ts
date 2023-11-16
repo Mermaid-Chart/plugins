@@ -42,7 +42,7 @@ export class PowerPointService extends OfficeService {
 
       for(let slideIndex = 0; slideIndex < slides.items.length; slideIndex++) {
         const slide = slides.items[slideIndex];
-        const shapes = slide.shapes.load("items");
+        const shapes = slide.shapes.load();
         
         await context.sync();
 

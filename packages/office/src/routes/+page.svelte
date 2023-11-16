@@ -106,6 +106,16 @@
     authToken = '';
   };
 
+  const openBrowserWindow = (url: string) => {
+    if (isOfficeInitialized) {
+      if (Office.context.requirements.isSetSupported('OpenBrowserWindowApi', '1.1')) {
+        Office.context.ui.openBrowserWindow(url);
+      } else {
+        window.open(url, '_blank');
+      }
+    }
+  };
+
   async function loadProjects() {
     projects = await mermaidChartApi.getProjects();
     projectIds = [];
@@ -149,7 +159,8 @@
     {#if !authToken}
       <div class="w-full sm:w-1/3 pt-6">
         <div class="text-md">
-          Create and edit diagrams in <a href="https://www.mermaidchart.com">Mermaid Chart</a> and easily
+          <!-- svelte-ignore a11y-click-events-have-key-events -->
+          Create and edit diagrams in <a href="#top" on:click={() => openBrowserWindow('https://www.mermaidchart.com')}>Mermaid Chart</a> and easily
           sync them to your document with the Mermaid Chart Add-in for Microsoft.
         </div>
       </div>
@@ -159,7 +170,8 @@
           Connect</button>
       </div>
       <div class="text-sm">
-        Don't have an account? <a href="https://www.mermaidchart.com/app/sign-up">Sign up</a>
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        Don't have an account? <a href="#top" on:click={() => openBrowserWindow('https://www.mermaidchart.com/app/sign-up')}>Sign up</a>
       </div>
     {:else}
         <div class="p-4">
