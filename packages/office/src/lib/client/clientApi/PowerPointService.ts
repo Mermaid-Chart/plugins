@@ -49,10 +49,13 @@ export class PowerPointService extends OfficeService {
 
         for (let shapeIndex = 0; shapeIndex < shapes.items.length; shapeIndex++) {
           const shape = shapes.items[shapeIndex];
-          const tag = shape.tags.getItemOrNullObject(C.TokenSettingName);
-          if (!tag.isNullObject) {
+          
+          try{
+            const tag = shape.tags.getItem(C.TokenSettingName);
             shape.delete();
             await this.replaceExistingDiagram(tag.value);
+          } catch (error) {
+            throw new RefreshError(`Error encountered while updating diagram:`, error as Error);
           }
         }
       }
