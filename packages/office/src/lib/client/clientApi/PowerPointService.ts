@@ -43,12 +43,15 @@ export class PowerPointService extends OfficeService {
 
       for(let slideIndex = 0; slideIndex < slides.items.length; slideIndex++) {
         const slide = slides.items[slideIndex];
-        const shapes = slide.shapes.load('items, isNullObject');
+        const shapes = slide.shapes.load('items');
         
         await context.sync();
 
         for (let shapeIndex = 0; shapeIndex < shapes.items.length; shapeIndex++) {
           const shape = shapes.items[shapeIndex];
+          shape.load('tags');
+
+          await context.sync();
           
           try{
             const tag = shape.tags.getItem(C.TokenSettingName);
