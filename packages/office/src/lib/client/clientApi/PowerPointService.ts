@@ -55,6 +55,8 @@ export class PowerPointService extends OfficeService {
           
           try{
             const tag = shape.tags.getItem(C.TokenSettingName);
+            tag.load('value');
+            await context.sync();
             shape.delete();
             await this.replaceExistingDiagram(tag.value);
           } catch (error) {
