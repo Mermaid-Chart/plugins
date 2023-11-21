@@ -46,6 +46,8 @@ export class PowerPointService extends OfficeService {
         const shapes = slide.shapes.load('items');
         
         await context.sync();
+        shapes.load("tags/key, tags/value");
+        await context.sync();
 
         for (let shapeIndex = 0; shapeIndex < shapes.items.length; shapeIndex++) {
           const shape = shapes.items[shapeIndex];
