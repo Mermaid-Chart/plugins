@@ -1,0 +1,35 @@
+name: Build
+on:
+  pull_request:
+  push:
+
+jobs:
+  test:
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        node: ['18.18.x']
+        pkg: ['sdk']
+    runs-on:
+      labels: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v4
+        with:
+          cache: pnpm
+          node-version: ${{ matrix.node }}
+
+      - name: Install dependencies for ${{ matrix.pkg }}
+        run: |
+          pnpm install --frozen-lockfile --filter='...${{ matrix.pkg }}'
+
+      - name: Test ${{ matrix.pkg }}
+        run: |
+          pnpm --filter='${{ matrix.pkg }}' test
