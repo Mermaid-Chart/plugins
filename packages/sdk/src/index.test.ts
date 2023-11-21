@@ -61,5 +61,20 @@ describe('MermaidChart', () => {
         ),
       ).rejects.toThrowError('invalid_state');
     });
+
+    it('should throw with nicer error if URL has no query params', async () => {
+      await expect(() =>
+        client.handleAuthorizationResponse(
+          // missing the ? so it's not read as a query
+          'code=hello-world&state=my-invalid-state',
+        ),
+      ).rejects.toThrowError(/no query parameters/);
+    });
+
+    it('should work in Node.JS with url fragment', async () => {
+      const code = 'hello-nodejs-world';
+      await client.handleAuthorizationResponse(`?code=${code}&state=${state}`);
+      await expect(client.getAccessToken()).resolves.toBe('test-example-access_token');
+    });
   });
 });

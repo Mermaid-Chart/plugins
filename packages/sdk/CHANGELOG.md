@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Compile an ESM version of this codebase for Node.JS v18.
 
-## [0.1.1] - 2023-09-08
+### Fixed
 
+- `MermaidChart#handleAuthorizationResponse()` now supports relative URLs.
+
+## [0.1.1] - 2023-09-08
 - Browser-only build.
