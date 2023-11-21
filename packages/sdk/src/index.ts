@@ -2,8 +2,8 @@ import { v4 as uuid } from 'uuid';
 import { OAuth2Client, generateCodeVerifier } from '@badgateway/oauth2-client';
 import defaultAxios from 'axios';
 import type { AxiosInstance, AxiosResponse } from 'axios';
-import { RequiredParameterMissingError, OAuthError } from './errors';
-import { URLS } from './urls';
+import { RequiredParameterMissingError, OAuthError } from './errors.js';
+import { URLS } from './urls.js';
 import type {
   AuthState,
   InitParams,
@@ -11,7 +11,7 @@ import type {
   MCUser,
   MCProject,
   MCDocument,
-} from './types';
+} from './types.js';
 
 const defaultBaseURL = 'https://www.mermaidchart.com'; // "http://127.0.0.1:5174"
 const authorizationURLTimeout = 60_000;

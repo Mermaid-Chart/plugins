@@ -1,4 +1,4 @@
-import type { MCDocument } from './types';
+import type { MCDocument } from './types.js';
 
 export const URLS = {
   oauth: {
