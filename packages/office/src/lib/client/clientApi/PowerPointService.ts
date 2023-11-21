@@ -48,18 +48,15 @@ export class PowerPointService extends OfficeService {
         
         await context.sync();
 
-        // shapes.load("tags/key, tags/value");
-        // await context.sync();
+        shapes.load("tags/key, tags/value");
+        await context.sync();
 
         for (let shapeIndex = 0; shapeIndex < shapes.items.length; shapeIndex++) {
           const shape = shapes.items[shapeIndex];
-          //shape.load('tags');
-          const tags = shape.tags.load('key, value');
-
           await context.sync();
           
           try{
-            const diagramTag = tags.getItem(C.TokenSettingName);
+            const diagramTag = shape.tags.getItem(C.TokenSettingName);
             await context.sync();
             if(diagramTag) {
               shape.delete();
