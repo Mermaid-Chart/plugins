@@ -43,7 +43,7 @@ export class PowerPointService extends OfficeService {
 
       for(let slideIndex = 0; slideIndex < slides.items.length; slideIndex++) {
         const slide = slides.items[slideIndex];
-        const shapes = slide.shapes.load('items, tags/key, tags/value');
+        const shapes = slide.shapes.load('items');
         
         await context.sync();
         // shapes.load("tags/key, tags/value");
@@ -51,18 +51,20 @@ export class PowerPointService extends OfficeService {
 
         for (let shapeIndex = 0; shapeIndex < shapes.items.length; shapeIndex++) {
           const shape = shapes.items[shapeIndex];
-          shape.load('tags');
+          //shape.load('tags');
+          const tags = shape.tags.load('key, value');
 
           await context.sync();
           
           try{
-            const tag = shape.tags.getItem(C.TokenSettingName);
-            tag.load('value');
+            const diagramTag = tags.getItem(C.TokenSettingName);
             await context.sync();
-            shape.delete();
-            await this.replaceExistingDiagram(tag.value);
+            if(diagramTag) {
+              shape.delete();
+              await this.replaceExistingDiagram(diagramTag.value);
+            }
           } catch (error) {
-            throw new RefreshError(`Error encountered while updating diagram:`, error as Error);
+            throw new RefreshError(`Error encountered while updating diagrams:`, error as Error);
           }
         }
       }
