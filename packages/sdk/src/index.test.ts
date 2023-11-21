@@ -39,6 +39,14 @@ describe('MermaidChart', () => {
     });
   });
 
+  describe('#getAuthorizationData', () => {
+    it('should set default state', async () => {
+      const { state, url } = await client.getAuthorizationData();
+
+      expect(new URL(url).searchParams.has('state', state)).toBeTruthy();
+    });
+  });
+
   describe('#handleAuthorizationResponse', () => {
     let state: AuthorizationData['state'];
     beforeEach(async () => {

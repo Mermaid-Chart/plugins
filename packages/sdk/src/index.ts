@@ -83,7 +83,7 @@ export class MermaidChart {
 
     const url = await this.oauth.authorizationCode.getAuthorizeUri({
       redirectUri: this.redirectURI,
-      state,
+      state: stateID,
       codeVerifier,
       scope,
     });
