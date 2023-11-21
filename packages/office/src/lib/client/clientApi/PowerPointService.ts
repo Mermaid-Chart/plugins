@@ -36,6 +36,7 @@ export class PowerPointService extends OfficeService {
   }
 
   public async syncDiagrams(): Promise<void> {
+    OfficeExtension.config.extendedErrorLogging = true;
     await PowerPoint.run(async (context) => {
       const presentation = context.presentation;
       const slides = presentation.slides.load("items");
@@ -46,6 +47,7 @@ export class PowerPointService extends OfficeService {
         const shapes = slide.shapes.load('items');
         
         await context.sync();
+
         // shapes.load("tags/key, tags/value");
         // await context.sync();
 
