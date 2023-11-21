@@ -68,7 +68,7 @@ export class WordService extends OfficeService {
         for (const control of contentControlsToUpdate) {
           await this.replaceExistingDiagram(control);
         }
-      } catch (error){
+      } catch (error) {
         if(error instanceof RefreshError) {
           showUserMessage(
             'Error refreshing diagrams. Please contact support',

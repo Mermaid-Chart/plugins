@@ -9,7 +9,7 @@
   import { loading } from '$lib/client/stores/loading';
   import { showUserMessage } from '$lib/client/stores/messaging';
   import { MermaidChart, type MCProject, type MCDocument } from '$lib/mermaidChartApi';
-    import { AppBar } from '@skeletonlabs/skeleton';
+  import { AppBar } from '@skeletonlabs/skeleton';
   
   let authToken: string | undefined;
   
@@ -181,7 +181,7 @@
             on:click={() => syncDiagramsInDocument()}>
             Sync diagrams</button>
         </div>
-      <div class="px-4 py-6 sticky top-14 z-10 bg-neutral-50 w-screen shadow-sm">
+      <div class="px-4 py-6 top-14 z-10 bg-neutral-50 w-screen shadow-sm">
         <div class="pb-2">Select project</div>
         <select
           id="projectSelectInput"
