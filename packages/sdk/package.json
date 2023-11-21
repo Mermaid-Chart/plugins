@@ -6,7 +6,8 @@
   "scripts": {
     "build": "pnpm build:code && pnpm build:types",
     "build:code": "esbuild src/index.ts --bundle --minify --outfile=dist/index.js",
-    "build:types": "tsc -p ./tsconfig.json --emitDeclarationOnly"
+    "build:types": "tsc -p ./tsconfig.json --emitDeclarationOnly",
+    "prepare": "pnpm run build"
   },
   "keywords": [],
   "contributors": [
