@@ -14,7 +14,8 @@
     "build:code:browser": "esbuild src/index.ts --bundle --minify --outfile=dist/bundle.iife.js",
     "build:code:node": "esbuild src/index.ts --bundle --platform=node --target=node18.18 --format=esm --packages=external --minify --outfile=dist/index.mjs",
     "build:types": "tsc -p ./tsconfig.json --emitDeclarationOnly",
-    "prepare": "pnpm run build"
+    "prepare": "pnpm run build",
+    "test": "vitest"
   },
   "type": "module",
   "keywords": [],
