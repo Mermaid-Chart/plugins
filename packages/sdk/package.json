@@ -2,12 +2,21 @@
   "name": "@mermaidchart/sdk",
   "version": "0.1.1",
   "description": "Access the MermaidChart services with OAuth and type safety.",
-  "main": "dist/index.js",
+  "browser": "dist/bundle.iife.js",
+  "types": "dist/index.d.ts",
+  "main": "dist/index.mjs",
+  "engines": {
+    "node": "^18.18.0 || >= 20.0.0"
+  },
   "scripts": {
     "build": "pnpm build:code && pnpm build:types",
-    "build:code": "esbuild src/index.ts --bundle --minify --outfile=dist/index.js",
-    "build:types": "tsc -p ./tsconfig.json --emitDeclarationOnly"
+    "build:code": "pnpm run build:code:browser && pnpm run build:code:node",
+    "build:code:browser": "esbuild src/index.ts --bundle --minify --outfile=dist/bundle.iife.js",
+    "build:code:node": "esbuild src/index.ts --bundle --platform=node --target=node18.18 --format=esm --packages=external --minify --outfile=dist/index.mjs",
+    "build:types": "tsc -p ./tsconfig.json --emitDeclarationOnly",
+    "prepare": "pnpm run build"
   },
+  "type": "module",
   "keywords": [],
   "contributors": [
     "Sidharth Vinod (https://sidharth.dev)"
