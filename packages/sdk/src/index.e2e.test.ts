@@ -7,6 +7,10 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import process from 'node:process';
 import { AxiosError } from 'axios';
 
+// hard-coded, replace with your own project,
+// or ask alois is you want this to be shared with your account
+const testProjectId = '316557b3-cb6f-47ed-acf7-fcfb7ce188d5';
+
 let client: MermaidChart;
 
 beforeAll(async() => {
@@ -38,6 +42,21 @@ const documentMatcher = expect.objectContaining({
   documentID: expect.any(String),
   major: expect.any(Number),
   minor: expect.any(Number),
+});
+
+describe('createDocument', () => {
+  it('should create document in project', async() => {
+    const existingDocuments = await client.getDocuments(testProjectId);
+
+    const newDocument = await client.createDocument(testProjectId);
+
+    expect(newDocument).toStrictEqual(documentMatcher);
+
+    const updatedProjectDocuments = await client.getDocuments(testProjectId);
+
+    expect(existingDocuments).not.toContainEqual(newDocument);
+    expect(updatedProjectDocuments).toContainEqual(newDocument);
+  });
 });
 
 describe("getDocument", () => {
@@ -73,3 +92,4 @@ describe("getDocument", () => {
     expect(error?.response?.status).toBe(404);
   });
 });
+
