@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Compile an ESM version of this codebase for Node.JS v18.
+- Add `MermaidChart#getDiagram(diagramID)` function to get a diagram.
 
 ### Fixed
 

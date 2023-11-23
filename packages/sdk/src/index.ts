@@ -180,6 +180,13 @@ export class MermaidChart {
     return url;
   }
 
+  public async getDocument(
+    document: Pick<MCDocument, 'documentID'> | Pick<MCDocument, 'documentID' | 'major' | 'minor'>,
+  ) {
+    const {data} =  await this.axios.get<MCDocument>(URLS.rest.documents.pick(document).self);
+    return data;
+  }
+
   public async getRawDocument(
     document: Pick<MCDocument, 'documentID' | 'major' | 'minor'>,
     theme: 'light' | 'dark',
