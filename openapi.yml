@@ -78,6 +78,12 @@ components:
           format: uuid
           description: |
             The id of this diagram, required for `setDocument()`.
+        code:
+          type: string
+          description: |
+            The Mermaid
+            [`application/vnd.mermaid`](https://www.iana.org/assignments/media-types/application/vnd.mermaid)
+            code for this diagram.
       required:
         - documentID
         - id
