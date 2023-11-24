@@ -6,6 +6,7 @@ import { RequiredParameterMissingError, OAuthError } from './errors.js';
 import { URLS } from './urls.js';
 import type {
   AuthState,
+  Document,
   InitParams,
   AuthorizationData,
   MCUser,
@@ -201,7 +202,7 @@ export class MermaidChart {
    * @returns Metadata about the deleted document.
    */
   public async deleteDocument(documentID: MCDocument['documentID']) {
-    const deletedDocument = await this.axios.delete<Pick<MCDocument, 'projectID' | 'title'>>(
+    const deletedDocument = await this.axios.delete<Document>(
       URLS.rest.documents.pick({documentID}).self,
       {}, // force sending empty JSON to avoid triggering CSRF check
     );

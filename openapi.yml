@@ -48,23 +48,45 @@ components:
         - title
     Document:
       type: object
+      description: |
+        MermaidChart document that may contain a diagram.
       properties:
-        documentID:
-          type: string
         projectID:
           type: string
-        major:
-          type: integer
-        minor:
-          type: integer
         title:
           type: string
       required:
         - documentID
         - projectID
-        - major
-        - minor
         - title
+    DiagramDocument:
+      type: object
+      description: |
+        MermaidChart diagram document, without any Document metadata.
+      properties:
+        documentID:
+          description: |
+            The id of the document that this diagram is linked to.
+          type: string
+          format: uuid
+        major:
+          type: integer
+        minor:
+          type: integer
+        id:
+          type: string
+          format: uuid
+          description: |
+            The id of this diagram, required for `setDocument()`.
+      required:
+        - documentID
+        - id
+    MCDocument:
+      description: |
+        MermaidChart diagram document.
+      allOf:
+        - $ref: "#/components/schemas/Document"
+        - $ref: "#/components/schemas/DiagramDocument"
 
   securitySchemes:
     bearer_auth:
@@ -127,7 +149,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Document'
+                  $ref: '#/components/schemas/MCDocument'
     post:
       tags:
         - project
@@ -150,11 +172,11 @@ paths:
       responses:
         '200':
           description: |
-            The newly created document.
+            The newly created diagram document.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Document'
+                $ref: '#/components/schemas/MCDocument'
 
   /app/projects/{projectID}/diagrams/{documentID}/version/{version}:
     get:
@@ -187,7 +209,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Document'
+                $ref: '#/components/schemas/MCDocument'
 
   /rest-api/documents/{documentID}:
     get:
@@ -221,7 +243,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Document'
+                $ref: '#/components/schemas/MCDocument'
         '404':
           description: File Not Found
     delete:
@@ -240,8 +262,12 @@ paths:
         - mermaidchart_auth: []
       responses:
         '200':
-          description: Metadata about the deleted document.
-          # TODO: update the sever to actually return the full document.
+          description: The deleted document.
+          content:
+            application/json:
+              schema:
+                # currently only returns the document, no diagram data!!!!
+                $ref: '#/components/schemas/Document'
 
   /raw/{documentID}:
     get:
