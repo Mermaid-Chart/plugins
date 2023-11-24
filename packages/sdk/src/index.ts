@@ -100,12 +100,20 @@ export class MermaidChart {
     };
   }
 
+  /**
+   * Handle authorization response.
+   *
+   * @param urlString - URL, only the query string is required (e.g. `?code=xxxx&state=xxxxx`)
+   */
   public async handleAuthorizationResponse(urlString: string) {
-    const url = new URL(urlString);
+    const url = new URL(urlString, 'https://dummy.invalid');
     const state = url.searchParams.get('state') ?? undefined;
     const authorizationToken = url.searchParams.get('code');
 
     if (!authorizationToken) {
+      if (url.searchParams.size === 0) {
+        throw new Error(`URL ${JSON.stringify(urlString)} has no query parameters.`);
+      }
       throw new RequiredParameterMissingError('token');
     }
     if (!state) {
