@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `MermaidChart#getAuthorizationData()` now correctly sets `state` in the URL
+  by default.
 - `MermaidChart#handleAuthorizationResponse()` now supports relative URLs.
 
 ## [0.1.1] - 2023-09-08
