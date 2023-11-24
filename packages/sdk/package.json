@@ -15,7 +15,8 @@
     "build:code:node": "esbuild src/index.ts --bundle --platform=node --target=node18.18 --format=esm --packages=external --minify --outfile=dist/index.mjs",
     "build:types": "tsc -p ./tsconfig.json --emitDeclarationOnly",
     "prepare": "pnpm run build",
-    "test": "vitest"
+    "test": "vitest src/",
+    "test:e2e": "vitest --config vitest.config.e2e.ts"
   },
   "type": "module",
   "keywords": [],
@@ -29,6 +30,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@types/node": "^18.18.0",
     "@types/uuid": "^9.0.2"
   },
   "publishConfig": {
