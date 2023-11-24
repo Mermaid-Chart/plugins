@@ -59,6 +59,20 @@ describe('createDocument', () => {
   });
 });
 
+describe('deleteDocument', () => {
+  it('should delete document', async() => {
+    const newDocument = await client.createDocument(testProjectId);
+
+    expect(await client.getDocuments(testProjectId)).toContainEqual(newDocument);
+
+    const deletedDoc = await client.deleteDocument(newDocument.documentID);
+
+    expect(deletedDoc.projectID).toStrictEqual(newDocument.projectID);
+
+    expect(await client.getDocuments(testProjectId)).not.toContainEqual(newDocument);
+  });
+});
+
 describe("getDocument", () => {
   it("should get publicly shared diagram", async() => {
     const latestDocument = await client.getDocument({

@@ -195,6 +195,19 @@ export class MermaidChart {
     return data;
   }
 
+  /**
+   * Delete the given document.
+   * @param documentID The ID of the document to delete.
+   * @returns Metadata about the deleted document.
+   */
+  public async deleteDocument(documentID: MCDocument['documentID']) {
+    const deletedDocument = await this.axios.delete<Pick<MCDocument, 'projectID' | 'title'>>(
+      URLS.rest.documents.pick({documentID}).self,
+      {}, // force sending empty JSON to avoid triggering CSRF check
+    );
+    return deletedDocument.data;
+  }
+
   public async getRawDocument(
     document: Pick<MCDocument, 'documentID' | 'major' | 'minor'>,
     theme: 'light' | 'dark',

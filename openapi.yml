@@ -224,6 +224,24 @@ paths:
                 $ref: '#/components/schemas/Document'
         '404':
           description: File Not Found
+    delete:
+      tags:
+        - document
+      summary: Delete the given document.
+      operationId: deleteDocument
+      parameters:
+        - name: documentID
+          in: path
+          required: true
+          description: The ID of the document to delete.
+          schema:
+            type: string
+      security:
+        - mermaidchart_auth: []
+      responses:
+        '200':
+          description: Metadata about the deleted document.
+          # TODO: update the sever to actually return the full document.
 
   /raw/{documentID}:
     get:
