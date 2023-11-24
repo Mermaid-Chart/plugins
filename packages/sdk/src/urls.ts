@@ -6,6 +6,25 @@ export const URLS = {
     token: `/oauth/token`,
   },
   rest: {
+    documents: {
+      pick: (opts: Pick<MCDocument, 'documentID'> | Pick<MCDocument, 'documentID' | 'major' | 'minor'>) => {
+        const {documentID} = opts;
+        let queryParams = "";
+
+        if ('major' in opts) {
+          const {major, minor} = opts;
+
+          queryParams = `v${major ?? 0}.${minor ?? 1}`;
+        }
+
+        const baseURL = `/rest-api/documents/${documentID}`;
+        return {
+          presentations: `${baseURL}/presentations`,
+          self: baseURL,
+          withVersion: `${baseURL}${queryParams}`
+        };
+      }
+    },
     users: {
       self: `/rest-api/users/me`,
     },
