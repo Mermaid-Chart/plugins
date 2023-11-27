@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         node: ['18.18.x']
-        pkg: ['sdk']
+        pkg: ['sdk', 'cli']
     runs-on:
       labels: ubuntu-latest
     steps:
