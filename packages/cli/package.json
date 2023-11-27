@@ -1,0 +1,60 @@
+{
+  "name": "@mermaidchart/cli",
+  "version": "0.1.0-alpha.0",
+  "description": "CLI for interacting with https://MermaidChart.com, the platform that makes collaborating with Mermaid diagrams easy",
+  "main": "index.js",
+  "bin": {
+    "mermaid-chart": "dist/cli.js"
+  },
+  "//1": "temporarily disable pushing until we finish progress on this",
+  "private": true,
+  "engines": {
+    "node": "^18.18.0 || ^20.0.0"
+  },
+  "scripts": {
+    "lint": "eslint src/ && prettier --check src/",
+    "lint:fix": "eslint --fix src/ && prettier --write src/",
+    "prepare": "tsc --build tsconfig.json",
+    "test": "vitest"
+  },
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "directory": "packages/cli",
+    "url": "git+https://github.com/Mermaid-Chart/plugins.git"
+  },
+  "keywords": [
+    "mermaid",
+    "mermaidchart",
+    "cli"
+  ],
+  "author": "Alois Klink <alois@mermaidchart.com> (https://github.com/aloisklink)",
+  "//2": "TODO: decide on a license once this code is finished",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/Mermaid-Chart/plugins/issues"
+  },
+  "homepage": "https://github.com/Mermaid-Chart/plugins/tree/main/packages/cli#readme",
+  "devDependencies": {
+    "@cspell/eslint-plugin": "^8.0.0",
+    "@tsconfig/node18": "^18.2.2",
+    "@tsconfig/strictest": "^2.0.2",
+    "@types/iarna__toml": "^2.0.5",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^18.18.11",
+    "@typescript-eslint/eslint-plugin": "^6.11.0",
+    "@typescript-eslint/parser": "^6.11.0",
+    "eslint": "^8.54.0",
+    "typescript": "^5.2.2",
+    "vitest": "^0.34.6"
+  },
+  "dependencies": {
+    "@commander-js/extra-typings": "^11.1.0",
+    "@iarna/toml": "^2.2.5",
+    "@inquirer/input": "^1.2.14",
+    "@inquirer/select": "^1.3.1",
+    "@mermaidchart/sdk": "workspace:^",
+    "commander": "^11.1.0",
+    "js-yaml": "^4.1.0"
+  }
+}
