@@ -30,6 +30,9 @@ jobs:
         run: |
           pnpm install --frozen-lockfile --filter='...${{ matrix.pkg }}'
 
+      - name: Lint (if present) ${{ matrix.pkg }}
+        run: pnpm --if-present --filter='${{ matrix.pkg }}' lint
+
       - name: Test ${{ matrix.pkg }}
         run: |
           pnpm --filter='${{ matrix.pkg }}' test
