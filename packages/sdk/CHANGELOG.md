@@ -8,7 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Compile an ESM version of this codebase for Node.JS v18.
+- Add `MermaidChart#getDiagram(diagramID)` function to get a diagram.
+
+### Fixed
+
+- Fix `MCDocument` `major`/`minor` type to `number`.
+
+### Fixed
+
+- `MermaidChart#getAuthorizationData()` now correctly sets `state` in the URL
+  by default.
+- `MermaidChart#handleAuthorizationResponse()` now supports relative URLs.
 
 ## [0.1.1] - 2023-09-08
-
 - Browser-only build.

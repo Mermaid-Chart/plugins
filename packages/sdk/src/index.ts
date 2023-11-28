@@ -83,7 +83,7 @@ export class MermaidChart {
 
     const url = await this.oauth.authorizationCode.getAuthorizeUri({
       redirectUri: this.redirectURI,
-      state,
+      state: stateID,
       codeVerifier,
       scope,
     });
@@ -100,12 +100,20 @@ export class MermaidChart {
     };
   }
 
+  /**
+   * Handle authorization response.
+   *
+   * @param urlString - URL, only the query string is required (e.g. `?code=xxxx&state=xxxxx`)
+   */
   public async handleAuthorizationResponse(urlString: string) {
-    const url = new URL(urlString);
+    const url = new URL(urlString, 'https://dummy.invalid');
     const state = url.searchParams.get('state') ?? undefined;
     const authorizationToken = url.searchParams.get('code');
 
     if (!authorizationToken) {
+      if (url.searchParams.size === 0) {
+        throw new Error(`URL ${JSON.stringify(urlString)} has no query parameters.`);
+      }
       throw new RequiredParameterMissingError('token');
     }
     if (!state) {
@@ -178,6 +186,13 @@ export class MermaidChart {
   ) {
     const url = `${this.baseURL}${URLS.diagram(document).edit}`;
     return url;
+  }
+
+  public async getDocument(
+    document: Pick<MCDocument, 'documentID'> | Pick<MCDocument, 'documentID' | 'major' | 'minor'>,
+  ) {
+    const {data} =  await this.axios.get<MCDocument>(URLS.rest.documents.pick(document).self);
+    return data;
   }
 
   public async getRawDocument(

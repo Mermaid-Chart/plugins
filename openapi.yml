@@ -54,9 +54,9 @@ components:
         projectID:
           type: string
         major:
-          type: string
+          type: integer
         minor:
-          type: string
+          type: integer
         title:
           type: string
       required:
@@ -160,6 +160,43 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Document'
+
+  /rest-api/documents/{documentID}:
+    get:
+      tags:
+        - document
+      summary: Gets the given diagram
+      operationId: getDocument
+      parameters:
+        - name: documentID
+          in: path
+          required: true
+          description: The ID of the document to get diagram data for
+          schema:
+            type: string
+        - name: version
+          in: query
+          required: false
+          description: |
+            The version of the document to get diagram data for.
+
+            If not set, defaults to the highest version.
+          schema:
+            type: string
+          example: v0.1
+      security:
+        - mermaidchart_auth:
+          - read
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '404':
+          description: File Not Found
+
   /raw/{documentID}:
     get:
       tags:

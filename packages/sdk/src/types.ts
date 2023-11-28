@@ -31,8 +31,8 @@ export interface MCProject {
 export interface MCDocument {
   documentID: string;
   projectID: string;
-  major: string;
-  minor: string;
+  major: number;
+  minor: number;
   title: string;
 }
 
