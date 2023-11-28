@@ -196,40 +196,48 @@ function linkCmd() {
 
 function pullCmd() {
   return createCommand('pull')
-    .description('Pulls a document from from Mermaid Chart')
-    .addArgument(new Argument('<path>', 'The path of the file to pull.'))
-    .option('--check', 'Check whether the local file would be overwrited')
-    .action(async (path, options, command) => {
+    .description('Pulls documents from Mermaid Chart')
+    .addArgument(new Argument('<path...>', 'The paths of the files to pull.'))
+    .option('--check', 'Check whether the local files would be overwrited')
+    .action(async (paths, options, command) => {
       const optsWithGlobals = command.optsWithGlobals<CommonOptions>();
       const client = await createClient(optsWithGlobals);
-      const text = await readFile(path, { encoding: 'utf8' });
+      await Promise.all(
+        paths.map(async (path) => {
+          const text = await readFile(path, { encoding: 'utf8' });
 
-      const newFile = await pull(text, client, { title: path });
+          const newFile = await pull(text, client, { title: path });
 
-      if (text === newFile) {
-        console.log(`✅ - ${path} is up to date`);
-      } else {
-        if (options['check']) {
-          console.log(`❌ - ${path} would be updated`);
-          process.exitCode = 1;
-        } else {
-          await writeFile(path, newFile, { encoding: 'utf8' });
-          console.log(`✅ - ${path} was updated`);
-        }
-      }
+          if (text === newFile) {
+            console.log(`✅ - ${path} is up to date`);
+          } else {
+            if (options['check']) {
+              console.log(`❌ - ${path} would be updated`);
+              process.exitCode = 1;
+            } else {
+              await writeFile(path, newFile, { encoding: 'utf8' });
+              console.log(`✅ - ${path} was updated`);
+            }
+          }
+        }),
+      );
     });
 }
 
 function pushCmd() {
   return createCommand('push')
-    .description('Push a local diagram to Mermaid Chart')
-    .addArgument(new Argument('<path>', 'The path of the file to push.'))
-    .action(async (path, _options, command) => {
+    .description('Push local diagrams to Mermaid Chart')
+    .addArgument(new Argument('<path...>', 'The paths of the files to push.'))
+    .action(async (paths, _options, command) => {
       const optsWithGlobals = command.optsWithGlobals<CommonOptions>();
       const client = await createClient(optsWithGlobals);
-      const text = await readFile(path, { encoding: 'utf8' });
+      await Promise.all(
+        paths.map(async (path) => {
+          const text = await readFile(path, { encoding: 'utf8' });
 
-      await push(text, client, { title: path });
+          await push(text, client, { title: path });
+        }),
+      );
     });
 }
 
