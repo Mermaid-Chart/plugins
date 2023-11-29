@@ -10,7 +10,10 @@ describe('MermaidChart', () => {
     vi.resetAllMocks();
 
     vi.spyOn(OAuth2Client.prototype, 'request').mockImplementation(
-      async (endpoint: 'tokenEndpoint' | 'introspectionEndpoint', _body: Record<string, unknown>) => {
+      async (
+        endpoint: 'tokenEndpoint' | 'introspectionEndpoint',
+        _body: Record<string, unknown>,
+      ) => {
         switch (endpoint) {
           case 'tokenEndpoint':
             return {

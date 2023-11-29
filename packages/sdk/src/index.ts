@@ -193,7 +193,7 @@ export class MermaidChart {
   public async getDocument(
     document: Pick<MCDocument, 'documentID'> | Pick<MCDocument, 'documentID' | 'major' | 'minor'>,
   ) {
-    const {data} =  await this.axios.get<MCDocument>(URLS.rest.documents.pick(document).self);
+    const { data } = await this.axios.get<MCDocument>(URLS.rest.documents.pick(document).self);
     return data;
   }
 
@@ -202,17 +202,17 @@ export class MermaidChart {
    *
    * @param document - The document to update.
    */
-  public async setDocument(
-    document: Pick<MCDocument, 'id' | 'documentID'> & Partial<MCDocument>,
-  ) {
-    const {data} = await this.axios.put<{result: "ok"} | {result: "failed", error: unknown}>(
+  public async setDocument(document: Pick<MCDocument, 'id' | 'documentID'> & Partial<MCDocument>) {
+    const { data } = await this.axios.put<{ result: 'ok' } | { result: 'failed'; error: unknown }>(
       URLS.rest.documents.pick(document).self,
       document,
     );
 
-    if (data.result === "failed") {
+    if (data.result === 'failed') {
       throw new Error(
-        `setDocument(${JSON.stringify({documentID: document.documentID})} failed due to ${JSON.stringify(data.error)}`
+        `setDocument(${JSON.stringify({
+          documentID: document.documentID,
+        })} failed due to ${JSON.stringify(data.error)}`,
       );
     }
   }
@@ -224,7 +224,7 @@ export class MermaidChart {
    */
   public async deleteDocument(documentID: MCDocument['documentID']) {
     const deletedDocument = await this.axios.delete<Document>(
-      URLS.rest.documents.pick({documentID}).self,
+      URLS.rest.documents.pick({ documentID }).self,
       {}, // force sending empty JSON to avoid triggering CSRF check
     );
     return deletedDocument.data;
