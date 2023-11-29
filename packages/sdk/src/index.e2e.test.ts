@@ -6,7 +6,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import process from 'node:process';
 import { AxiosError } from 'axios';
-import { MCDocument } from './types.js';
+import type { MCDocument } from './types.js';
 
 let testProjectId = '316557b3-cb6f-47ed-acf7-fcfb7ce188d5';
 let baseURL = new URL('https://test.mermaidchart.com');
@@ -44,14 +44,14 @@ beforeAll(async() => {
   // confirm that testProjectId is valid
   if (process.env.TEST_MERMAIDCHART_PROJECT_ID) {
     testProjectId = process.env.TEST_MERMAIDCHART_PROJECT_ID;
-    if (!projects.find((project) => project.id === testProjectId)) {
+    if (!projects.some((project) => project.id === testProjectId)) {
       throw new Error(
         `Invalid environment variable TEST_MERMAIDCHART_PROJECT_ID. `
         + `Please go to ${new URL('/app/projects', baseURL)} and create one that you have access to.`
       );
     }
   } else {
-    if (!projects.find((project) => project.id === testProjectId)) {
+    if (!projects.some((project) => project.id === testProjectId)) {
       throw new Error(
         `Missing environment variable TEST_MERMAIDCHART_PROJECT_ID. `
         + `Please go to ${new URL('/app/projects', baseURL)} and create one.`
@@ -80,7 +80,7 @@ const documentMatcher = expect.objectContaining({
  */
 const documentsToDelete = new Set<MCDocument["documentID"]>();
 afterAll(async() => {
-  await Promise.all(Array.from(documentsToDelete).map(async(document) => {
+  await Promise.all([...documentsToDelete].map(async(document) => {
     if (documentsToDelete.delete(document)) {
       await client.deleteDocument(document);
     }
