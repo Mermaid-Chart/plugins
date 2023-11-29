@@ -40,22 +40,20 @@ export class PowerPointService extends OfficeService {
     await PowerPoint.run(async (context) => {
       const presentation = context.presentation;
       const slides = presentation.slides.load("items");
+      
       await context.sync();
 
       for(let slideIndex = 0; slideIndex < slides.items.length; slideIndex++) {
         const slide = slides.items[slideIndex];
-        const shapes = slide.shapes;
-        shapes.load("tags/key, tags/value");
+        const shapes = slide.shapes.load('items');
         await context.sync();
 
         for (let shapeIndex = 0; shapeIndex < shapes.items.length; shapeIndex++) {
-          const shape = shapes.items[shapeIndex];
-          shape.load("tags/key, tags/value");
+          const shape = shapes.items[shapeIndex].load('tags/items');
           await context.sync();
           
           try{
-            const diagramTag = shape.tags.getItem(C.TokenSettingName);
-            diagramTag.load("key, value");
+            const diagramTag = shape.tags.getItem(C.TokenSettingName.toUpperCase()).load('key, value');;
             await context.sync();
             if(diagramTag) {
               shape.delete();
