@@ -6,7 +6,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import process from 'node:process';
 import { AxiosError } from 'axios';
-import { MCDocument } from './types.js';
+import type { MCDocument } from './types.js';
 
 // hard-coded, replace with your own project,
 // or ask alois is you want this to be shared with your account
@@ -50,7 +50,7 @@ const documentMatcher = expect.objectContaining({
  */
 const documentsToDelete = new Set<MCDocument["documentID"]>();
 afterAll(async() => {
-  await Promise.all(Array.from(documentsToDelete).map(async(document) => {
+  await Promise.all([...documentsToDelete].map(async(document) => {
     if (documentsToDelete.delete(document)) {
       await client.deleteDocument(document);
     }
