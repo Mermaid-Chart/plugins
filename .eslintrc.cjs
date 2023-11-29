@@ -48,6 +48,16 @@ module.exports = {
     '@typescript-eslint/consistent-type-imports': 'error',
     '@typescript-eslint/no-floating-promises': 'error',
     '@typescript-eslint/no-misused-promises': 'error',
+    '@typescript-eslint/no-unused-vars': [
+      'error',
+      {
+        // TypeScript by default allows params starting with _
+        varsIgnorePattern: /^_/.source,
+        argsIgnorePattern: /^_/.source,
+        caughtErrorsIgnorePattern: /^_/.source,
+        destructuredArrayIgnorePattern: /^_/.source,
+      },
+    ],
     '@typescript-eslint/ban-ts-comment': [
       'error',
       {
