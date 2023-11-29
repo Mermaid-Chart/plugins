@@ -48,23 +48,51 @@ components:
         - title
     Document:
       type: object
+      description: |
+        MermaidChart document that may contain a diagram.
       properties:
-        documentID:
-          type: string
         projectID:
           type: string
-        major:
-          type: integer
-        minor:
-          type: integer
         title:
           type: string
       required:
         - documentID
         - projectID
-        - major
-        - minor
         - title
+    DiagramDocument:
+      type: object
+      description: |
+        MermaidChart diagram document, without any Document metadata.
+      properties:
+        documentID:
+          description: |
+            The id of the document that this diagram is linked to.
+          type: string
+          format: uuid
+        major:
+          type: integer
+        minor:
+          type: integer
+        id:
+          type: string
+          format: uuid
+          description: |
+            The id of this diagram, required for `setDocument()`.
+        code:
+          type: string
+          description: |
+            The Mermaid
+            [`application/vnd.mermaid`](https://www.iana.org/assignments/media-types/application/vnd.mermaid)
+            code for this diagram.
+      required:
+        - documentID
+        - id
+    MCDocument:
+      description: |
+        MermaidChart diagram document.
+      allOf:
+        - $ref: "#/components/schemas/Document"
+        - $ref: "#/components/schemas/DiagramDocument"
 
   securitySchemes:
     bearer_auth:
@@ -127,7 +155,35 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Document'
+                  $ref: '#/components/schemas/MCDocument'
+    post:
+      tags:
+        - project
+      summary: Add a new document to the project.
+      operationId: createDocument
+      parameters:
+        - name: projectID
+          in: path
+          required: true
+          description: The ID of the project to add a document to.
+          schema:
+            type: string
+      requestBody:
+        description: Currently unused, as long as it's not a form.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: |
+            The newly created diagram document.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MCDocument'
+
   /app/projects/{projectID}/diagrams/{documentID}/version/{version}:
     get:
       tags:
@@ -159,7 +215,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Document'
+                $ref: '#/components/schemas/MCDocument'
 
   /rest-api/documents/{documentID}:
     get:
@@ -193,9 +249,67 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Document'
+                $ref: '#/components/schemas/MCDocument'
         '404':
           description: File Not Found
+    put:
+      tags:
+        - document
+      summary: Update the given document.
+      operationId: setDocument
+      parameters:
+        - name: documentID
+          in: path
+          required: true
+          description: The ID of the document to update.
+          schema:
+            type: string
+      requestBody:
+        description: Document and diagram settings to update.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MCDocument'
+      security:
+        - mermaidchart_auth: []
+      responses:
+        '200':
+          description: |
+            Update status.
+          content:
+            application/json:
+              schema:
+                type: object
+                # TODO: update this once MC-1060 is fixed.
+                # properties:
+                #   result:
+                #     type: string
+                #     enum:
+                #       - ok
+                #       - failed
+    delete:
+      tags:
+        - document
+      summary: Delete the given document.
+      operationId: deleteDocument
+      parameters:
+        - name: documentID
+          in: path
+          required: true
+          description: The ID of the document to delete.
+          schema:
+            type: string
+      security:
+        - mermaidchart_auth: []
+      responses:
+        '200':
+          description: The deleted document.
+          content:
+            application/json:
+              schema:
+                # currently only returns the document, no diagram data!!!!
+                $ref: '#/components/schemas/Document'
 
   /raw/{documentID}:
     get:

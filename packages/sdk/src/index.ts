@@ -6,6 +6,7 @@ import { RequiredParameterMissingError, OAuthError } from './errors.js';
 import { URLS } from './urls.js';
 import type {
   AuthState,
+  Document,
   InitParams,
   AuthorizationData,
   MCUser,
@@ -18,7 +19,7 @@ const authorizationURLTimeout = 60_000;
 
 export class MermaidChart {
   private clientID: string;
-  private baseURL!: string;
+  #baseURL!: string;
   private axios!: AxiosInstance;
   private oauth!: OAuth2Client;
   private pendingStates: Record<string, AuthState> = {};
@@ -38,19 +39,19 @@ export class MermaidChart {
   }
 
   public setBaseURL(baseURL: string = defaultBaseURL) {
-    if (this.baseURL && this.baseURL === baseURL) {
+    if (this.#baseURL && this.#baseURL === baseURL) {
       return;
     }
-    this.baseURL = baseURL;
+    this.#baseURL = baseURL;
     this.accessToken = undefined;
     this.oauth = new OAuth2Client({
-      server: this.baseURL,
+      server: this.#baseURL,
       clientId: this.clientID,
       tokenEndpoint: URLS.oauth.token,
       authorizationEndpoint: URLS.oauth.authorize,
     });
     this.axios = defaultAxios.create({
-      baseURL: this.baseURL,
+      baseURL: this.#baseURL,
     });
 
     this.axios.interceptors.response.use((res: AxiosResponse) => {
@@ -60,6 +61,10 @@ export class MermaidChart {
       }
       return res;
     });
+  }
+
+  get baseURL() {
+    return this.#baseURL;
   }
 
   public async getAuthorizationData({
@@ -181,10 +186,18 @@ export class MermaidChart {
     return projects.data;
   }
 
+  public async createDocument(projectID: string) {
+    const newDocument = await this.axios.post<MCDocument>(
+      URLS.rest.projects.get(projectID).documents,
+      {}, // force sending empty JSON to avoid triggering CSRF check
+    );
+    return newDocument.data;
+  }
+
   public async getEditURL(
     document: Pick<MCDocument, 'documentID' | 'major' | 'minor' | 'projectID'>,
   ) {
-    const url = `${this.baseURL}${URLS.diagram(document).edit}`;
+    const url = `${this.#baseURL}${URLS.diagram(document).edit}`;
     return url;
   }
 
@@ -193,6 +206,39 @@ export class MermaidChart {
   ) {
     const {data} =  await this.axios.get<MCDocument>(URLS.rest.documents.pick(document).self);
     return data;
+  }
+
+  /**
+   * Update the given document.
+   *
+   * @param document The document to update.
+   */
+  public async setDocument(
+    document: Pick<MCDocument, 'id' | 'documentID'> & Partial<MCDocument>,
+  ) {
+    const {data} = await this.axios.put<{result: "ok"} | {result: "failed", error: any}>(
+      URLS.rest.documents.pick(document).self,
+      document,
+    );
+
+    if (data.result === "failed") {
+      throw new Error(
+        `setDocument(${JSON.stringify({documentID: document.documentID})} failed due to ${JSON.stringify(data.error)}`
+      );
+    }
+  }
+
+  /**
+   * Delete the given document.
+   * @param documentID The ID of the document to delete.
+   * @returns Metadata about the deleted document.
+   */
+  public async deleteDocument(documentID: MCDocument['documentID']) {
+    const deletedDocument = await this.axios.delete<Document>(
+      URLS.rest.documents.pick({documentID}).self,
+      {}, // force sending empty JSON to avoid triggering CSRF check
+    );
+    return deletedDocument.data;
   }
 
   public async getRawDocument(
