@@ -17,10 +17,10 @@ function userConfigDir() {
     case 'darwin':
       return `${homedir()}/Library/Application Support`;
     case 'win32':
-      if (process.env['AppData']) {
-        return process.env['AppData'];
+      if (process.env['APPDATA']) {
+        return process.env['APPDATA'];
       } else {
-        throw new Error('%AppData% is not set correctly');
+        throw new Error('%APPDATA% is not set correctly');
       }
     case 'aix':
     case 'freebsd':
