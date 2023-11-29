@@ -7,6 +7,7 @@ import {
 import { readFile, writeFile } from 'fs/promises';
 import { MermaidChart } from '@mermaidchart/sdk';
 
+import confirm from '@inquirer/confirm';
 import input from '@inquirer/input';
 import select, { Separator } from '@inquirer/select';
 import { type Config, defaultConfigPath, readConfig, writeConfig } from './config.js';
@@ -158,39 +159,52 @@ function logout() {
 
 function linkCmd() {
   return createCommand('link')
-    .description('Link the given Mermaid diagram to Mermaid Chart')
-    .addArgument(new Argument('<path>', 'The path of the file to link.'))
-    .action(async (path, _options, command) => {
+    .description('Link the given Mermaid diagrams to Mermaid Chart')
+    .addArgument(new Argument('<path...>', 'The paths of the files to link.'))
+    .action(async (paths, _options, command) => {
       const optsWithGlobals = command.optsWithGlobals<CommonOptions>();
       const client = await createClient(optsWithGlobals);
       const linkCache = {};
 
-      const existingFile = await readFile(path, { encoding: 'utf8' });
+      for (const path of paths) {
+        const existingFile = await readFile(path, { encoding: 'utf8' });
 
-      const linkedDiagram = await link(existingFile, client, {
-        cache: linkCache,
-        title: path,
-        async getProjectId(cache) {
-          cache.projects = cache.projects ?? client.getProjects();
-          const projectId = await select({
-            message: `Select a project to upload ${path} to`,
-            choices: [
-              ...(await cache.projects).map((project) => {
-                return {
-                  name: project.title,
-                  value: project.id,
-                };
-              }),
-              new Separator(
-                `Or go to ${new URL('/app/projects', client.baseURL)} to create a new project`,
-              ),
-            ],
-          });
-          return projectId;
-        },
-      });
+        const linkedDiagram = await link(existingFile, client, {
+          cache: linkCache,
+          title: path,
+          async getProjectId(cache) {
+            cache.projects = cache.projects ?? client.getProjects();
+            const projectId = await select({
+              message: `Select a project to upload ${path} to`,
+              choices: [
+                ...(await cache.projects).map((project) => {
+                  return {
+                    name: project.title,
+                    value: project.id,
+                  };
+                }),
+                new Separator(
+                  `Or go to ${new URL('/app/projects', client.baseURL)} to create a new project`,
+                ),
+              ],
+            });
 
-      await writeFile(path, linkedDiagram, { encoding: 'utf8' });
+            if (path === paths[0] && paths.length > 1) {
+              const useProjectIdForAllDiagrams = await confirm({
+                message: `Would you like to upload all ${paths.length} diagrams to this project?`,
+                default: true,
+              });
+              if (useProjectIdForAllDiagrams) {
+                cache.selectedProjectId = projectId;
+              }
+            }
+
+            return projectId;
+          },
+        });
+
+        await writeFile(path, linkedDiagram, { encoding: 'utf8' });
+      }
     });
 }
 

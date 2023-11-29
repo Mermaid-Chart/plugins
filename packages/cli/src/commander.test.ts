@@ -4,6 +4,7 @@ import { copyFile, mkdir, readFile, rm } from 'node:fs/promises';
 import type { Command, CommanderError, OutputConfiguration } from '@commander-js/extra-typings';
 import { MermaidChart } from '@mermaidchart/sdk';
 
+import confirm from '@inquirer/confirm';
 import input from '@inquirer/input';
 import select from '@inquirer/select';
 import type { MCDocument, MCProject, MCUser } from '@mermaidchart/sdk/dist/types.js';
@@ -186,9 +187,15 @@ describe('logout', () => {
 
 describe('link', () => {
   const diagram = 'test/output/unsynced.mmd';
+  const diagram2 = 'test/output/unsynced2.mmd';
+  const diagram3 = 'test/output/unsynced3.mmd';
 
   beforeEach(async () => {
-    await copyFile('test/fixtures/unsynced.mmd', diagram);
+    await Promise.all([
+      copyFile('test/fixtures/unsynced.mmd', diagram),
+      copyFile('test/fixtures/unsynced.mmd', diagram2),
+      copyFile('test/fixtures/unsynced.mmd', diagram3),
+    ]);
   });
 
   it('should create a new diagram on MermaidChart and add id to frontmatter', async () => {
@@ -214,6 +221,54 @@ describe('link', () => {
       `id: ${mockedEmptyDiagram.documentID}`,
     );
   });
+
+  for (const rememberProjectId of [true, false]) {
+    it(`should link multiple diagrams ${
+      rememberProjectId ? 'and remember project id' : ''
+    }`, async () => {
+      const { program } = mockedProgram();
+
+      vi.mock('@inquirer/confirm');
+      vi.mock('@inquirer/select');
+      vi.mocked(confirm).mockResolvedValue(rememberProjectId);
+      vi.mocked(select).mockResolvedValue(mockedProjects[0].id);
+
+      vi.mocked(MermaidChart.prototype.createDocument).mockResolvedValue(mockedEmptyDiagram);
+
+      await expect(readFile(diagram, { encoding: 'utf8' })).resolves.not.toContain(/^id:/);
+
+      await program.parseAsync(['--config', CONFIG_AUTHED, 'link', diagram, diagram2, diagram3], {
+        from: 'user',
+      });
+
+      if (rememberProjectId) {
+        expect(vi.mocked(confirm)).toHaveBeenCalledOnce();
+        expect(vi.mocked(select)).toHaveBeenCalledOnce();
+      } else {
+        // if the user didn't allow using the same project id for all diagrams,
+        // ask every time
+        expect(vi.mocked(confirm)).toHaveBeenCalledOnce();
+        expect(vi.mocked(select)).toHaveBeenCalledTimes(3);
+      }
+
+      // should have uploaded and created three files
+      expect(vi.mocked(MermaidChart.prototype.setDocument)).toHaveBeenCalledTimes(3);
+      expect(vi.mocked(MermaidChart.prototype.setDocument)).toHaveBeenCalledWith(
+        expect.objectContaining({
+          code: expect.not.stringContaining('id:'), // id: field should not be uploaded
+          title: diagram, // title should default to file name
+        }),
+      );
+
+      await Promise.all(
+        [diagram, diagram2, diagram3].map(async (file) => {
+          await expect(readFile(file, { encoding: 'utf8' })).resolves.toContain(
+            `id: ${mockedEmptyDiagram.documentID}`,
+          );
+        }),
+      );
+    });
+  }
 });
 
 describe('pull', () => {
