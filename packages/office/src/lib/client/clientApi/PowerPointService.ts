@@ -59,7 +59,7 @@ export class PowerPointService extends OfficeService {
             for (let tagIndex = 0; tagIndex < tags.items.length; tagIndex++) {
               const currentTag = tags.items[tagIndex];
               
-              if (currentTag.key === C.TokenSettingName.toUpperCase()) {
+              if (currentTag.key === C.TokenSettingName) {
                 currentShape.delete();
                 await this.replaceExistingDiagram(currentTag.value);
               }
