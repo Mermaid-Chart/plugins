@@ -172,10 +172,22 @@ function linkCmd() {
         const linkedDiagram = await link(existingFile, client, {
           cache: linkCache,
           title: path,
-          async getProjectId(cache) {
+          async getProjectId(cache, documentTitle) {
+            if (cache.previousSelectedProjectId !== undefined) {
+              if (cache.usePreviousSelectedProjectId === undefined) {
+                cache.usePreviousSelectedProjectId = confirm({
+                  message: `Would you like to upload all diagrams to this project?`,
+                  default: true,
+                });
+              }
+              if (await cache.usePreviousSelectedProjectId) {
+                return cache.previousSelectedProjectId;
+              }
+            }
+
             cache.projects = cache.projects ?? client.getProjects();
             const projectId = await select({
-              message: `Select a project to upload ${path} to`,
+              message: `Select a project to upload ${documentTitle} to`,
               choices: [
                 ...(await cache.projects).map((project) => {
                   return {
@@ -189,15 +201,7 @@ function linkCmd() {
               ],
             });
 
-            if (path === paths[0] && paths.length > 1) {
-              const useProjectIdForAllDiagrams = await confirm({
-                message: `Would you like to upload all ${paths.length} diagrams to this project?`,
-                default: true,
-              });
-              if (useProjectIdForAllDiagrams) {
-                cache.selectedProjectId = projectId;
-              }
-            }
+            cache.previousSelectedProjectId = projectId;
 
             return projectId;
           },
