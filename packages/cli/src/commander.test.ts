@@ -11,6 +11,10 @@ import type { MCDocument, MCProject, MCUser } from '@mermaidchart/sdk/dist/types
 
 /** Config file with auth_key setup */
 const CONFIG_AUTHED = 'test/fixtures/config-authed.toml';
+/** Markdown file that has every Mermaid diagrams already linked */
+const LINKED_MARKDOWN_FILE = 'test/fixtures/linked-markdown-file.md';
+/** Markdown file that has some unlinked Mermaid diagrams */
+const UNLINKED_MARKDOWN_FILE = 'test/fixtures/unlinked-markdown-file.md';
 
 type Optional<T> = T | undefined;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -269,16 +273,42 @@ describe('link', () => {
       );
     });
   }
+
+  it('should link diagrams in a markdown file', async () => {
+    const unlinkedMarkdownFile = 'test/output/markdown-file.md';
+    await copyFile(UNLINKED_MARKDOWN_FILE, unlinkedMarkdownFile);
+
+    const { program } = mockedProgram();
+
+    vi.mock('@inquirer/confirm');
+    vi.mock('@inquirer/select');
+    vi.mocked(confirm).mockResolvedValue(true);
+    vi.mocked(select).mockResolvedValueOnce(mockedProjects[0].id);
+
+    vi.mocked(MermaidChart.prototype.createDocument)
+      .mockResolvedValueOnce(mockedEmptyDiagram)
+      .mockResolvedValueOnce({ ...mockedEmptyDiagram, documentID: 'second-id' });
+    await program.parseAsync(['--config', CONFIG_AUTHED, 'link', unlinkedMarkdownFile], {
+      from: 'user',
+    });
+
+    const file = await readFile(unlinkedMarkdownFile, { encoding: 'utf8' });
+
+    expect(file).toMatch(`id: ${mockedEmptyDiagram.documentID}\n`);
+    expect(file).toMatch(`id: second-id\n`);
+  });
 });
 
 describe('pull', () => {
   const diagram = 'test/output/connected-diagram.mmd';
   const diagram2 = 'test/output/connected-diagram-2.mmd';
+  const linkedMarkdownFile = 'test/output/linked-markdown-file.md';
 
   beforeEach(async () => {
     await Promise.all([
       copyFile('test/fixtures/connected-diagram.mmd', diagram),
       copyFile('test/fixtures/connected-diagram.mmd', diagram2),
+      copyFile(LINKED_MARKDOWN_FILE, linkedMarkdownFile),
     ]);
   });
 
@@ -327,16 +357,41 @@ title: My cool flowchart
       expect(diagramContents).toContain("flowchart TD\n      A[I've been updated!]");
     }
   });
+
+  it('should pull documents from within markdown file', async () => {
+    const { program } = mockedProgram();
+
+    vi.mocked(MermaidChart.prototype.getDocument)
+      .mockResolvedValueOnce({
+        ...mockedEmptyDiagram,
+        code: "flowchart TD\n      A[I've been updated!]",
+      })
+      .mockResolvedValueOnce({
+        ...mockedEmptyDiagram,
+        code: 'pie\n  "Flowchart" : 2',
+      });
+
+    await program.parseAsync(['--config', CONFIG_AUTHED, 'pull', linkedMarkdownFile], {
+      from: 'user',
+    });
+
+    const file = await readFile(linkedMarkdownFile, { encoding: 'utf8' });
+
+    expect(file).toMatch("flowchart TD\n      A[I've been updated!]");
+    expect(file).toMatch('pie\n  "Flowchart" : 2');
+  });
 });
 
 describe('push', () => {
   const diagram = 'test/output/connected-diagram.mmd';
   const diagram2 = 'test/output/connected-diagram-2.mmd';
+  const linkedMarkdownFile = 'test/output/linked-markdown-file.md';
 
   beforeEach(async () => {
     await Promise.all([
       copyFile('test/fixtures/connected-diagram.mmd', diagram),
       copyFile('test/fixtures/connected-diagram.mmd', diagram2),
+      copyFile(LINKED_MARKDOWN_FILE, linkedMarkdownFile),
     ]);
   });
 
@@ -367,5 +422,17 @@ describe('push', () => {
         code: expect.not.stringContaining('id:'),
       }),
     );
+  });
+
+  it('should push documents from within markdown file', async () => {
+    const { program } = mockedProgram();
+
+    vi.mocked(MermaidChart.prototype.getDocument).mockResolvedValue(mockedEmptyDiagram);
+
+    await program.parseAsync(['--config', CONFIG_AUTHED, 'push', linkedMarkdownFile], {
+      from: 'user',
+    });
+
+    expect(vi.mocked(MermaidChart.prototype.setDocument)).toHaveBeenCalledTimes(2);
   });
 });
