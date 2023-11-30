@@ -6,12 +6,22 @@ import { extractFrontMatter, injectFrontMatter, removeFrontMatterKeys } from './
 /**
  * Cached data to use when pulling/pushing/linking multiple files at once.
  */
-interface Cache {
+export interface Cache {
   /**
-   * If set, the user has said to use the projectId to create all documents
+   * If `true`, the user has said to use the projectId to create all documents
    * in.
+   *
+   * If `undefined`, ask the user if they want to use their first chosen project
+   * id for every other document.
+   *
+   * If `false`, don't ask the user.
    */
-  selectedProjectId?: string;
+  usePreviousSelectedProjectId?: Promise<boolean>;
+  /**
+   * Previously selected project ID.
+   * Will be reused if {@link usePreviousSelectedProjectId} is `true`.
+   */
+  previousSelectedProjectId?: string;
   /**
    * Cached response from {@link MermaidChart.getProjects}.
    */
@@ -25,8 +35,8 @@ interface CommonOptions {
 
 interface LinkOptions extends CommonOptions {
   /** Function that asks the user which project id they want to upload a diagram to */
-  getProjectId: (cache: LinkOptions['cache']) => Promise<string>;
-  // cache to be shared between link calls
+  getProjectId: (cache: LinkOptions['cache'], documentTitle: string) => Promise<string>;
+  // cache to be shared between link calls. This object may be modified between calls.
   cache: Cache;
 }
 
@@ -48,7 +58,7 @@ export async function link(diagram: string, client: MermaidChart, options: LinkO
 
   const { title, getProjectId, cache } = options;
 
-  const projectId = cache.selectedProjectId ?? (await getProjectId(cache));
+  const projectId = await getProjectId(cache, title);
 
   const createdDocument = await client.createDocument(projectId);
 
