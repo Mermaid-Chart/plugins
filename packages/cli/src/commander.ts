@@ -11,7 +11,7 @@ import confirm from '@inquirer/confirm';
 import input from '@inquirer/input';
 import select, { Separator } from '@inquirer/select';
 import { type Config, defaultConfigPath, readConfig, writeConfig } from './config.js';
-import { link, pull, push } from './methods.js';
+import { link, type LinkOptions, pull, push } from './methods.js';
 
 /**
  * Global configuration option for the root Commander Command.
@@ -164,15 +164,9 @@ function linkCmd() {
     .action(async (paths, _options, command) => {
       const optsWithGlobals = command.optsWithGlobals<CommonOptions>();
       const client = await createClient(optsWithGlobals);
-      const linkCache = {};
 
-      for (const path of paths) {
-        const existingFile = await readFile(path, { encoding: 'utf8' });
-
-        const linkedDiagram = await link(existingFile, client, {
-          cache: linkCache,
-          title: path,
-          async getProjectId(cache, documentTitle) {
+      // Ask the user which project they want to upload each diagram to
+      const getProjectId: LinkOptions['getProjectId'] = async (cache, documentTitle) => {
             if (cache.previousSelectedProjectId !== undefined) {
               if (cache.usePreviousSelectedProjectId === undefined) {
                 cache.usePreviousSelectedProjectId = confirm({
@@ -204,7 +198,17 @@ function linkCmd() {
             cache.previousSelectedProjectId = projectId;
 
             return projectId;
-          },
+      };
+
+      const linkCache = {};
+
+      for (const path of paths) {
+        const existingFile = await readFile(path, { encoding: 'utf8' });
+
+        const linkedDiagram = await link(existingFile, client, {
+          cache: linkCache,
+          title: path,
+          getProjectId,
         });
 
         await writeFile(path, linkedDiagram, { encoding: 'utf8' });
