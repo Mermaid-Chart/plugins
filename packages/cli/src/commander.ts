@@ -11,7 +11,8 @@ import confirm from '@inquirer/confirm';
 import input from '@inquirer/input';
 import select, { Separator } from '@inquirer/select';
 import { type Config, defaultConfigPath, readConfig, writeConfig } from './config.js';
-import { link, type LinkOptions, pull, push } from './methods.js';
+import { type Cache, link, type LinkOptions, pull, push } from './methods.js';
+import { processMarkdown } from './remark.js';
 
 /**
  * Global configuration option for the root Commander Command.
@@ -157,6 +158,10 @@ function logout() {
     });
 }
 
+function isMarkdownFile(path: string): path is `${string}.${'md' | 'markdown'}` {
+  return /\.(md|markdown)$/.test(path);
+}
+
 function linkCmd() {
   return createCommand('link')
     .description('Link the given Mermaid diagrams to Mermaid Chart')
@@ -200,9 +205,13 @@ function linkCmd() {
         return projectId;
       };
 
-      const linkCache = {};
+      const linkCache: Cache = {};
 
       for (const path of paths) {
+        if (isMarkdownFile(path)) {
+          await processMarkdown(path, { command: 'link', client, cache: linkCache, getProjectId });
+          continue;
+        }
         const existingFile = await readFile(path, { encoding: 'utf8' });
 
         const linkedDiagram = await link(existingFile, client, {
@@ -220,12 +229,18 @@ function pullCmd() {
   return createCommand('pull')
     .description('Pulls documents from Mermaid Chart')
     .addArgument(new Argument('<path...>', 'The paths of the files to pull.'))
-    .option('--check', 'Check whether the local files would be overwrited')
+    .option('--check', 'Check whether the local files would be overwrited', false)
     .action(async (paths, options, command) => {
       const optsWithGlobals = command.optsWithGlobals<CommonOptions>();
       const client = await createClient(optsWithGlobals);
+
       await Promise.all(
         paths.map(async (path) => {
+          if (isMarkdownFile(path)) {
+            await processMarkdown(path, { command: 'pull', client, check: options['check'] });
+            return;
+          }
+
           const text = await readFile(path, { encoding: 'utf8' });
 
           const newFile = await pull(text, client, { title: path });
@@ -255,6 +270,11 @@ function pushCmd() {
       const client = await createClient(optsWithGlobals);
       await Promise.all(
         paths.map(async (path) => {
+          if (isMarkdownFile(path)) {
+            await processMarkdown(path, { command: 'push', client });
+            return;
+          }
+
           const text = await readFile(path, { encoding: 'utf8' });
 
           await push(text, client, { title: path });
