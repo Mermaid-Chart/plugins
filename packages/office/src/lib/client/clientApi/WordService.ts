@@ -54,7 +54,7 @@ export class WordService extends OfficeService {
   }
 
   public async syncDiagrams() {
-    const contentControlsToUpdate = await this.getContentControls().catch((error) => {
+    const controlTagsToUpdate = await this.getContentControlTagsToUpdate().catch((error) => {
       if(error instanceof ContentControlsNotFoundError) {
         showUserMessage(
           'No diagrams found in document',
@@ -63,10 +63,10 @@ export class WordService extends OfficeService {
       }
     });
 
-    if(contentControlsToUpdate) {
+    if(controlTagsToUpdate) {
       try {
-        for (const control of contentControlsToUpdate) {
-          await this.replaceExistingDiagram(control);
+        for (const tag of controlTagsToUpdate) {
+          await this.replaceExistingDiagram(tag);
         }
       } catch (error) {
         if(error instanceof RefreshError) {
@@ -81,8 +81,8 @@ export class WordService extends OfficeService {
     }
   }
 
-  private async getContentControls() {
-    const contentControlsList: string[] = [];
+  private async getContentControlTagsToUpdate() {
+    const tagList: string[] = [];
 
     try {
       await Word.run(async (context) => {
@@ -93,7 +93,7 @@ export class WordService extends OfficeService {
           for (let i = 0; i < contentControls.items.length; i++) {
             const tag = contentControls.items[i].tag;
             if(tag.startsWith(C.TokenSettingName)) {
-              contentControlsList.push(contentControls.items[i].tag);
+              tagList.push(contentControls.items[i].tag);
             }
           }
         });
@@ -102,11 +102,11 @@ export class WordService extends OfficeService {
       throw new Error('unknown error getting content controls');
     }
 
-    if(contentControlsList.length === 0) {
+    if(tagList.length === 0) {
       throw new ContentControlsNotFoundError();
     }
 
-    return contentControlsList;
+    return tagList;
   }
 
   private async replaceExistingDiagram(tag: string) {

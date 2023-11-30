@@ -36,34 +36,30 @@ export class PowerPointService extends OfficeService {
   }
 
   public async syncDiagrams(): Promise<void> {
-    OfficeExtension.config.extendedErrorLogging = true;
     await PowerPoint.run(async (context) => {
-      const presentation = context.presentation;
-      const slides = presentation.slides.load("items");
-      
-      await context.sync();
-
-      for(let slideIndex = 0; slideIndex < slides.items.length; slideIndex++) {``
-        const slide = slides.getItemAt(slideIndex);
-        const shapes = slide.shapes.load('items');
+        const slides = context.presentation.slides.load("items");
         await context.sync();
-
-        for (let shapeIndex = 0; shapeIndex < shapes.items.length; shapeIndex++) {
-          const shape = shapes.getItemAt(shapeIndex).load('tags/items');
+    
+        for (let i = 0; i < slides.items.length; i++) {
+          const currentSlide = slides.items[i];
+          const shapes = currentSlide.shapes.load("items");
           await context.sync();
-          
-          try{
-            const diagramTag = shape.tags.getItem(C.TokenSettingName.toUpperCase()).load('key, value');;
+    
+          for (let shapeIndex = 0; shapeIndex < shapes.items.length; shapeIndex++) {
+            const currentShape = shapes.items[shapeIndex];
+            const tags = currentShape.tags.load("key, value");
             await context.sync();
-            if(diagramTag) {
-              shape.delete();
-              await this.replaceExistingDiagram(diagramTag.value);
+    
+            for (let tagIndex = 0; tagIndex < tags.items.length; tagIndex++) {
+              const currentTag = tags.items[tagIndex];
+              
+              if (currentTag.key === C.TokenSettingName.toUpperCase()) {
+                currentShape.delete();
+                await this.replaceExistingDiagram(currentTag.value);
+              }
             }
-          } catch (error) {
-            throw new RefreshError(`Error encountered while updating diagrams:`, error as Error);
           }
         }
-      }
     });
   }
 
