@@ -14,7 +14,7 @@ export class PowerPointService extends OfficeService {
   
   public async insertDiagram(diagram: Diagram): Promise<void> {
     await PowerPoint.run(async (context) => {
-      Office.context.document.setSelectedDataAsync(diagram.base64Image, {coercionType: Office.CoercionType.Image }, function (asyncResult) {
+      Office.context.document.setSelectedDataAsync(diagram.base64Image, { coercionType: Office.CoercionType.Image }, function (asyncResult) {
         if (asyncResult.status === Office.AsyncResultStatus.Failed) {
           showUserMessage(
             //'Error generating image, or image not found. Please contact support',
@@ -25,16 +25,22 @@ export class PowerPointService extends OfficeService {
       });
 
       await context.sync();
-      // after inserting an image with setSelectedDataAsync, the shape will be the selected item
-      const selectedShapes = context.presentation.getSelectedShapes().load('items');
-      await context.sync();
-      if(selectedShapes.items.length > 0) {
-        const shape = selectedShapes.items[0];
-        shape.tags.add(C.TokenSettingName, diagram.tag);
-      }      
+      
+      const selectedShapes = context.presentation.getSelectedShapes();
+      selectedShapes.load('items');
+      context.sync().then(function () {
+        if (selectedShapes.items.length > 0) {
+          const shape = selectedShapes.items[0];
+          shape.tags.add(C.TokenSettingName, diagram.tag);
+        }
+      }).catch(function (error) {
+        if (error instanceof OfficeExtension.Error) {
+            console.error("Debug info: " + JSON.stringify(error.debugInfo));
+        }
+      });
     });
   }
-
+  
   public async syncDiagrams(): Promise<void> {
     await PowerPoint.run(async (context) => {
         const slides = context.presentation.slides.load("items");
