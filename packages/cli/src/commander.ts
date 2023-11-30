@@ -167,37 +167,37 @@ function linkCmd() {
 
       // Ask the user which project they want to upload each diagram to
       const getProjectId: LinkOptions['getProjectId'] = async (cache, documentTitle) => {
-            if (cache.previousSelectedProjectId !== undefined) {
-              if (cache.usePreviousSelectedProjectId === undefined) {
-                cache.usePreviousSelectedProjectId = confirm({
-                  message: `Would you like to upload all diagrams to this project?`,
-                  default: true,
-                });
-              }
-              if (await cache.usePreviousSelectedProjectId) {
-                return cache.previousSelectedProjectId;
-              }
-            }
-
-            cache.projects = cache.projects ?? client.getProjects();
-            const projectId = await select({
-              message: `Select a project to upload ${documentTitle} to`,
-              choices: [
-                ...(await cache.projects).map((project) => {
-                  return {
-                    name: project.title,
-                    value: project.id,
-                  };
-                }),
-                new Separator(
-                  `Or go to ${new URL('/app/projects', client.baseURL)} to create a new project`,
-                ),
-              ],
+        if (cache.previousSelectedProjectId !== undefined) {
+          if (cache.usePreviousSelectedProjectId === undefined) {
+            cache.usePreviousSelectedProjectId = confirm({
+              message: `Would you like to upload all diagrams to this project?`,
+              default: true,
             });
+          }
+          if (await cache.usePreviousSelectedProjectId) {
+            return cache.previousSelectedProjectId;
+          }
+        }
 
-            cache.previousSelectedProjectId = projectId;
+        cache.projects = cache.projects ?? client.getProjects();
+        const projectId = await select({
+          message: `Select a project to upload ${documentTitle} to`,
+          choices: [
+            ...(await cache.projects).map((project) => {
+              return {
+                name: project.title,
+                value: project.id,
+              };
+            }),
+            new Separator(
+              `Or go to ${new URL('/app/projects', client.baseURL)} to create a new project`,
+            ),
+          ],
+        });
 
-            return projectId;
+        cache.previousSelectedProjectId = projectId;
+
+        return projectId;
       };
 
       const linkCache = {};
