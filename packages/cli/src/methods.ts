@@ -33,7 +33,10 @@ interface CommonOptions {
   title: string;
 }
 
-interface LinkOptions extends CommonOptions {
+/**
+ * Options to pass to {@link link}.
+ */
+export interface LinkOptions extends CommonOptions {
   /** Function that asks the user which project id they want to upload a diagram to */
   getProjectId: (cache: LinkOptions['cache'], documentTitle: string) => Promise<string>;
   // cache to be shared between link calls. This object may be modified between calls.
