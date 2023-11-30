@@ -5,12 +5,12 @@ import {
   InvalidArgumentError,
 } from '@commander-js/extra-typings';
 import { readFile, writeFile } from 'fs/promises';
-import { extractFrontMatter, removeFrontMatterKeys, injectFrontMatter } from './frontmatter.js';
 import { MermaidChart } from '@mermaidchart/sdk';
 
 import input from '@inquirer/input';
 import select, { Separator } from '@inquirer/select';
 import { type Config, defaultConfigPath, readConfig, writeConfig } from './config.js';
+import { link, pull, push } from './methods.js';
 
 /**
  * Global configuration option for the root Commander Command.
@@ -156,58 +156,45 @@ function logout() {
     });
 }
 
-function link() {
+function linkCmd() {
   return createCommand('link')
     .description('Link the given Mermaid diagram to Mermaid Chart')
     .addArgument(new Argument('<path>', 'The path of the file to link.'))
     .action(async (path, _options, command) => {
       const optsWithGlobals = command.optsWithGlobals<CommonOptions>();
       const client = await createClient(optsWithGlobals);
+      const linkCache = {};
+
       const existingFile = await readFile(path, { encoding: 'utf8' });
-      const frontmatter = extractFrontMatter(existingFile);
 
-      if (frontmatter.metadata.id) {
-        throw new CommanderError(
-          /*exitCode=*/ 1,
-          'EALREADY_LINKED',
-          'This document already has an `id` field',
-        );
-      }
-
-      const projects = await client.getProjects();
-
-      const projectId = await select({
-        message: 'Select a project to upload your document to',
-        choices: [
-          ...projects.map((project) => {
-            return {
-              name: project.title,
-              value: project.id,
-            };
-          }),
-          new Separator(
-            `Or go to ${new URL('/app/projects', client.baseURL)} to create a new project`,
-          ),
-        ],
+      const linkedDiagram = await link(existingFile, client, {
+        cache: linkCache,
+        title: path,
+        async getProjectId(cache) {
+          cache.projects = cache.projects ?? client.getProjects();
+          const projectId = await select({
+            message: `Select a project to upload ${path} to`,
+            choices: [
+              ...(await cache.projects).map((project) => {
+                return {
+                  name: project.title,
+                  value: project.id,
+                };
+              }),
+              new Separator(
+                `Or go to ${new URL('/app/projects', client.baseURL)} to create a new project`,
+              ),
+            ],
+          });
+          return projectId;
+        },
       });
 
-      const createdDocument = await client.createDocument(projectId);
-
-      const code = injectFrontMatter(existingFile, { id: createdDocument.documentID });
-
-      await Promise.all([
-        writeFile(path, code, { encoding: 'utf8' }),
-        client.setDocument({
-          projectID: createdDocument.projectID,
-          documentID: createdDocument.documentID,
-          title: path,
-          code: existingFile,
-        }),
-      ]);
+      await writeFile(path, linkedDiagram, { encoding: 'utf8' });
     });
 }
 
-function pull() {
+function pullCmd() {
   return createCommand('pull')
     .description('Pulls a document from from Mermaid Chart')
     .addArgument(new Argument('<path>', 'The path of the file to pull.'))
@@ -216,21 +203,8 @@ function pull() {
       const optsWithGlobals = command.optsWithGlobals<CommonOptions>();
       const client = await createClient(optsWithGlobals);
       const text = await readFile(path, { encoding: 'utf8' });
-      const frontmatter = extractFrontMatter(text);
 
-      if (frontmatter.metadata.id === undefined) {
-        throw new Error('Diagram has no id, have you run `link` yet?');
-      }
-
-      const uploadedFile = await client.getDocument({
-        documentID: frontmatter.metadata.id,
-      });
-
-      if (uploadedFile.code === undefined) {
-        throw new Error('Diagram has no code, please use push first');
-      }
-
-      const newFile = injectFrontMatter(uploadedFile.code, { id: frontmatter.metadata.id });
+      const newFile = await pull(text, client, { title: path });
 
       if (text === newFile) {
         console.log(`✅ - ${path} is up to date`);
@@ -246,7 +220,7 @@ function pull() {
     });
 }
 
-function push() {
+function pushCmd() {
   return createCommand('push')
     .description('Push a local diagram to Mermaid Chart')
     .addArgument(new Argument('<path>', 'The path of the file to push.'))
@@ -254,30 +228,8 @@ function push() {
       const optsWithGlobals = command.optsWithGlobals<CommonOptions>();
       const client = await createClient(optsWithGlobals);
       const text = await readFile(path, { encoding: 'utf8' });
-      const frontmatter = extractFrontMatter(text);
 
-      if (frontmatter.metadata.id === undefined) {
-        throw new Error('Diagram has no id, have you run `link` yet?');
-      }
-
-      // TODO: check if file has changed since last push and print a warning
-      const existingDiagram = await client.getDocument({
-        documentID: frontmatter.metadata.id,
-      });
-
-      // due to MC-1056, try to remove YAML frontmatter if we can
-      const diagramToUpload = removeFrontMatterKeys(text, new Set(['id']));
-
-      if (existingDiagram.code === diagramToUpload) {
-        console.log(`✅ - ${path} is up to date`);
-      } else {
-        await client.setDocument({
-          projectID: existingDiagram.projectID,
-          documentID: existingDiagram.documentID,
-          code: diagramToUpload,
-        });
-        console.log(`✅ - ${path} was pushed`);
-      }
+      await push(text, client, { title: path });
     });
 }
 
@@ -297,7 +249,7 @@ export function createCommanderCommand() {
     .addCommand(whoami())
     .addCommand(login())
     .addCommand(logout())
-    .addCommand(link())
-    .addCommand(pull())
-    .addCommand(push());
+    .addCommand(linkCmd())
+    .addCommand(pullCmd())
+    .addCommand(pushCmd());
 }

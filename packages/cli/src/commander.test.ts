@@ -230,7 +230,7 @@ describe('pull', () => {
       program.parseAsync(['--config', CONFIG_AUTHED, 'pull', 'test/fixtures/unsynced.mmd'], {
         from: 'user',
       }),
-    ).rejects.toThrowError('Diagram has no id');
+    ).rejects.toThrowError('Diagram at test/fixtures/unsynced.mmd has no id');
   });
 
   it('should fail if MermaidChart document has no code', async () => {
@@ -240,7 +240,7 @@ describe('pull', () => {
 
     await expect(
       program.parseAsync(['--config', CONFIG_AUTHED, 'pull', diagram], { from: 'user' }),
-    ).rejects.toThrowError('Diagram has no code');
+    ).rejects.toThrowError(`Diagram at ${diagram} has no code`);
   });
 
   it('should pull document and add a `id:` field to frontmatter', async () => {
@@ -280,7 +280,7 @@ describe('push', () => {
       program.parseAsync(['--config', CONFIG_AUTHED, 'push', 'test/fixtures/unsynced.mmd'], {
         from: 'user',
       }),
-    ).rejects.toThrowError('Diagram has no id');
+    ).rejects.toThrowError('Diagram at test/fixtures/unsynced.mmd has no id');
   });
 
   it('should push document and remove the `id:` field front frontmatter', async () => {
