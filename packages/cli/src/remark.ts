@@ -5,6 +5,8 @@ import type { MermaidChart } from '@mermaidchart/sdk';
 import { type LinkOptions, link, pull, push } from './methods.js';
 
 import { remark } from 'remark';
+import remarkFrontmatter from 'remark-frontmatter';
+import remarkGfm from 'remark-gfm';
 import { read, write } from 'to-vfile';
 interface MCPluginCommonOptions {
   /** Authenticated client */
@@ -87,7 +89,11 @@ export function plugin({ client, ...options }: MCPluginOptions) {
  */
 export async function processMarkdown(inputFile: string, options: MCPluginOptions) {
   const inVFile = await read(inputFile);
-  const outVFile = await remark().use(plugin, options).process(inVFile);
+  const outVFile = await remark()
+    .use(remarkFrontmatter)
+    .use(remarkGfm)
+    .use(plugin, options)
+    .process(inVFile);
 
   switch (options.command) {
     case 'link':
