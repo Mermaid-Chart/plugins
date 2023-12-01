@@ -53,6 +53,7 @@ export function plugin({ client, ...options }: MCPluginOptions) {
             cache: options.cache,
             title: ``,
             getProjectId: options.getProjectId,
+            ignoreAlreadyLinked: true,
           });
           break;
         case 'pull': {

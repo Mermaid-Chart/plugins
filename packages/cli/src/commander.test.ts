@@ -13,7 +13,9 @@ import type { MCDocument, MCProject, MCUser } from '@mermaidchart/sdk/dist/types
 const CONFIG_AUTHED = 'test/fixtures/config-authed.toml';
 /** Markdown file that has every Mermaid diagrams already linked */
 const LINKED_MARKDOWN_FILE = 'test/fixtures/linked-markdown-file.md';
-/** Markdown file that has some unlinked Mermaid diagrams */
+/** Markdown file that has some linked and some unlinked Mermaid diagrams */
+const PARTIALLY_LINKED_MARKDOWN_FILE = 'test/fixtures/partially-linked-markdown-file.md';
+/** Markdown file that has unlinked Mermaid diagrams */
 const UNLINKED_MARKDOWN_FILE = 'test/fixtures/unlinked-markdown-file.md';
 
 type Optional<T> = T | undefined;
@@ -295,6 +297,30 @@ describe('link', () => {
     const file = await readFile(unlinkedMarkdownFile, { encoding: 'utf8' });
 
     expect(file).toMatch(`id: ${mockedEmptyDiagram.documentID}\n`);
+    expect(file).toMatch(`id: second-id\n`);
+  });
+
+  it('should link diagrams in partially linked markdown file', async () => {
+    const partiallyLinkedMarkdownFile = 'test/output/partially-linked-markdown-file.md';
+    await copyFile(PARTIALLY_LINKED_MARKDOWN_FILE, partiallyLinkedMarkdownFile);
+
+    const { program } = mockedProgram();
+
+    vi.mock('@inquirer/confirm');
+    vi.mock('@inquirer/select');
+    vi.mocked(confirm).mockResolvedValue(true);
+    vi.mocked(select).mockResolvedValueOnce(mockedProjects[0].id);
+
+    vi.mocked(MermaidChart.prototype.createDocument).mockResolvedValueOnce({
+      ...mockedEmptyDiagram,
+      documentID: 'second-id',
+    });
+    await program.parseAsync(['--config', CONFIG_AUTHED, 'link', partiallyLinkedMarkdownFile], {
+      from: 'user',
+    });
+
+    const file = await readFile(partiallyLinkedMarkdownFile, { encoding: 'utf8' });
+
     expect(file).toMatch(`id: second-id\n`);
   });
 });
