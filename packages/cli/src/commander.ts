@@ -218,6 +218,7 @@ function linkCmd() {
           cache: linkCache,
           title: path,
           getProjectId,
+          ignoreAlreadyLinked: false,
         });
 
         await writeFile(path, linkedDiagram, { encoding: 'utf8' });
