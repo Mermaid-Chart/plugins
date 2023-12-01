@@ -30,8 +30,8 @@ npx @mermaidchart/cli --help
 on https://mermaidchart.com.
 
 These local diagrams can either be stored in `.mmd` or `.mermaid` files, or
-the can be stored within ```` ```mermaid```` code blocks within `.md` markdown
-files.
+they can be stored within ```` ```mermaid```` code blocks within `.md`
+[GFM](https://github.github.com/gfm/) markdown files.
 
 ### `login`
 

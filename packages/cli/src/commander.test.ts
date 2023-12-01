@@ -17,6 +17,8 @@ const LINKED_MARKDOWN_FILE = 'test/fixtures/linked-markdown-file.md';
 const PARTIALLY_LINKED_MARKDOWN_FILE = 'test/fixtures/partially-linked-markdown-file.md';
 /** Markdown file that has unlinked Mermaid diagrams */
 const UNLINKED_MARKDOWN_FILE = 'test/fixtures/unlinked-markdown-file.md';
+/** Markdown file that has non-standard Markdown features like YAML frontmatter */
+const UNUSUAL_MARKDOWN_FILE = 'test/fixtures/unusual-markdown-file.md';
 
 type Optional<T> = T | undefined;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -322,6 +324,37 @@ describe('link', () => {
     const file = await readFile(partiallyLinkedMarkdownFile, { encoding: 'utf8' });
 
     expect(file).toMatch(`id: second-id\n`);
+  });
+
+  it('should handle unusual markdown formatting', async () => {
+    const unusualMarkdownFile = 'test/output/unusual-markdown-file.md';
+    await copyFile(UNUSUAL_MARKDOWN_FILE, unusualMarkdownFile);
+
+    const { program } = mockedProgram();
+
+    vi.mock('@inquirer/confirm');
+    vi.mock('@inquirer/select');
+    vi.mocked(confirm).mockResolvedValue(true);
+    vi.mocked(select).mockResolvedValueOnce(mockedProjects[0].id);
+
+    vi.mocked(MermaidChart.prototype.createDocument).mockResolvedValueOnce({
+      ...mockedEmptyDiagram,
+      documentID: 'my-mocked-diagram-id',
+    });
+    await program.parseAsync(['--config', CONFIG_AUTHED, 'link', unusualMarkdownFile], {
+      from: 'user',
+    });
+
+    const file = await readFile(unusualMarkdownFile, { encoding: 'utf8' });
+
+    const idLineRegex = /^.*id: my-mocked-diagram-id\n/gm;
+
+    expect(file).toMatch(idLineRegex);
+    // other than the added `id: xxxx` field, everything else should be identical,
+    // although in practice, we'd expect some formatting changes
+    expect(file.replace(idLineRegex, '')).toStrictEqual(
+      await readFile(UNUSUAL_MARKDOWN_FILE, { encoding: 'utf8' }),
+    );
   });
 });
 
