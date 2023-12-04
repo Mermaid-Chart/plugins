@@ -57,8 +57,7 @@ export class MermaidChart {
     this.axios.interceptors.response.use((res: AxiosResponse) => {
       // Reset token if a 401 is thrown
       if (res.status === 401) {
-        // don't care if this function rejects/resolves
-        void this.resetAccessToken();
+        this.resetAccessToken();
       }
       return res;
     });
@@ -153,7 +152,7 @@ export class MermaidChart {
     this.accessToken = accessToken;
   }
 
-  public async resetAccessToken(): Promise<void> {
+  public resetAccessToken(): void {
     this.accessToken = undefined;
     this.axios.defaults.headers.common['Authorization'] = `Bearer none`;
   }
