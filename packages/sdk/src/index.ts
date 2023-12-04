@@ -181,6 +181,14 @@ export class MermaidChart {
     return projects.data;
   }
 
+  public async createDocument(projectID: string) {
+    const newDocument = await this.axios.post<MCDocument>(
+      URLS.rest.projects.get(projectID).documents,
+      {}, // force sending empty JSON to avoid triggering CSRF check
+    );
+    return newDocument.data;
+  }
+
   public async getEditURL(
     document: Pick<MCDocument, 'documentID' | 'major' | 'minor' | 'projectID'>,
   ) {
