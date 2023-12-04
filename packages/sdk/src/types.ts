@@ -51,6 +51,12 @@ export interface DiagramDocument {
   documentID: string;
   major: number;
   minor: number;
+  /**
+   * The Mermaid
+   * [`application/vnd.mermaid`](https://www.iana.org/assignments/media-types/application/vnd.mermaid)
+   * code for this diagram.
+   */
+  code?: string;
 }
 
 export interface AuthorizationData {

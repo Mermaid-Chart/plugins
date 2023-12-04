@@ -205,6 +205,26 @@ export class MermaidChart {
   }
 
   /**
+   * Update the given document.
+   *
+   * @param document The document to update.
+   */
+  public async setDocument(
+    document: Pick<MCDocument, 'id' | 'documentID'> & Partial<MCDocument>,
+  ) {
+    const {data} = await this.axios.put<{result: "ok"} | {result: "failed", error: any}>(
+      URLS.rest.documents.pick(document).self,
+      document,
+    );
+
+    if (data.result === "failed") {
+      throw new Error(
+        `setDocument(${JSON.stringify({documentID: document.documentID})} failed due to ${JSON.stringify(data.error)}`
+      );
+    }
+  }
+
+  /**
    * Delete the given document.
    * @param documentID The ID of the document to delete.
    * @returns Metadata about the deleted document.

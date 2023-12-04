@@ -78,6 +78,12 @@ components:
           format: uuid
           description: |
             The id of this diagram, required for `setDocument()`.
+        code:
+          type: string
+          description: |
+            The Mermaid
+            [`application/vnd.mermaid`](https://www.iana.org/assignments/media-types/application/vnd.mermaid)
+            code for this diagram.
       required:
         - documentID
         - id
@@ -246,6 +252,42 @@ paths:
                 $ref: '#/components/schemas/MCDocument'
         '404':
           description: File Not Found
+    put:
+      tags:
+        - document
+      summary: Update the given document.
+      operationId: setDocument
+      parameters:
+        - name: documentID
+          in: path
+          required: true
+          description: The ID of the document to update.
+          schema:
+            type: string
+      requestBody:
+        description: Document and diagram settings to update.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MCDocument'
+      security:
+        - mermaidchart_auth: []
+      responses:
+        '200':
+          description: |
+            Update status.
+          content:
+            application/json:
+              schema:
+                type: object
+                # TODO: update this once MC-1060 is fixed.
+                # properties:
+                #   result:
+                #     type: string
+                #     enum:
+                #       - ok
+                #       - failed
     delete:
       tags:
         - document
