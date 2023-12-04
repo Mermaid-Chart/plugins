@@ -2,10 +2,11 @@
  * E2E tests
  */
 import { MermaidChart } from './index.js';
-import { beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import process from 'node:process';
 import { AxiosError } from 'axios';
+import { MCDocument } from './types.js';
 
 // hard-coded, replace with your own project,
 // or ask alois is you want this to be shared with your account
@@ -44,11 +45,25 @@ const documentMatcher = expect.objectContaining({
   minor: expect.any(Number),
 });
 
+/**
+ * Cleanup created documents at the end of this test.
+ */
+const documentsToDelete = new Set<MCDocument["documentID"]>();
+afterAll(async() => {
+  await Promise.all(Array.from(documentsToDelete).map(async(document) => {
+    if (documentsToDelete.delete(document)) {
+      await client.deleteDocument(document);
+    }
+  }));
+});
+
 describe('createDocument', () => {
   it('should create document in project', async() => {
     const existingDocuments = await client.getDocuments(testProjectId);
 
     const newDocument = await client.createDocument(testProjectId);
+
+    documentsToDelete.add(newDocument.documentID);
 
     expect(newDocument).toStrictEqual(documentMatcher);
 
@@ -56,6 +71,20 @@ describe('createDocument', () => {
 
     expect(existingDocuments).not.toContainEqual(newDocument);
     expect(updatedProjectDocuments).toContainEqual(newDocument);
+  });
+});
+
+describe('deleteDocument', () => {
+  it('should delete document', async() => {
+    const newDocument = await client.createDocument(testProjectId);
+
+    expect(await client.getDocuments(testProjectId)).toContainEqual(newDocument);
+
+    const deletedDoc = await client.deleteDocument(newDocument.documentID);
+
+    expect(deletedDoc.projectID).toStrictEqual(newDocument.projectID);
+
+    expect(await client.getDocuments(testProjectId)).not.toContainEqual(newDocument);
   });
 });
 
