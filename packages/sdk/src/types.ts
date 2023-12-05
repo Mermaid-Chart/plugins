@@ -28,12 +28,35 @@ export interface MCProject {
   title: string;
 }
 
-export interface MCDocument {
-  documentID: string;
+/**
+ * MermaidChart diagram document.
+ */
+export type MCDocument = Document & DiagramDocument;
+
+/**
+ * MermaidChart document that may contain a diagram.
+ */
+export interface Document {
   projectID: string;
+  title: string;
+}
+
+/**
+ * MermaidChart diagram document, without any {@link Document} metadata.
+ */
+export interface DiagramDocument {
+  /** The id of this diagram, required for `setDocument()` */
+  id: string;
+  /** The id of the document that this diagram is linked to. */
+  documentID: string;
   major: number;
   minor: number;
-  title: string;
+  /**
+   * The Mermaid
+   * [`application/vnd.mermaid`](https://www.iana.org/assignments/media-types/application/vnd.mermaid)
+   * code for this diagram.
+   */
+  code?: string;
 }
 
 export interface AuthorizationData {
