@@ -73,3 +73,8 @@ updated:
 $ mermaid-chart pull ./path/to/my/mermaid-digram.mmd
 ❌ - ./path/to/my/mermaid-digram.mmd would be updated
 ```
+
+## Contributing
+
+For local development and testing, you can `pnpm dev` to run the CLI,
+`pnpm run lint` to run linting, and `pnpm test` to run unit tests.
