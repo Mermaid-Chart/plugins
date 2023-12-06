@@ -19,7 +19,7 @@ const authorizationURLTimeout = 60_000;
 
 export class MermaidChart {
   private clientID: string;
-  private baseURL!: string;
+  #baseURL!: string;
   private axios!: AxiosInstance;
   private oauth!: OAuth2Client;
   private pendingStates: Record<string, AuthState> = {};
@@ -39,19 +39,19 @@ export class MermaidChart {
   }
 
   public setBaseURL(baseURL: string = defaultBaseURL) {
-    if (this.baseURL && this.baseURL === baseURL) {
+    if (this.#baseURL && this.#baseURL === baseURL) {
       return;
     }
-    this.baseURL = baseURL;
+    this.#baseURL = baseURL;
     this.accessToken = undefined;
     this.oauth = new OAuth2Client({
-      server: this.baseURL,
+      server: this.#baseURL,
       clientId: this.clientID,
       tokenEndpoint: URLS.oauth.token,
       authorizationEndpoint: URLS.oauth.authorize,
     });
     this.axios = defaultAxios.create({
-      baseURL: this.baseURL,
+      baseURL: this.#baseURL,
     });
 
     this.axios.interceptors.response.use((res: AxiosResponse) => {
@@ -61,6 +61,10 @@ export class MermaidChart {
       }
       return res;
     });
+  }
+
+  get baseURL() {
+    return this.#baseURL;
   }
 
   public async getAuthorizationData({
@@ -193,7 +197,7 @@ export class MermaidChart {
   public async getEditURL(
     document: Pick<MCDocument, 'documentID' | 'major' | 'minor' | 'projectID'>,
   ) {
-    const url = `${this.baseURL}${URLS.diagram(document).edit}`;
+    const url = `${this.#baseURL}${URLS.diagram(document).edit}`;
     return url;
   }
 
