@@ -117,6 +117,9 @@ importers:
       eslint:
         specifier: ^8.54.0
         version: 8.54.0
+      tsx:
+        specifier: ^3.12.8
+        version: 3.12.8
       typescript:
         specifier: ^5.2.2
         version: 5.2.2

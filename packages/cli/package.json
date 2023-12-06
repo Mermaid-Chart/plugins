@@ -12,6 +12,7 @@
     "node": "^18.18.0 || ^20.0.0"
   },
   "scripts": {
+    "dev": "tsx src/cli.ts",
     "lint": "eslint src/ && prettier --check src/",
     "lint:fix": "eslint --fix src/ && prettier --write src/",
     "prepare": "tsc --build tsconfig.json",
@@ -45,6 +46,7 @@
     "@typescript-eslint/eslint-plugin": "^6.11.0",
     "@typescript-eslint/parser": "^6.11.0",
     "eslint": "^8.54.0",
+    "tsx": "^3.12.8",
     "typescript": "^5.2.2",
     "vitest": "^0.34.6"
   },
