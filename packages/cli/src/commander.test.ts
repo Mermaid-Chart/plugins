@@ -435,6 +435,7 @@ describe('pull', () => {
     const mockedDiagram = {
       ...mockedEmptyDiagram,
       code: `---
+# comments in YAML shouldn't be removed
 title: My cool flowchart
 ---
   flowchart TD
@@ -453,6 +454,7 @@ title: My cool flowchart
       expect(diagramContents).toContain(
         `id: https://test.mermaidchart.invalid/d/${mockedDiagram.documentID}`,
       );
+      expect(diagramContents).toContain("# comments in YAML shouldn't be removed");
       expect(diagramContents).toContain("flowchart TD\n      A[I've been updated!]");
     }
   });
@@ -519,6 +521,11 @@ describe('push', () => {
     expect(vi.mocked(MermaidChart.prototype.setDocument)).toHaveBeenCalledWith(
       expect.objectContaining({
         code: expect.not.stringContaining('id:'),
+      }),
+    );
+    expect(vi.mocked(MermaidChart.prototype.setDocument)).toHaveBeenCalledWith(
+      expect.objectContaining({
+        code: expect.stringMatching(/^# This comment should be pushed to the server/m),
       }),
     );
   });

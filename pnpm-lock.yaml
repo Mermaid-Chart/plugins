@@ -89,9 +89,6 @@ importers:
       commander:
         specifier: ^11.1.0
         version: 11.1.0
-      js-yaml:
-        specifier: ^4.1.0
-        version: 4.1.0
       remark:
         specifier: ^15.0.1
         version: 15.0.1
@@ -107,6 +104,9 @@ importers:
       unist-util-visit:
         specifier: ^5.0.0
         version: 5.0.0
+      yaml:
+        specifier: ^2.3.4
+        version: 2.4.1
     devDependencies:
       '@cspell/eslint-plugin':
         specifier: ^8.0.0
@@ -385,7 +385,7 @@ importers:
         version: 4.9.5
       vite:
         specifier: ^4.3.7
-        version: 4.3.7(@types/node@20.8.5)
+        version: 4.3.7(@types/node@18.18.12)
       vitest:
         specifier: ^0.30.1
         version: 0.30.1(jsdom@21.0.0)
@@ -3767,7 +3767,7 @@ packages:
       open: 8.4.2
       tree-kill: 1.2.2
       underscore: 1.13.6
-      yaml: 2.3.2
+      yaml: 2.4.1
       yargs: 17.7.2
     optionalDependencies:
       keytar: 7.9.0
@@ -3840,7 +3840,7 @@ packages:
       uuid: 8.3.2
       validator: 13.11.0
       xml2js: 0.5.0
-      yaml: 2.3.2
+      yaml: 2.4.1
     transitivePeerDependencies:
       - bluebird
       - debug
@@ -4182,7 +4182,7 @@ packages:
       svelte: 3.59.1
       tiny-glob: 0.2.9
       undici: 5.22.1
-      vite: 4.3.7(@types/node@20.8.5)
+      vite: 4.3.7(@types/node@18.18.12)
     transitivePeerDependencies:
       - supports-color
 
@@ -4197,7 +4197,7 @@ packages:
       '@sveltejs/vite-plugin-svelte': 2.4.5(svelte@3.59.1)(vite@4.3.7)
       debug: 4.3.4
       svelte: 3.59.1
-      vite: 4.3.7(@types/node@20.8.5)
+      vite: 4.3.7(@types/node@18.18.12)
     transitivePeerDependencies:
       - supports-color
 
@@ -4215,7 +4215,7 @@ packages:
       magic-string: 0.30.3
       svelte: 3.59.1
       svelte-hmr: 0.15.3(svelte@3.59.1)
-      vite: 4.3.7(@types/node@20.8.5)
+      vite: 4.3.7(@types/node@18.18.12)
       vitefu: 0.2.4(vite@4.3.7)
     transitivePeerDependencies:
       - supports-color
@@ -4386,6 +4386,7 @@ packages:
     resolution: {integrity: sha512-SPlobFgbidfIeOYlzXiEjSYeIJiOCthv+9tSQVpvk4PAdIIc+2SmjNVzWXk9t0Y7dl73Zdf+OgXKHX9XtkqUpw==}
     dependencies:
       undici-types: 5.25.3
+    dev: true
 
   /@types/normalize-package-data@2.4.1:
     resolution: {integrity: sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==}
@@ -5311,6 +5312,7 @@ packages:
 
   /argparse@2.0.1:
     resolution: {integrity: sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q==}
+    dev: true
 
   /array-buffer-byte-length@1.0.0:
     resolution: {integrity: sha512-LPuwb2P+NrQw3XhxGc36+XSvuBPopovXYTR9Ew++Du9Yb/bx5AzBfrIsBoj0EZUifjQU+sHL21sseZ3jerWO/A==}
@@ -9685,6 +9687,7 @@ packages:
     hasBin: true
     dependencies:
       argparse: 2.0.1
+    dev: true
 
   /js@0.1.0:
     resolution: {integrity: sha512-ZBbGYOpact8QAH9RprFWL4RAESYwbDodxiuDjOnzwzzk9pBzKycoifGuUrHHcDixE/eLMKPHRaXenTgu1qXBqA==}
@@ -12107,7 +12110,7 @@ packages:
     dependencies:
       lilconfig: 2.1.0
       postcss: 8.4.14
-      yaml: 2.3.1
+      yaml: 2.4.1
     dev: true
 
   /postcss-nested@6.0.0(postcss@8.4.14):
@@ -14057,6 +14060,7 @@ packages:
 
   /undici-types@5.25.3:
     resolution: {integrity: sha512-Ga1jfYwRn7+cP9v8auvEXN1rX3sWqlayd4HP7OKk4mZWylEmu3KzXDUGrQUN6Ol7qo1gPvB2e5gX6udnyEPgdA==}
+    dev: true
 
   /undici-types@5.26.5:
     resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
@@ -14418,7 +14422,6 @@ packages:
       rollup: 3.26.3
     optionalDependencies:
       fsevents: 2.3.3
-    dev: true
 
   /vite@4.3.7(@types/node@20.8.5):
     resolution: {integrity: sha512-MTIFpbIm9v7Hh5b0wSBgkcWzSBz7SAa6K/cBTwS4kUiQJfQLFlZZRJRQgqunCVzhTPCk674tW+0Qaqh3Q00dBg==}
@@ -14451,6 +14454,7 @@ packages:
       rollup: 3.26.3
     optionalDependencies:
       fsevents: 2.3.3
+    dev: true
 
   /vitefu@0.2.4(vite@4.3.7):
     resolution: {integrity: sha512-fanAXjSaf9xXtOOeno8wZXIhgia+CZury481LsDaV++lSvcU2R9Ch2bPh3PYFyoHW+w9LqAeYRISVQjUIew14g==}
@@ -14460,7 +14464,7 @@ packages:
       vite:
         optional: true
     dependencies:
-      vite: 4.3.7(@types/node@20.8.5)
+      vite: 4.3.7(@types/node@18.18.12)
 
   /vitest@0.30.1(jsdom@21.0.0):
     resolution: {integrity: sha512-y35WTrSTlTxfMLttgQk4rHcaDkbHQwDP++SNwPb+7H8yb13Q3cu2EixrtHzF27iZ8v0XCciSsLg00RkPAzB/aA==}
@@ -14985,10 +14989,10 @@ packages:
     engines: {node: '>= 14'}
     dev: true
 
-  /yaml@2.3.2:
-    resolution: {integrity: sha512-N/lyzTPaJasoDmfV7YTrYCI0G/3ivm/9wdG0aHuheKowWQwGTsK0Eoiw6utmzAnI6pkJa0DUVygvp3spqqEKXg==}
+  /yaml@2.4.1:
+    resolution: {integrity: sha512-pIXzoImaqmfOrL7teGUBt/T7ZDnyeGBWyXQBvOVhLkWLN37GXv8NMLK406UY6dS51JfcQHsmcW5cJ441bHg6Lg==}
     engines: {node: '>= 14'}
-    dev: true
+    hasBin: true
 
   /yargs-parser@21.1.1:
     resolution: {integrity: sha512-tVpsJW7DdjecAiFpbIB1e3qxIQsE6NoPc5/eTdrbbIC4h0LVsWhnoa3g+m2HclBIujHzsxZ4VJVA+GUuc2/LBw==}
