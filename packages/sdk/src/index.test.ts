@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MermaidChart } from './index.js';
-import { AuthorizationData } from './types.js';
+import type { AuthorizationData } from './types.js';
 
 import { OAuth2Client } from '@badgateway/oauth2-client';
 
@@ -10,7 +10,10 @@ describe('MermaidChart', () => {
     vi.resetAllMocks();
 
     vi.spyOn(OAuth2Client.prototype, 'request').mockImplementation(
-      async (endpoint: 'tokenEndpoint' | 'introspectionEndpoint', _body: Record<string, any>) => {
+      async (
+        endpoint: 'tokenEndpoint' | 'introspectionEndpoint',
+        _body: Record<string, unknown>,
+      ) => {
         switch (endpoint) {
           case 'tokenEndpoint':
             return {

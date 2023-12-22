@@ -6,7 +6,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import process from 'node:process';
 import { AxiosError } from 'axios';
-import { MCDocument } from './types.js';
+import type { MCDocument } from './types.js';
 
 // hard-coded, replace with your own project,
 // or ask alois is you want this to be shared with your account
@@ -14,11 +14,11 @@ const testProjectId = '316557b3-cb6f-47ed-acf7-fcfb7ce188d5';
 
 let client: MermaidChart;
 
-beforeAll(async() => {
+beforeAll(async () => {
   if (!process.env.TEST_MERMAIDCHART_API_TOKEN) {
     throw new Error(
-      "Missing required environment variable TEST_MERMAIDCHART_API_TOKEN. "
-      + "Please go to https://test.mermaidchart.com/app/user/settings and create one."
+      'Missing required environment variable TEST_MERMAIDCHART_API_TOKEN. ' +
+        'Please go to https://test.mermaidchart.com/app/user/settings and create one.',
     );
   }
 
@@ -32,7 +32,7 @@ beforeAll(async() => {
 });
 
 describe('getUser', () => {
-  it("should get user", async() => {
+  it('should get user', async () => {
     const user = await client.getUser();
 
     expect(user).toHaveProperty('emailAddress');
@@ -48,17 +48,19 @@ const documentMatcher = expect.objectContaining({
 /**
  * Cleanup created documents at the end of this test.
  */
-const documentsToDelete = new Set<MCDocument["documentID"]>();
-afterAll(async() => {
-  await Promise.all(Array.from(documentsToDelete).map(async(document) => {
-    if (documentsToDelete.delete(document)) {
-      await client.deleteDocument(document);
-    }
-  }));
+const documentsToDelete = new Set<MCDocument['documentID']>();
+afterAll(async () => {
+  await Promise.all(
+    [...documentsToDelete].map(async (document) => {
+      if (documentsToDelete.delete(document)) {
+        await client.deleteDocument(document);
+      }
+    }),
+  );
 });
 
 describe('createDocument', () => {
-  it('should create document in project', async() => {
+  it('should create document in project', async () => {
     const existingDocuments = await client.getDocuments(testProjectId);
 
     const newDocument = await client.createDocument(testProjectId);
@@ -75,7 +77,7 @@ describe('createDocument', () => {
 });
 
 describe('setDocument', () => {
-  it('should set document', async() => {
+  it('should set document', async () => {
     const newDocument = await client.createDocument(testProjectId);
     documentsToDelete.add(newDocument.documentID);
 
@@ -85,7 +87,7 @@ describe('setDocument', () => {
     await client.setDocument({
       documentID: newDocument.documentID,
       id: newDocument.id, // diagram ID
-      title: "@mermaidchart/sdk E2E test diagram",
+      title: '@mermaidchart/sdk E2E test diagram',
       code,
     });
 
@@ -93,26 +95,28 @@ describe('setDocument', () => {
       documentID: newDocument.documentID,
     });
     expect(updatedDoc).toMatchObject({
-      title: "@mermaidchart/sdk E2E test diagram",
+      title: '@mermaidchart/sdk E2E test diagram',
       code,
     });
   });
 
   // TODO: this function never seems to return an error, see MC-1060
-  it.skip('should throw an error on invalid data', async() => {
+  it.skip('should throw an error on invalid data', async () => {
     const newDocument = await client.createDocument(testProjectId);
     documentsToDelete.add(newDocument.documentID);
 
-    await expect(client.setDocument({
-      documentID: newDocument.documentID,
-      // @ts-expect-error not setting diagram `id` should throw an error
-      id: null,
-    })).rejects.toThrowError("400"); // should throw HTTP 400 error
+    await expect(
+      client.setDocument({
+        documentID: newDocument.documentID,
+        // @ts-expect-error not setting diagram `id` should throw an error
+        id: null,
+      }),
+    ).rejects.toThrowError('400'); // should throw HTTP 400 error
   });
 });
 
 describe('deleteDocument', () => {
-  it('should delete document', async() => {
+  it('should delete document', async () => {
     const newDocument = await client.createDocument(testProjectId);
 
     expect(await client.getDocuments(testProjectId)).toContainEqual(newDocument);
@@ -125,8 +129,8 @@ describe('deleteDocument', () => {
   });
 });
 
-describe("getDocument", () => {
-  it("should get publicly shared diagram", async() => {
+describe('getDocument', () => {
+  it('should get publicly shared diagram', async () => {
     const latestDocument = await client.getDocument({
       // owned by alois@mermaidchart.com
       documentID: '8bce727b-69b7-4f6e-a434-d578e2b363ff',
@@ -144,7 +148,7 @@ describe("getDocument", () => {
     expect(earliestDocument).toStrictEqual(documentMatcher);
   });
 
-  it("should throw 404 on unknown document", async() => {
+  it('should throw 404 on unknown document', async () => {
     let error: AxiosError | undefined = undefined;
     try {
       await client.getDocument({
@@ -158,4 +162,3 @@ describe("getDocument", () => {
     expect(error?.response?.status).toBe(404);
   });
 });
-
