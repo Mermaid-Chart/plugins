@@ -7,6 +7,7 @@ import { PowerPointService } from './PowerPointService';
 import { WordService } from './WordService';
 import { InvalidTokenError } from '$lib/errors';
 import { ExcelService } from './ExcelService';
+import { sendBehaviorEvent } from '../util/sendEvents';
 
 export interface Diagram {
   base64Image: string;
@@ -19,9 +20,11 @@ export interface Diagram {
 export class OfficeManager {
   officeService: OfficeService;
   mermaidChartApi: MermaidChart;
+  host: Office.HostType;
 
   constructor(host: Office.HostType, api: MermaidChart) { 
     this.mermaidChartApi = api;
+    this.host = host;
     switch(host) {
       case Office.HostType.Word: {
         this.officeService = new WordService(this.mermaidChartApi);
@@ -65,13 +68,28 @@ export class OfficeManager {
       };
 
       await this.officeService.insertDiagram(diagram);
+      sendBehaviorEvent(
+        'Insert PNG of diagram', {
+          area: 'insert-diagram',
+          eventID: `DIAGRAM_INSERT_${this.host.toString().toUpperCase()}`
+        });
     } catch (error) {
         if(error instanceof InvalidTokenError) {
+          sendBehaviorEvent(
+            'Auth token invalid or not found', {
+              area: 'insert-diagram',
+              eventID: `DIAGRAM_INSERT_${this.host.toString().toUpperCase()}`
+            });
           showUserMessage(
             'Auth token invalid or not found, please make sure that you are authenticated, or contact support',
             'error'
           );
         } else {
+          sendBehaviorEvent(
+            'Error generating PNG', {
+              area: 'insert-diagram',
+              eventID: `DIAGRAM_INSERT_${this.host.toString().toUpperCase()}`
+            });
           showUserMessage(
             'Error generating image, or image not found. Please contact support',
             'error'
@@ -86,7 +104,17 @@ export class OfficeManager {
       try {
         loading.setState(true, 'Syncing diagrams in document...');
         await this.officeService.syncDiagrams();
+        sendBehaviorEvent(
+          'Sync diagrams with mermaid chart', {
+            area: 'sync-diagrams',
+            eventID: `SYNC_DIAGRAM_${this.host.toString().toUpperCase()}`
+          });
       } catch {
+        sendBehaviorEvent(
+          'Sync diagrams failed', {
+            area: 'insert-diagram',
+            eventID: `SYNC_DIAGRAM_${this.host.toString().toUpperCase()}`
+          });
         showUserMessage(
           'Error refreshing diagrams. Please contact support',
           'error'

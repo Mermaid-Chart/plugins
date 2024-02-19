@@ -6,6 +6,7 @@ import { ContentControlsNotFoundError, DiagramNotFoundError, RefreshError } from
 import type { Diagram } from './officeManager';
 import { authStore } from '../stores/auth';
 import { OfficeService } from './OfficeService';
+import { sendBehaviorEvent } from '../util/sendEvents';
 
 export class WordService extends OfficeService {
   authToken = authStore.accessKey();
@@ -56,6 +57,11 @@ export class WordService extends OfficeService {
   public async syncDiagrams() {
     const controlTagsToUpdate = await this.getContentControlTagsToUpdate().catch((error) => {
       if(error instanceof ContentControlsNotFoundError) {
+        sendBehaviorEvent(
+          'No diagrams found in document to sync', {
+            area: 'sync-diagrams',
+            eventID: `SYNC_DIAGRAM_WORD`
+          });
         showUserMessage(
           'No diagrams found in document',
           'info'

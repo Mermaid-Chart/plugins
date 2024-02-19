@@ -1,12 +1,10 @@
 <script lang="ts">
   import type { OfficeManager } from '$lib/client/clientApi/officeManager';
-  import { createEventDispatcher } from 'svelte';
   import { documentStore } from '../stores/documents';
   import { storePopup } from '@skeletonlabs/skeleton';
   import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
-  import { C } from '$lib/constants';
-  import { loading } from '../stores/loading';
-    import RawView from './Editor/RawView.svelte';
+
+  import RawView from './Editor/RawView.svelte';
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 

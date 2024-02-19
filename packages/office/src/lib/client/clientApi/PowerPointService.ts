@@ -5,6 +5,7 @@ import { showUserMessage } from '../stores/messaging';
 import type { Diagram } from './officeManager';
 import { authStore } from '../stores/auth';
 import { OfficeService } from './OfficeService';
+import { sendBehaviorEvent } from '../util/sendEvents';
 export class PowerPointService extends OfficeService {
   authToken = authStore.accessKey();
 
@@ -73,6 +74,11 @@ export class PowerPointService extends OfficeService {
     const docDetails = splitReferenceToken(tag);
     const document = await this.mermaidChartApi.getDocument(docDetails.documentID);
     if(!document) {
+      sendBehaviorEvent(
+        'Could not find document in presentation', {
+          area: 'sync-diagrams',
+          eventID: `REPLACE_DIAGRAM_POWERPOINT`
+        });
       throw new DiagramNotFoundError(docDetails.documentID);
     }
 
