@@ -112,7 +112,7 @@ export class OfficeManager {
       } catch {
         sendBehaviorEvent(
           'Sync diagrams failed', {
-            area: 'insert-diagram',
+            area: 'sync-diagrams',
             eventID: `SYNC_DIAGRAM_${this.host.toString().toUpperCase()}`
           });
         showUserMessage(
