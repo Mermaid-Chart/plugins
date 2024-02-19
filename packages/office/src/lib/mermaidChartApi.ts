@@ -4,6 +4,8 @@ import defaultAxios, { type AxiosInstance } from "axios";
 // eslint-disable-next-line unicorn/prefer-node-protocol
 import {Buffer} from 'buffer';
 import { blobToBase64 } from "./utils";
+import type { Tier } from "./enums";
+import { sessionStore } from "./client/stores/session";
 
 const defaultBaseURL = "https://www.mermaidchart.com"; 
 const authorizationURLTimeout = 60_000;
@@ -31,6 +33,12 @@ interface AuthState {
 export interface MCUser {
   fullName: string;
   emailAddress: string;
+  id: string
+  authID: string
+  analyticsID: string
+  allowMarketingEmail: boolean
+  allowProductEmail: boolean
+  subscriptionTier: string
 }
 
 export interface MCProject {
@@ -62,6 +70,7 @@ export class MermaidChart {
   private pendingStates: Record<string, AuthState> = {};
   private redirectURI?: string;
   private accessToken?: string;
+  private session?: MCUser;
 
   constructor({ clientID, baseURL, redirectURI }: InitParams) {
     this.clientID = clientID;
@@ -197,7 +206,7 @@ export class MermaidChart {
       "Authorization"
     ] = `Bearer ${accessToken}`;
     // This is to verify that the token is valid
-    await this.getUser();
+    sessionStore.update(await this.getUser());
     this.accessToken = accessToken;
   }
 

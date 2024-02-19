@@ -1,13 +1,46 @@
 <script lang="ts">
   import '@skeletonlabs/skeleton/themes/theme-skeleton.css';
   import '@skeletonlabs/skeleton/styles/all.css';
+  import { env as publicEnv } from '$env/dynamic/public';
+  import { initializeMixPanel } from '$lib/client/util/sendEvents';
   import '../theme.postcss';
   import '../app.postcss';
   import { navigating } from '$app/stores';
+  import { onMount } from 'svelte';
+  import { sessionStore } from '$lib/client/stores/session';
   import { Toast } from '@skeletonlabs/skeleton';
+  import { updateConsent } from '$lib/client/stores/analytics';
+  import { FeatureName, shouldUseFeature } from '$lib/client/featureSet';
 
   let syncDiagramsInDocument: () => Promise<void>;
+
+  onMount(() => {
+    initializeMixPanel(
+      publicEnv.PUBLIC_MIXPANEL_TOKEN, 
+      $sessionStore.id, 
+      $sessionStore);
+
+    window.addEventListener(
+      'CookiebotOnConsentReady',
+      () => {
+        updateConsent(window.Cookiebot?.consent);
+      },
+      false
+    );
+  });
 </script>
+
+<svelte:head>
+  {#if shouldUseFeature(FeatureName.CookieBot)}
+    <script
+      id="Cookiebot"
+      src="https://consent.cookiebot.com/uc.js"
+      data-cbid="0ef251a9-4ed6-4465-895b-5fb661fb0601"
+      data-blockingmode="auto"
+      type="text/javascript"></script>
+  {/if}
+</svelte:head>
+
 
 <Toast position="t" />
 

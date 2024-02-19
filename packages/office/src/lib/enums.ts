@@ -19,6 +19,13 @@ export enum MessageType {
   Success = 'success'
 }
 
+export enum Tier {
+  Free = 'free',
+  Individual = 'individual',
+  Pro = 'pro',
+  Team = 'team',
+  Enterprise = 'enterprise'
+}
 
 /**
  * Type guard for enum values

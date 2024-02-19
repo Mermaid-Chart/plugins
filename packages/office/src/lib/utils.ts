@@ -1,5 +1,9 @@
 import pick from 'lodash-es/pick';
 
+export const minutesToMilliSeconds = (minutes: number): number => {
+  return minutes * 60_000;
+};
+
 export const splitVersion = (versionString: string | null) => {
   if (!versionString) {
     versionString = 'v0.1';

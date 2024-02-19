@@ -156,6 +156,12 @@ importers:
       mermaid:
         specifier: 10.2.3
         version: 10.2.3
+      mixpanel:
+        specifier: ^0.18.0
+        version: 0.18.0
+      mixpanel-browser:
+        specifier: ^2.49.0
+        version: 2.49.0
       office-addin-dev-certs:
         specifier: ^1.11.4
         version: 1.11.4
@@ -196,6 +202,9 @@ importers:
       '@types/luxon':
         specifier: ^3.1.0
         version: 3.1.0
+      '@types/mixpanel-browser':
+        specifier: ^2.38.1
+        version: 2.49.0
       '@types/office-js':
         specifier: ^1.0.350
         version: 1.0.350
@@ -3976,6 +3985,10 @@ packages:
 
   /@types/minimatch@3.0.5:
     resolution: {integrity: sha512-Klz949h02Gz2uZCMGwDUSDS1YBlTdDDgbWHi+81l29tQALUtvz4rAYi5uoVhE5Lagoq6DeqAUlbrHvW/mXDgdQ==}
+    dev: true
+
+  /@types/mixpanel-browser@2.49.0:
+    resolution: {integrity: sha512-StmgUnS58d44DmIAEX9Kk8qwisAYCl6E2qulIjYyHXUPuJCPOuyUMTTKBp+aU2F2do+kxAzCxiBtsB4fnBT9Fg==}
     dev: true
 
   /@types/ms@0.7.31:
@@ -8320,6 +8333,16 @@ packages:
       resolve-alpn: 1.2.1
     dev: true
 
+  /https-proxy-agent@5.0.0:
+    resolution: {integrity: sha512-EkYm5BcKUGiduxzSt3Eppko+PiNWNEpa4ySk9vTC6wDsQJW9rHSa+UhGNJoRYp7bz6Ht1eaRIa6QaJqO5rCFbA==}
+    engines: {node: '>= 6'}
+    dependencies:
+      agent-base: 6.0.2
+      debug: 4.3.4
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
   /https-proxy-agent@5.0.1:
     resolution: {integrity: sha512-dFcAjpTQFgoLMzC2VwU+C/CbS7uRL0lWmxDITmqm7C+7F0Odmj6s9l6alZc6AELXhrnggM2CeWSXHGOdX2YtwA==}
     engines: {node: '>= 6'}
@@ -9865,6 +9888,19 @@ packages:
     dependencies:
       minipass: 3.3.6
       yallist: 4.0.0
+
+  /mixpanel-browser@2.49.0:
+    resolution: {integrity: sha512-RZJCO7XXuuHBAWG5fd9Mavz994M7v7W3Qiaq8NzmN631pa4BQ0vNZQtRFqKcCCOBn4xqOZbX2GkuC7ZkQoL4cQ==}
+    dev: false
+
+  /mixpanel@0.18.0:
+    resolution: {integrity: sha512-VyUoiLB/S/7abYYHGD5x0LijeuJCUabG8Hb+FvYU3Y99xHf1Qh+s4/pH9lt50fRitAHncWbU1FE01EknUfVVjQ==}
+    engines: {node: '>=10.0'}
+    dependencies:
+      https-proxy-agent: 5.0.0
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
 
   /mkcert@1.5.1:
     resolution: {integrity: sha512-MHOmridCutIIPMKvaQwueIAo+lsHPyO0WotbGIOq5V4mPywrjtOPlzdS/kgk/2vjRELWv4OrDSKo4KA8H7VARw==}
