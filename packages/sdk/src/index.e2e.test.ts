@@ -8,27 +8,57 @@ import process from 'node:process';
 import { AxiosError } from 'axios';
 import { MCDocument } from './types.js';
 
-// hard-coded, replace with your own project,
-// or ask alois is you want this to be shared with your account
-const testProjectId = '316557b3-cb6f-47ed-acf7-fcfb7ce188d5';
+let testProjectId = '316557b3-cb6f-47ed-acf7-fcfb7ce188d5';
+let baseURL = new URL('https://test.mermaidchart.com');
 
 let client: MermaidChart;
 
 beforeAll(async() => {
+  if (process.env.TEST_MERMAIDCHART_BASE_URL) {
+    try {
+      baseURL = new URL(process.env.TEST_MERMAIDCHART_BASE_URL);
+    } catch (err) {
+      throw new Error("Invalid URL in environment variable TEST_MERMAIDCHART_BASE_URL", { cause: err});
+    }
+  } else {
+    process.emitWarning(`Missing environment variable TEST_MERMAIDCHART_BASE_URL. Defaulting to ${baseURL.href}.`);
+  }
+
   if (!process.env.TEST_MERMAIDCHART_API_TOKEN) {
     throw new Error(
       "Missing required environment variable TEST_MERMAIDCHART_API_TOKEN. "
-      + "Please go to https://test.mermaidchart.com/app/user/settings and create one."
+      + `Please go to ${new URL('/app/user/settings', baseURL)} and create one.`
     );
   }
 
   client = new MermaidChart({
     clientID: '00000000-0000-0000-0000-000000git000test',
-    baseURL: 'https://test.mermaidchart.com',
+    baseURL: baseURL.href,
     redirectURI: 'https://localhost.invalid',
   });
 
   await client.setAccessToken(process.env.TEST_MERMAIDCHART_API_TOKEN);
+
+  const projects = await client.getProjects();
+
+  // confirm that testProjectId is valid
+  if (process.env.TEST_MERMAIDCHART_PROJECT_ID) {
+    testProjectId = process.env.TEST_MERMAIDCHART_PROJECT_ID;
+    if (!projects.find((project) => project.id === testProjectId)) {
+      throw new Error(
+        `Invalid environment variable TEST_MERMAIDCHART_PROJECT_ID. `
+        + `Please go to ${new URL('/app/projects', baseURL)} and create one that you have access to.`
+      );
+    }
+  } else {
+    if (!projects.find((project) => project.id === testProjectId)) {
+      throw new Error(
+        `Missing environment variable TEST_MERMAIDCHART_PROJECT_ID. `
+        + `Please go to ${new URL('/app/projects', baseURL)} and create one.`
+      );
+    }
+    process.emitWarning(`Missing optional environment variable TEST_MERMAIDCHART_PROJECT_ID. Defaulting to ${testProjectId}`);
+  }
 });
 
 describe('getUser', () => {
