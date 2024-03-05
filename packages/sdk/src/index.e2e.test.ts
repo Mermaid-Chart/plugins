@@ -98,8 +98,7 @@ describe('setDocument', () => {
     });
   });
 
-  // TODO: this function never seems to return an error, see MC-1060
-  it.skip('should throw an error on invalid data', async() => {
+  it('should throw an error on invalid data', async() => {
     const newDocument = await client.createDocument(testProjectId);
     documentsToDelete.add(newDocument.documentID);
 
