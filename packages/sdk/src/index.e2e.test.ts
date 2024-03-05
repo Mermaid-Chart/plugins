@@ -85,6 +85,7 @@ describe('setDocument', () => {
     await client.setDocument({
       documentID: newDocument.documentID,
       id: newDocument.id, // diagram ID
+      projectID: newDocument.projectID,
       title: "@mermaidchart/sdk E2E test diagram",
       code,
     });
