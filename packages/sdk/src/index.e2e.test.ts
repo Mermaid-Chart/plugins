@@ -155,17 +155,20 @@ describe('deleteDocument', () => {
 });
 
 describe("getDocument", () => {
-  it("should get publicly shared diagram", async() => {
+  it("should get diagram", async() => {
+    const newDocument = await client.createDocument(testProjectId);
+
+    documentsToDelete.add(newDocument.documentID);
+
     const latestDocument = await client.getDocument({
-      // owned by alois@mermaidchart.com
-      documentID: '8bce727b-69b7-4f6e-a434-d578e2b363ff',
+      documentID: newDocument.documentID,
+      // major and minor are optional
     });
 
     expect(latestDocument).toStrictEqual(documentMatcher);
 
     const earliestDocument = await client.getDocument({
-      // owned by alois@mermaidchart.com
-      documentID: '8bce727b-69b7-4f6e-a434-d578e2b363ff',
+      documentID: newDocument.documentID,
       major: 0,
       minor: 1,
     });
