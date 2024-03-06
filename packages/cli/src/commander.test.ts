@@ -4,6 +4,7 @@ import { copyFile, mkdir, readFile, rm } from 'node:fs/promises';
 import type { Command, CommanderError, OutputConfiguration } from '@commander-js/extra-typings';
 import { MermaidChart } from '@mermaidchart/sdk';
 
+import confirm from '@inquirer/confirm';
 import input from '@inquirer/input';
 import select from '@inquirer/select';
 import type { MCDocument, MCProject, MCUser } from '@mermaidchart/sdk/dist/types.js';
@@ -186,9 +187,15 @@ describe('logout', () => {
 
 describe('link', () => {
   const diagram = 'test/output/unsynced.mmd';
+  const diagram2 = 'test/output/unsynced2.mmd';
+  const diagram3 = 'test/output/unsynced3.mmd';
 
   beforeEach(async () => {
-    await copyFile('test/fixtures/unsynced.mmd', diagram);
+    await Promise.all([
+      copyFile('test/fixtures/unsynced.mmd', diagram),
+      copyFile('test/fixtures/unsynced.mmd', diagram2),
+      copyFile('test/fixtures/unsynced.mmd', diagram3),
+    ]);
   });
 
   it('should create a new diagram on MermaidChart and add id to frontmatter', async () => {
@@ -214,13 +221,65 @@ describe('link', () => {
       `id: ${mockedEmptyDiagram.documentID}`,
     );
   });
+
+  for (const rememberProjectId of [true, false]) {
+    it(`should link multiple diagrams ${
+      rememberProjectId ? 'and remember project id' : ''
+    }`, async () => {
+      const { program } = mockedProgram();
+
+      vi.mock('@inquirer/confirm');
+      vi.mock('@inquirer/select');
+      vi.mocked(confirm).mockResolvedValue(rememberProjectId);
+      vi.mocked(select).mockResolvedValue(mockedProjects[0].id);
+
+      vi.mocked(MermaidChart.prototype.createDocument).mockResolvedValue(mockedEmptyDiagram);
+
+      await expect(readFile(diagram, { encoding: 'utf8' })).resolves.not.toContain(/^id:/);
+
+      await program.parseAsync(['--config', CONFIG_AUTHED, 'link', diagram, diagram2, diagram3], {
+        from: 'user',
+      });
+
+      if (rememberProjectId) {
+        expect(vi.mocked(confirm)).toHaveBeenCalledOnce();
+        expect(vi.mocked(select)).toHaveBeenCalledOnce();
+      } else {
+        // if the user didn't allow using the same project id for all diagrams,
+        // ask every time
+        expect(vi.mocked(confirm)).toHaveBeenCalledOnce();
+        expect(vi.mocked(select)).toHaveBeenCalledTimes(3);
+      }
+
+      // should have uploaded and created three files
+      expect(vi.mocked(MermaidChart.prototype.setDocument)).toHaveBeenCalledTimes(3);
+      expect(vi.mocked(MermaidChart.prototype.setDocument)).toHaveBeenCalledWith(
+        expect.objectContaining({
+          code: expect.not.stringContaining('id:'), // id: field should not be uploaded
+          title: diagram, // title should default to file name
+        }),
+      );
+
+      await Promise.all(
+        [diagram, diagram2, diagram3].map(async (file) => {
+          await expect(readFile(file, { encoding: 'utf8' })).resolves.toContain(
+            `id: ${mockedEmptyDiagram.documentID}`,
+          );
+        }),
+      );
+    });
+  }
 });
 
 describe('pull', () => {
   const diagram = 'test/output/connected-diagram.mmd';
+  const diagram2 = 'test/output/connected-diagram-2.mmd';
 
   beforeEach(async () => {
-    await copyFile('test/fixtures/connected-diagram.mmd', diagram);
+    await Promise.all([
+      copyFile('test/fixtures/connected-diagram.mmd', diagram),
+      copyFile('test/fixtures/connected-diagram.mmd', diagram2),
+    ]);
   });
 
   it('should fail if MermaidChart document has not yet been linked', async () => {
@@ -243,7 +302,7 @@ describe('pull', () => {
     ).rejects.toThrowError(`Diagram at ${diagram} has no code`);
   });
 
-  it('should pull document and add a `id:` field to frontmatter', async () => {
+  it('should pull documents and add a `id:` field to frontmatter', async () => {
     const { program } = mockedProgram();
 
     const mockedDiagram = {
@@ -255,22 +314,30 @@ title: My cool flowchart
       A[I've been updated!]`,
     };
 
-    vi.mocked(MermaidChart.prototype.getDocument).mockResolvedValueOnce(mockedDiagram);
+    vi.mocked(MermaidChart.prototype.getDocument).mockResolvedValue(mockedDiagram);
 
-    await program.parseAsync(['--config', CONFIG_AUTHED, 'pull', diagram], { from: 'user' });
+    await program.parseAsync(['--config', CONFIG_AUTHED, 'pull', diagram, diagram2], {
+      from: 'user',
+    });
 
-    const diagramContents = await readFile(diagram, { encoding: 'utf8' });
+    for (const file of [diagram, diagram2]) {
+      const diagramContents = await readFile(file, { encoding: 'utf8' });
 
-    expect(diagramContents).toContain(`id: ${mockedDiagram.documentID}`);
-    expect(diagramContents).toContain("flowchart TD\n      A[I've been updated!]");
+      expect(diagramContents).toContain(`id: ${mockedDiagram.documentID}`);
+      expect(diagramContents).toContain("flowchart TD\n      A[I've been updated!]");
+    }
   });
 });
 
 describe('push', () => {
   const diagram = 'test/output/connected-diagram.mmd';
+  const diagram2 = 'test/output/connected-diagram-2.mmd';
 
   beforeEach(async () => {
-    await copyFile('test/fixtures/connected-diagram.mmd', diagram);
+    await Promise.all([
+      copyFile('test/fixtures/connected-diagram.mmd', diagram),
+      copyFile('test/fixtures/connected-diagram.mmd', diagram2),
+    ]);
   });
 
   it('should fail if MermaidChart document has not yet been linked', async () => {
@@ -283,16 +350,18 @@ describe('push', () => {
     ).rejects.toThrowError('Diagram at test/fixtures/unsynced.mmd has no id');
   });
 
-  it('should push document and remove the `id:` field front frontmatter', async () => {
+  it('should push documents and remove the `id:` field front frontmatter', async () => {
     const { program } = mockedProgram();
 
-    vi.mocked(MermaidChart.prototype.getDocument).mockResolvedValueOnce(mockedEmptyDiagram);
+    vi.mocked(MermaidChart.prototype.getDocument).mockResolvedValue(mockedEmptyDiagram);
 
     await expect(readFile(diagram, { encoding: 'utf8' })).resolves.not.toContain(/^id:/);
 
-    await program.parseAsync(['--config', CONFIG_AUTHED, 'push', diagram], { from: 'user' });
+    await program.parseAsync(['--config', CONFIG_AUTHED, 'push', diagram, diagram2], {
+      from: 'user',
+    });
 
-    expect(vi.mocked(MermaidChart.prototype.setDocument)).toHaveBeenCalledOnce();
+    expect(vi.mocked(MermaidChart.prototype.setDocument)).toHaveBeenCalledTimes(2);
     expect(vi.mocked(MermaidChart.prototype.setDocument)).toHaveBeenCalledWith(
       expect.objectContaining({
         code: expect.not.stringContaining('id:'),
