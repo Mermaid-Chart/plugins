@@ -12,6 +12,10 @@ The OpenAPI YAML file is located at [./openapi.yaml](./openapi.yaml).
 
 - [Javascript/Typescript](./packages/sdk)
 
+## CLI
+
+- [`@mermaidchart/cli` command-line interface](./packages/cli)
+
 ## Plugins
 
 - [VSCode (to be migrated here)](https://github.com/Mermaid-Chart/vscode-mermaid-chart/)
