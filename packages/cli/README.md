@@ -29,6 +29,10 @@ npx @mermaidchart/cli --help
 `@mermaidchart/cli` allows you to easily sync local diagrams with your diagrams
 on https://mermaidchart.com.
 
+These local diagrams can either be stored in `.mmd` or `.mermaid` files, or
+they can be stored within ```` ```mermaid```` code blocks within `.md`
+[GFM](https://github.github.com/gfm/) markdown files.
+
 ### `login`
 
 Firstly, go to https://www.mermaidchart.com/app/user/settings and generate an
