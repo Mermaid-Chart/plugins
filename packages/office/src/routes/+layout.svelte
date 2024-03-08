@@ -15,18 +15,20 @@
   let syncDiagramsInDocument: () => Promise<void>;
 
   onMount(() => {
-    initializeMixPanel(
-      publicEnv.PUBLIC_MIXPANEL_TOKEN, 
-      $sessionStore.id, 
-      $sessionStore);
+    if(shouldUseFeature(FeatureName.UserBehavior)) {
+      initializeMixPanel(
+        publicEnv.PUBLIC_MIXPANEL_TOKEN, 
+        $sessionStore.id, 
+        $sessionStore);
 
-    window.addEventListener(
-      'CookiebotOnConsentReady',
-      () => {
-        updateConsent(window.Cookiebot?.consent);
-      },
-      false
-    );
+      window.addEventListener(
+        'CookiebotOnConsentReady',
+        () => {
+          updateConsent(window.Cookiebot?.consent);
+        },
+        false
+      );
+    }
   });
 </script>
 

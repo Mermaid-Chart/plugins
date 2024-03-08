@@ -5,6 +5,7 @@ import { analyticsEnabled } from '../stores/analytics';
 import { minutesToMilliSeconds } from '$lib/utils';
 import type { MCUser } from '$lib/mermaidChartApi';
 import log from '$lib/log';
+import { FeatureName, shouldUseFeature } from '../featureSet';
 
 let initialized = false;
 
@@ -75,16 +76,18 @@ const delaysPerEvent: Record<string, number> = {
 const timeouts: Record<string, number> = {};
 
 export function sendBehaviorEvent(description: string, event: BehaviorEvent) {
-  if (timeouts[event.eventID]) {
-    clearTimeout(timeouts[event.eventID]);
-  }
-  if (delaysPerEvent[event.eventID] === undefined) {
-    sendEvent(description, event);
-  } else {
-    timeouts[event.eventID] = window.setTimeout(() => {
+  if(shouldUseFeature(FeatureName.UserBehavior)) {
+    if (timeouts[event.eventID]) {
+      clearTimeout(timeouts[event.eventID]);
+    }
+    if (delaysPerEvent[event.eventID] === undefined) {
       sendEvent(description, event);
-      delete timeouts[event.eventID];
-    }, delaysPerEvent[event.eventID]);
+    } else {
+      timeouts[event.eventID] = window.setTimeout(() => {
+        sendEvent(description, event);
+        delete timeouts[event.eventID];
+      }, delaysPerEvent[event.eventID]);
+    }
   }
 }
 
