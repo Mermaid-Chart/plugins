@@ -4,26 +4,26 @@ import { AuthorizationData } from './types.js';
 
 import { OAuth2Client } from '@badgateway/oauth2-client';
 
+const mockOAuth2ClientRequest = (async (endpoint, _body) => {
+  switch (endpoint) {
+    case 'tokenEndpoint':
+      return {
+        access_token: 'test-example-access_token',
+        refresh_token: 'test-example-refresh_token',
+        token_type: 'Bearer',
+        expires_in: 3600,
+      };
+    default:
+      throw new Error('mock unimplemented');
+  }
+}) as typeof OAuth2Client.prototype.request;
+
 describe('MermaidChart', () => {
   let client: MermaidChart;
   beforeEach(() => {
     vi.resetAllMocks();
 
-    vi.spyOn(OAuth2Client.prototype, 'request').mockImplementation(
-      async (endpoint: 'tokenEndpoint' | 'introspectionEndpoint', _body: Record<string, any>) => {
-        switch (endpoint) {
-          case 'tokenEndpoint':
-            return {
-              access_token: 'test-example-access_token',
-              refresh_token: 'test-example-refresh_token',
-              token_type: 'Bearer',
-              expires_in: 3600,
-            };
-          default:
-            throw new Error('mock unimplemented');
-        }
-      },
-    );
+    vi.spyOn(OAuth2Client.prototype, 'request').mockImplementation(mockOAuth2ClientRequest);
 
     client = new MermaidChart({
       clientID: '00000000-0000-0000-0000-000000000dead',
