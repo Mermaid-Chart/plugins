@@ -2,6 +2,7 @@ import { writable } from 'svelte/store';
 import { getDiagramType } from '$lib/utils';
 import { loading } from './loading';
 import type { MCDocument, MermaidChart } from '$lib/mermaidChartApi';
+import { showUserMessage } from './messaging';
 
 interface MCDocumentDB {
   filterStr: string;
@@ -15,6 +16,17 @@ const defaultDB: MCDocumentDB = {
   documents: {}
 };
 
+const fullDocumentList: MCDocument[] = [];
+
+const addToFullList = (document: MCDocument) => {
+  const existingDoc = fullDocumentList.find((doc) => doc.documentID === document.documentID);
+  if (existingDoc) {
+    return
+  } else {
+    fullDocumentList.push(document);
+  }
+}
+
 function createDocumentStore() {
   const { subscribe, set, update } = writable(defaultDB);
   return {
@@ -24,8 +36,15 @@ function createDocumentStore() {
       const documents: MCDocument[] = [];
       
       for (const projectID of projectIDList) {
-        const projectDocuments = await mermaidChartApi.getDocuments(projectID);
-        documents.push(...projectDocuments);
+        try {
+          const projectDocuments = await mermaidChartApi.getDocuments(projectID);
+          documents.push(...projectDocuments);
+        } catch {
+          loading.setState(false, '');
+          return showUserMessage(
+            'Failed to load documents for project with ID: ' + projectID,
+            'error');
+        }
       }
       
       const res = update((documentDB) => {
@@ -37,6 +56,7 @@ function createDocumentStore() {
               document.diagramType = getDiagramType(document.code);
               documentDB.documents[document.documentID] = document;
               documentDB.documentIds.push(document.documentID);
+              addToFullList(document);
             }
           }
           documentDB.documentIds.sort((a, b) => doSort(a, b, 'updatedAt', documentDB.documents, 'asc'));
