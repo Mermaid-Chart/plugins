@@ -6,7 +6,7 @@ This is a flowchart diagram
 
 ```mermaid
 ---
-id: xxxxxxx-flowchart
+id: https://test.mermaidchart.invalid/d/xxxxxxx-flowchart
 ---
 flowchart
     A[Hello World]
@@ -16,7 +16,7 @@ While this is a pie diagram
 
 ```mermaid
 ---
-id: xxxxxxx-pie
+id: https://test.mermaidchart.invalid/d/xxxxxxx-pie
 ---
 pie
     "Flowchart" : 1

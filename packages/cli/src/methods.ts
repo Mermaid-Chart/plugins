@@ -1,7 +1,13 @@
 import type { MermaidChart } from '@mermaidchart/sdk';
 
 import { CommanderError } from '@commander-js/extra-typings';
-import { extractFrontMatter, injectFrontMatter, removeFrontMatterKeys } from './frontmatter.js';
+import {
+  createUrlID,
+  extractFrontMatter,
+  getDocumentID,
+  injectFrontMatter,
+  removeFrontMatterKeys,
+} from './frontmatter.js';
 
 /**
  * Cached data to use when pulling/pushing/linking multiple files at once.
@@ -81,7 +87,9 @@ export async function link(
     code: diagram,
   });
 
-  const diagramWithId = injectFrontMatter(diagram, { id: createdDocument.documentID });
+  const diagramWithId = injectFrontMatter(diagram, {
+    id: createUrlID(client.baseURL, createdDocument.documentID),
+  });
 
   return diagramWithId;
 }
@@ -103,7 +111,7 @@ export async function pull(diagram: string, client: MermaidChart, { title }: Pul
   }
 
   const uploadedFile = await client.getDocument({
-    documentID: frontmatter.metadata.id,
+    documentID: getDocumentID(frontmatter.metadata.id, client.baseURL),
   });
 
   if (uploadedFile.code === undefined) {
@@ -129,7 +137,7 @@ export async function push(diagram: string, client: MermaidChart, { title }: Pus
 
   // TODO: check if file has changed since last push and print a warning
   const existingDiagram = await client.getDocument({
-    documentID: frontmatter.metadata.id,
+    documentID: getDocumentID(frontmatter.metadata.id, client.baseURL),
   });
 
   // due to MC-1056, try to remove YAML frontmatter if we can

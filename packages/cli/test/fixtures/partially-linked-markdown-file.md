@@ -6,7 +6,7 @@ This is a journey diagram that is already linked.
 
 ```mermaid
 ---
-id: xxxxxxx-journey
+id: https://test.mermaidchart.invalid/d/xxxxxxx-journey
 ---
 journey
     title This is a linked journey diagram.

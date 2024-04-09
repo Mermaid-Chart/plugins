@@ -6,14 +6,37 @@
 import * as yaml from 'js-yaml';
 
 const frontMatterRegex = /^-{3}\s*[\n\r](.*?)[\n\r]-{3}\s*[\n\r]+/s;
+const urlIDRegex = /(?<baseURL>.*)\/d\/(?<documentID>[\w-]+)/;
+
+type UrlID = `${string}/d/${string}`;
+
+export function getDocumentID(urlID: UrlID, expectedbaseURL: string) {
+  const match = urlID.match(urlIDRegex);
+  if (match === null) {
+    throw new Error(
+      `Invalid document ID: ${urlID}. Please report this issue to the @mermaidchart/cli maintainers.`,
+    );
+  }
+  // we know that this regex will always return groups on a match
+  const { baseURL, documentID } = match.groups as { baseURL: string; documentID: string };
+  if (baseURL !== expectedbaseURL) {
+    throw new Error(
+      `Your @mermaidchart/cli is configured to use ${expectedbaseURL}, but your diagram is using ${baseURL}`,
+    );
+  }
+  return documentID;
+}
+export function createUrlID(baseURL: string, documentID: string): UrlID {
+  return `${baseURL}/d/${documentID}`;
+}
 
 interface FrontMatterMetadata {
   title?: string;
   // Allows custom display modes. Currently used for compact mode in gantt charts.
   displayMode?: string;
   config?: Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
-  /** Unique ID for the diagram on MermaidChart.com */
-  id?: string;
+  /** Unique ID for the diagram, e.g. `https://www.mermaidchart.com/d/xxxxxx-xxxx-xxxxx` */
+  id?: UrlID;
 }
 
 export interface FrontMatterResult {
