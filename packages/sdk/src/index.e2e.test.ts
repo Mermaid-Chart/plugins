@@ -84,7 +84,7 @@ describe('setDocument', () => {
 
     await client.setDocument({
       documentID: newDocument.documentID,
-      id: newDocument.id, // diagram ID
+      projectID: newDocument.projectID,
       title: "@mermaidchart/sdk E2E test diagram",
       code,
     });
@@ -98,15 +98,14 @@ describe('setDocument', () => {
     });
   });
 
-  // TODO: this function never seems to return an error, see MC-1060
-  it.skip('should throw an error on invalid data', async() => {
+  it('should throw an error on invalid data', async() => {
     const newDocument = await client.createDocument(testProjectId);
     documentsToDelete.add(newDocument.documentID);
 
     await expect(client.setDocument({
       documentID: newDocument.documentID,
-      // @ts-expect-error not setting diagram `id` should throw an error
-      id: null,
+      // @ts-expect-error not setting diagram `projectID` should throw an error
+      projectID: null,
     })).rejects.toThrowError("400"); // should throw HTTP 400 error
   });
 });

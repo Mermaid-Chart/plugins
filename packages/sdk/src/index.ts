@@ -210,7 +210,7 @@ export class MermaidChart {
    * @param document The document to update.
    */
   public async setDocument(
-    document: Pick<MCDocument, 'id' | 'documentID'> & Partial<MCDocument>,
+    document: Pick<MCDocument, 'documentID' | 'projectID'> & Partial<MCDocument>,
   ) {
     const {data} = await this.axios.put<{result: "ok"} | {result: "failed", error: any}>(
       URLS.rest.documents.pick(document).self,
