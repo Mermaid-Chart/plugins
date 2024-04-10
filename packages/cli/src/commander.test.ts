@@ -1,4 +1,4 @@
-import { beforeAll, beforeEach, describe, expect, vi, it, type Mock } from 'vitest';
+import { afterEach, beforeAll, beforeEach, describe, expect, vi, it, type Mock } from 'vitest';
 import { createCommanderCommand } from './commander.js';
 import { copyFile, mkdir, readFile, rm } from 'node:fs/promises';
 import type { Command, CommanderError, OutputConfiguration } from '@commander-js/extra-typings';
@@ -106,6 +106,10 @@ describe('--version', () => {
 });
 
 describe('whoami', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
   it('should error if --config file does not exist', async () => {
     const { program } = mockedProgram();
 
@@ -136,10 +140,12 @@ describe('whoami', () => {
     ).rejects.toThrowError('Invalid access token.');
   });
 
-  it('--auth-token should override config file', async () => {
+  it('--auth-token should override config file and environment variables', async () => {
     const { program } = mockedProgram();
 
     const myCliAuthToken = 'my-cli-auth-token';
+
+    vi.stubEnv('MERMAID_CHART_AUTH_TOKEN', 'my-env-auth-token');
 
     await program.parseAsync(
       ['--config', CONFIG_AUTHED, '--auth-token', myCliAuthToken, 'whoami'],
@@ -155,6 +161,21 @@ describe('whoami', () => {
     const consoleLogSpy = vi.spyOn(global.console, 'log');
     await program.parseAsync(['--config', CONFIG_AUTHED, 'whoami'], { from: 'user' });
 
+    expect(consoleLogSpy).toBeCalledWith(mockedMCUser.emailAddress);
+  });
+
+  it('should support loading auth from environment variables', async () => {
+    const { program } = mockedProgram();
+
+    const authToken = 'my-api-key-from-env-var';
+    vi.stubEnv('MERMAID_CHART_AUTH_TOKEN', authToken);
+    vi.stubEnv('MERMAID_CHART_BASE_URL', 'https://test.mermaidchart.invalid');
+
+    const consoleLogSpy = vi.spyOn(global.console, 'log');
+    await program.parseAsync(['--config', CONFIG_AUTHED, 'whoami'], { from: 'user' });
+
+    // environment variables should override config file
+    expect(vi.mocked(MermaidChart.prototype.setAccessToken)).toHaveBeenCalledWith(authToken);
     expect(consoleLogSpy).toBeCalledWith(mockedMCUser.emailAddress);
   });
 });

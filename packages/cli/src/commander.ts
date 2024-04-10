@@ -296,12 +296,15 @@ export function createCommanderCommand() {
       defaultConfigPath(),
     )
     .addOption(
-      new Option(
-        '--base-url <base_url>',
-        'The base URL of the Mermaid Chart instance to use.',
-      ).default('https://mermaidchart.com'),
+      new Option('--base-url <base_url>', 'The base URL of the Mermaid Chart instance to use.')
+        .default('https://mermaidchart.com')
+        .env('MERMAID_CHART_BASE_URL'),
     )
-    .addOption(new Option('--auth-token <auth_token>', 'The Mermaid Chart API token to use.'))
+    .addOption(
+      new Option('--auth-token <auth_token>', 'The Mermaid Chart API token to use.').env(
+        'MERMAID_CHART_AUTH_TOKEN',
+      ),
+    )
     .hook('preSubcommand', async (command, actionCommand) => {
       const configPath = command.getOptionValue('config');
       /**
