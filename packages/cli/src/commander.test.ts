@@ -189,7 +189,9 @@ describe('logout', () => {
 
     await expect(readFile(configFile, { encoding: 'utf8' })).resolves.not.toContain('my-api-key');
 
-    expect(consoleLogSpy).toBeCalledWith(`API token removed from ${configFile}`);
+    expect(consoleLogSpy).toBeCalledWith(
+      `API token for ${mockedMCUser.emailAddress} removed from ${configFile}`,
+    );
   });
 });
 

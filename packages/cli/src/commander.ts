@@ -37,10 +37,11 @@ async function createClient(options: CommonOptions, config?: Config) {
         options['config'] === defaultConfigPath()
       ) {
         config = {};
+      } else {
+        throw new InvalidArgumentError(
+          `Failed to load config file ${options['config']} due to: ${error}`,
+        );
       }
-      throw new InvalidArgumentError(
-        `Failed to load config file ${options['config']} due to: ${error}`,
-      );
     }
   }
 
