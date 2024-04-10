@@ -136,6 +136,19 @@ describe('whoami', () => {
     ).rejects.toThrowError('Invalid access token.');
   });
 
+  it('--auth-token should override config file', async () => {
+    const { program } = mockedProgram();
+
+    const myCliAuthToken = 'my-cli-auth-token';
+
+    await program.parseAsync(
+      ['--config', CONFIG_AUTHED, '--auth-token', myCliAuthToken, 'whoami'],
+      { from: 'user' },
+    );
+
+    expect(vi.mocked(MermaidChart.prototype.setAccessToken)).toHaveBeenCalledWith(myCliAuthToken);
+  });
+
   it('should print email of logged in user', async () => {
     const { program } = mockedProgram();
 

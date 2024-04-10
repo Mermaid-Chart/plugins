@@ -3,6 +3,7 @@ import {
   CommanderError,
   createCommand,
   InvalidArgumentError,
+  Option,
 } from '@commander-js/extra-typings';
 import { readFile, writeFile } from 'fs/promises';
 import { MermaidChart } from '@mermaidchart/sdk';
@@ -10,7 +11,7 @@ import { MermaidChart } from '@mermaidchart/sdk';
 import confirm from '@inquirer/confirm';
 import input from '@inquirer/input';
 import select, { Separator } from '@inquirer/select';
-import { type Config, defaultConfigPath, readConfig, writeConfig } from './config.js';
+import { defaultConfigPath, readConfig, writeConfig, optionNameMap } from './config.js';
 import { type Cache, link, type LinkOptions, pull, push } from './methods.js';
 import { processMarkdown } from './remark.js';
 
@@ -25,32 +26,40 @@ import { processMarkdown } from './remark.js';
  */
 type CommonOptions = ReturnType<ReturnType<typeof createCommanderCommand>['opts']>;
 
-async function createClient(options: CommonOptions, config?: Config) {
-  if (config === undefined) {
-    try {
-      config = await readConfig(options['config']);
-    } catch (error) {
-      if (
-        error instanceof Error &&
-        'errno' in error &&
-        (error as NodeJS.ErrnoException).code === 'ENOENT' &&
-        options['config'] === defaultConfigPath()
-      ) {
-        config = {};
-      } else {
-        throw new InvalidArgumentError(
-          `Failed to load config file ${options['config']} due to: ${error}`,
-        );
-      }
+/**
+ * Reads the config file from the given `--config <configPath>` argument, ignoring
+ * ENONET errors if `ignoreENONET` is `true`.
+ *
+ * @param configPath - The path to the config file.
+ * @param ignoreENONET - Whether to ignore ENONET errors.
+ * @throws {@link InvalidArgumentError}
+ * Thrown if:
+ *  - The config file exists, but is not a valid TOML file.
+ *  - The config file does not exist, and `ignoreENONET` is `false`.
+ */
+async function readConfigFromConfigArg(configPath: string, ignoreENONET: boolean = false) {
+  try {
+    return await readConfig(configPath);
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      'errno' in error &&
+      (error as NodeJS.ErrnoException).code === 'ENOENT' &&
+      ignoreENONET
+    ) {
+      return {};
     }
+    throw new InvalidArgumentError(`Failed to load config file ${configPath} due to: ${error}`);
   }
+}
 
+async function createClient(options: CommonOptions) {
   const client = new MermaidChart({
     clientID: '018bf0ff-7e8c-7952-ab4e-a7bd7c7f54f3',
-    baseURL: new URL(config.base_url ?? 'https://mermaidchart.com').toString(),
+    baseURL: options.baseUrl,
   });
 
-  if (config.auth_token === undefined) {
+  if (options.authToken === undefined) {
     throw new CommanderError(
       /*exitCode=*/ 1,
       'ENEEDAUTH',
@@ -59,7 +68,7 @@ async function createClient(options: CommonOptions, config?: Config) {
   }
 
   try {
-    await client.setAccessToken(config.auth_token);
+    await client.setAccessToken(options.authToken);
   } catch (error) {
     if (error instanceof Error && error.message.includes('401')) {
       throw new CommanderError(
@@ -91,32 +100,22 @@ function login() {
     .description('Login to a Mermaid Chart account')
     .action(async (_options, command) => {
       const optsWithGlobals = command.optsWithGlobals<CommonOptions>();
-      let config;
-      try {
-        config = await readConfig(optsWithGlobals['config']);
-      } catch (error) {
-        if (
-          error instanceof Error &&
-          'errno' in error &&
-          (error as NodeJS.ErrnoException).code === 'ENOENT'
-        ) {
-          config = {};
-        } else {
-          throw error;
-        }
-      }
 
-      const baseURL = new URL(config.base_url ?? 'https://mermaidchart.com').toString();
+      // empty if default config file doesn't exist
+      const config = await readConfigFromConfigArg(
+        optsWithGlobals['config'],
+        /*ignoreENONET=*/ true,
+      );
 
       const client = new MermaidChart({
         clientID: '018bf0ff-7e8c-7952-ab4e-a7bd7c7f54f3',
-        baseURL: baseURL,
+        baseURL: optsWithGlobals.baseUrl,
       });
 
       const answer = await input({
         message: `Enter your API token. You can generate one at ${new URL(
           '/app/user/settings',
-          baseURL,
+          optsWithGlobals.baseUrl,
         )}`,
         async validate(key) {
           try {
@@ -150,7 +149,7 @@ function logout() {
       await writeConfig(optsWithGlobals['config'], config);
 
       try {
-        const user = await (await createClient(optsWithGlobals, config)).getUser();
+        const user = await (await createClient(optsWithGlobals)).getUser();
         console.log(`API token for ${user.emailAddress} removed from ${optsWithGlobals['config']}`);
       } catch (error) {
         // API token might have been expired
@@ -295,7 +294,43 @@ export function createCommanderCommand() {
       '-c, --config <config_file>',
       'The path to the config file to use.',
       defaultConfigPath(),
-    );
+    )
+    .addOption(
+      new Option(
+        '--base-url <base_url>',
+        'The base URL of the Mermaid Chart instance to use.',
+      ).default('https://mermaidchart.com'),
+    )
+    .addOption(new Option('--auth-token <auth_token>', 'The Mermaid Chart API token to use.'))
+    .hook('preSubcommand', async (command, actionCommand) => {
+      const configPath = command.getOptionValue('config');
+      /**
+       * config file is allowed to not exist if:
+       *   - the user is running the `login` command, we'll create a new config file if it doesn't exist
+       */
+      const ignoreENONET = configPath === defaultConfigPath() || actionCommand.name() === 'login';
+
+      const config = await readConfigFromConfigArg(configPath, ignoreENONET);
+      for (const key in config) {
+        if (!(key in optionNameMap)) {
+          console.warn(`Warning: Ignoring unrecognized config key: ${key} in ${configPath}`);
+          continue;
+        }
+        const optionCommanderName = optionNameMap[key as keyof typeof optionNameMap];
+        // config values only override default/implied values
+        if (
+          [undefined, 'default', 'implied'].includes(
+            command.getOptionValueSource(optionCommanderName),
+          )
+        ) {
+          command.setOptionValueWithSource(
+            optionNameMap[key as keyof typeof optionNameMap],
+            config[key],
+            'config',
+          );
+        }
+      }
+    });
 
   return program
     .addCommand(whoami())
