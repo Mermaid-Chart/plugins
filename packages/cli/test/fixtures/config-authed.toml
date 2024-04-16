@@ -1,0 +1,4 @@
+# TOML config file for mermaid-chart-cli with auth token
+[mermaid-chart]
+base_url = "https://test.mermaidchart.invalid"
+auth_token = "my-api-key"

@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `MermaidChart#createDocument(projectID)` function to create a diagram in a project.
 - Add `MermaidChart#setDocument(document)` function to update a diagram.
 - Add `MermaidChart#deleteDocument(documentID)` function to delete a diagram.
+- Add `MermaidChart#baseURL` is now public.
 
 ### Fixed
 

@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         node: ['18.18.x']
-        pkg: ['sdk']
+        pkg: ['sdk', 'cli']
     runs-on:
       labels: ubuntu-latest
     steps:
@@ -29,6 +29,9 @@ jobs:
       - name: Install dependencies for ${{ matrix.pkg }}
         run: |
           pnpm install --frozen-lockfile --filter='...${{ matrix.pkg }}'
+
+      - name: Lint (if present) ${{ matrix.pkg }}
+        run: pnpm --if-present --filter='${{ matrix.pkg }}' lint
 
       - name: Test ${{ matrix.pkg }}
         run: |
