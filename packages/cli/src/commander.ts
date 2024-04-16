@@ -7,10 +7,11 @@ import {
 import { readFile, writeFile } from 'fs/promises';
 import { MermaidChart } from '@mermaidchart/sdk';
 import { createRequire } from 'node:module';
+import confirm from '@inquirer/confirm';
 import input from '@inquirer/input';
 import select, { Separator } from '@inquirer/select';
 import { type Config, defaultConfigPath, readConfig, writeConfig } from './config.js';
-import { link, pull, push } from './methods.js';
+import { link, type LinkOptions, pull, push } from './methods.js';
 
 /**
  * Global configuration option for the root Commander Command.
@@ -158,78 +159,107 @@ function logout() {
 
 function linkCmd() {
   return createCommand('link')
-    .description('Link the given Mermaid diagram to Mermaid Chart')
-    .addArgument(new Argument('<path>', 'The path of the file to link.'))
-    .action(async (path, _options, command) => {
+    .description('Link the given Mermaid diagrams to Mermaid Chart')
+    .addArgument(new Argument('<path...>', 'The paths of the files to link.'))
+    .action(async (paths, _options, command) => {
       const optsWithGlobals = command.optsWithGlobals<CommonOptions>();
       const client = await createClient(optsWithGlobals);
+
+      // Ask the user which project they want to upload each diagram to
+      const getProjectId: LinkOptions['getProjectId'] = async (cache, documentTitle) => {
+        if (cache.previousSelectedProjectId !== undefined) {
+          if (cache.usePreviousSelectedProjectId === undefined) {
+            cache.usePreviousSelectedProjectId = confirm({
+              message: `Would you like to upload all diagrams to this project?`,
+              default: true,
+            });
+          }
+          if (await cache.usePreviousSelectedProjectId) {
+            return cache.previousSelectedProjectId;
+          }
+        }
+
+        cache.projects = cache.projects ?? client.getProjects();
+        const projectId = await select({
+          message: `Select a project to upload ${documentTitle} to`,
+          choices: [
+            ...(await cache.projects).map((project) => {
+              return {
+                name: project.title,
+                value: project.id,
+              };
+            }),
+            new Separator(
+              `Or go to ${new URL('/app/projects', client.baseURL)} to create a new project`,
+            ),
+          ],
+        });
+
+        cache.previousSelectedProjectId = projectId;
+
+        return projectId;
+      };
+
       const linkCache = {};
 
-      const existingFile = await readFile(path, { encoding: 'utf8' });
+      for (const path of paths) {
+        const existingFile = await readFile(path, { encoding: 'utf8' });
 
-      const linkedDiagram = await link(existingFile, client, {
-        cache: linkCache,
-        title: path,
-        async getProjectId(cache) {
-          cache.projects = cache.projects ?? client.getProjects();
-          const projectId = await select({
-            message: `Select a project to upload ${path} to`,
-            choices: [
-              ...(await cache.projects).map((project) => {
-                return {
-                  name: project.title,
-                  value: project.id,
-                };
-              }),
-              new Separator(
-                `Or go to ${new URL('/app/projects', client.baseURL)} to create a new project`,
-              ),
-            ],
-          });
-          return projectId;
-        },
-      });
+        const linkedDiagram = await link(existingFile, client, {
+          cache: linkCache,
+          title: path,
+          getProjectId,
+        });
 
-      await writeFile(path, linkedDiagram, { encoding: 'utf8' });
+        await writeFile(path, linkedDiagram, { encoding: 'utf8' });
+      }
     });
 }
 
 function pullCmd() {
   return createCommand('pull')
-    .description('Pulls a document from from Mermaid Chart')
-    .addArgument(new Argument('<path>', 'The path of the file to pull.'))
-    .option('--check', 'Check whether the local file would be overwrited')
-    .action(async (path, options, command) => {
+    .description('Pulls documents from Mermaid Chart')
+    .addArgument(new Argument('<path...>', 'The paths of the files to pull.'))
+    .option('--check', 'Check whether the local files would be overwrited')
+    .action(async (paths, options, command) => {
       const optsWithGlobals = command.optsWithGlobals<CommonOptions>();
       const client = await createClient(optsWithGlobals);
-      const text = await readFile(path, { encoding: 'utf8' });
+      await Promise.all(
+        paths.map(async (path) => {
+          const text = await readFile(path, { encoding: 'utf8' });
 
-      const newFile = await pull(text, client, { title: path });
+          const newFile = await pull(text, client, { title: path });
 
-      if (text === newFile) {
-        console.log(`✅ - ${path} is up to date`);
-      } else {
-        if (options['check']) {
-          console.log(`❌ - ${path} would be updated`);
-          process.exitCode = 1;
-        } else {
-          await writeFile(path, newFile, { encoding: 'utf8' });
-          console.log(`✅ - ${path} was updated`);
-        }
-      }
+          if (text === newFile) {
+            console.log(`✅ - ${path} is up to date`);
+          } else {
+            if (options['check']) {
+              console.log(`❌ - ${path} would be updated`);
+              process.exitCode = 1;
+            } else {
+              await writeFile(path, newFile, { encoding: 'utf8' });
+              console.log(`✅ - ${path} was updated`);
+            }
+          }
+        }),
+      );
     });
 }
 
 function pushCmd() {
   return createCommand('push')
-    .description('Push a local diagram to Mermaid Chart')
-    .addArgument(new Argument('<path>', 'The path of the file to push.'))
-    .action(async (path, _options, command) => {
+    .description('Push local diagrams to Mermaid Chart')
+    .addArgument(new Argument('<path...>', 'The paths of the files to push.'))
+    .action(async (paths, _options, command) => {
       const optsWithGlobals = command.optsWithGlobals<CommonOptions>();
       const client = await createClient(optsWithGlobals);
-      const text = await readFile(path, { encoding: 'utf8' });
+      await Promise.all(
+        paths.map(async (path) => {
+          const text = await readFile(path, { encoding: 'utf8' });
 
-      await push(text, client, { title: path });
+          await push(text, client, { title: path });
+        }),
+      );
     });
 }
 
