@@ -39,8 +39,10 @@ interface CommonOptions {
 export interface LinkOptions extends CommonOptions {
   /** Function that asks the user which project id they want to upload a diagram to */
   getProjectId: (cache: LinkOptions['cache'], documentTitle: string) => Promise<string>;
-  // cache to be shared between link calls. This object may be modified between calls.
+  /** cache to be shared between link calls. This object may be modified between calls. */
   cache: Cache;
+  /** If `true`, ignore diagrams that are already linked. */
+  ignoreAlreadyLinked: boolean;
 }
 
 /**
@@ -48,18 +50,25 @@ export interface LinkOptions extends CommonOptions {
  *
  * @returns The diagram with an added `id: xxxx` field.
  */
-export async function link(diagram: string, client: MermaidChart, options: LinkOptions) {
+export async function link(
+  diagram: string,
+  client: MermaidChart,
+  { title, getProjectId, cache, ignoreAlreadyLinked }: LinkOptions,
+) {
   const frontmatter = extractFrontMatter(diagram);
 
   if (frontmatter.metadata.id) {
-    throw new CommanderError(
-      /*exitCode=*/ 1,
-      'EALREADY_LINKED',
-      'This document already has an `id` field',
-    );
+    if (ignoreAlreadyLinked) {
+      console.log(`○ - ${title} is already linked`);
+      return diagram; // no change required
+    } else {
+      throw new CommanderError(
+        /*exitCode=*/ 1,
+        'EALREADY_LINKED',
+        'This document already has an `id` field',
+      );
+    }
   }
-
-  const { title, getProjectId, cache } = options;
 
   const projectId = await getProjectId(cache, title);
 
