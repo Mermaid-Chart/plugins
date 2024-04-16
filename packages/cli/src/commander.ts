@@ -6,7 +6,7 @@ import {
 } from '@commander-js/extra-typings';
 import { readFile, writeFile } from 'fs/promises';
 import { MermaidChart } from '@mermaidchart/sdk';
-
+import { createRequire } from 'node:module';
 import confirm from '@inquirer/confirm';
 import input from '@inquirer/input';
 import select, { Separator } from '@inquirer/select';
@@ -264,8 +264,11 @@ function pushCmd() {
 }
 
 export function createCommanderCommand() {
+  const require = createRequire(import.meta.url);
+  const pkg = require('../package.json');
+
   const program = createCommand('mermaid-cli')
-    .version('0.1.0-alpha.0') // TODO: how can we keep this synced with package.json
+    .version(pkg.version)
     .description(
       'CLI for interacting with https://MermaidChart.com, the platform that makes collaborating with Mermaid diagrams easy.',
     )

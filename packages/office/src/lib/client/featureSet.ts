@@ -23,8 +23,8 @@ export enum FeatureName {
 const features: Record<FeatureName, FeatureState> = {
   editor: FeatureState.UnderDevelopment,
   dashboard: FeatureState.UnderDevelopment,
-  userBehavior: FeatureState.StageAndProd,
-  cookieBot: FeatureState.OnlyInProd
+  userBehavior: FeatureState.NotInProd,
+  cookieBot: FeatureState.NotInProd
 };
 
 /**
