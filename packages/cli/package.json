@@ -30,8 +30,7 @@
     "cli"
   ],
   "author": "Alois Klink <alois@mermaidchart.com> (https://github.com/aloisklink)",
-  "//2": "TODO: decide on a license once this code is finished",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/Mermaid-Chart/plugins/issues"
   },
