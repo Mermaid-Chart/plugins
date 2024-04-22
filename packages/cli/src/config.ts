@@ -38,6 +38,19 @@ export function defaultConfigPath() {
   return join(userConfigDir(), 'mermaid-chart.toml');
 }
 
+/**
+ * Maps the TOML keys to the Commander option names.
+ *
+ * Commander uses:
+ *   - kebab-case for CLI options, but
+ *   - camelCase for option names in JavaScript,
+ * while TOML uses snake_case.
+ */
+export const optionNameMap = {
+  auth_token: 'authToken',
+  base_url: 'baseUrl',
+} as const;
+
 export interface Config extends JsonMap {
   /**
    * Mermaid-Chart API token.
