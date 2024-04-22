@@ -57,7 +57,7 @@ which points to the diagram on MermaidChart.com:
 ```mermaid
 ---
 title: My diagram
-id: xxxx-xxxxx-xxxxx # this field is created by @mermaidchart/cli
+id: https://www.mermaidchart.com/d/xxxx-xxxxx-xxxxx # this field is created by @mermaidchart/cli
 ---
 flowchart
   x[My Diagram]

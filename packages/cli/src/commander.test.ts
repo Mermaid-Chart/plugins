@@ -226,7 +226,7 @@ describe('link', () => {
     );
 
     await expect(readFile(diagram, { encoding: 'utf8' })).resolves.toContain(
-      `id: ${mockedEmptyDiagram.documentID}`,
+      `id: https://test.mermaidchart.invalid/d/${mockedEmptyDiagram.documentID}`,
     );
   });
 
@@ -271,7 +271,7 @@ describe('link', () => {
       await Promise.all(
         [diagram, diagram2, diagram3].map(async (file) => {
           await expect(readFile(file, { encoding: 'utf8' })).resolves.toContain(
-            `id: ${mockedEmptyDiagram.documentID}`,
+            `id: https://test.mermaidchart.invalid/d/${mockedEmptyDiagram.documentID}`,
           );
         }),
       );
@@ -298,8 +298,10 @@ describe('link', () => {
 
     const file = await readFile(unlinkedMarkdownFile, { encoding: 'utf8' });
 
-    expect(file).toMatch(`id: ${mockedEmptyDiagram.documentID}\n`);
-    expect(file).toMatch(`id: second-id\n`);
+    expect(file).toMatch(
+      `id: https://test.mermaidchart.invalid/d/${mockedEmptyDiagram.documentID}\n`,
+    );
+    expect(file).toMatch(`id: https://test.mermaidchart.invalid/d/second-id\n`);
   });
 
   it('should link diagrams in partially linked markdown file', async () => {
@@ -323,7 +325,7 @@ describe('link', () => {
 
     const file = await readFile(partiallyLinkedMarkdownFile, { encoding: 'utf8' });
 
-    expect(file).toMatch(`id: second-id\n`);
+    expect(file).toMatch(`id: https://test.mermaidchart.invalid/d/second-id\n`);
   });
 
   it('should handle unusual markdown formatting', async () => {
@@ -347,7 +349,7 @@ describe('link', () => {
 
     const file = await readFile(unusualMarkdownFile, { encoding: 'utf8' });
 
-    const idLineRegex = /^.*id: my-mocked-diagram-id\n/gm;
+    const idLineRegex = /^.*id: https:\/\/test.mermaidchart.invalid\/d\/my-mocked-diagram-id\n/gm;
 
     expect(file).toMatch(idLineRegex);
     // other than the added `id: xxxx` field, everything else should be identical,
@@ -412,7 +414,9 @@ title: My cool flowchart
     for (const file of [diagram, diagram2]) {
       const diagramContents = await readFile(file, { encoding: 'utf8' });
 
-      expect(diagramContents).toContain(`id: ${mockedDiagram.documentID}`);
+      expect(diagramContents).toContain(
+        `id: https://test.mermaidchart.invalid/d/${mockedDiagram.documentID}`,
+      );
       expect(diagramContents).toContain("flowchart TD\n      A[I've been updated!]");
     }
   });
