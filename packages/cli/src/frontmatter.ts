@@ -3,7 +3,7 @@
  */
 import { parseDocument, type Document, YAMLMap, isMap } from 'yaml';
 
-const frontMatterRegex = /^-{3}\s*[\n\r](.*?)[\n\r]-{3}\s*[\n\r]+/s;
+const frontMatterRegex = /^-{3}\s*[\n\r](.*?[\n\r])-{3}\s*[\n\r]+/s;
 const urlIDRegex = /(?<baseURL>.*)\/d\/(?<documentID>[\w-]+)/;
 
 type UrlID = `${string}/d/${string}`;
