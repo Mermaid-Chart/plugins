@@ -1,9 +1,7 @@
 /**
  * Copied from https://github.com/mermaid-js/mermaid/blob/4a4e614b646bdb5f91f02d0483a7704b315d09fd/packages/mermaid/src/diagram-api/regexes.ts
  */
-
-// The "* as yaml" part is necessary for tree-shaking
-import * as yaml from 'js-yaml';
+import { parseDocument, type Document, YAMLMap, isMap } from 'yaml';
 
 const frontMatterRegex = /^-{3}\s*[\n\r](.*?)[\n\r]-{3}\s*[\n\r]+/s;
 const urlIDRegex = /(?<baseURL>.*)\/d\/(?<documentID>[\w-]+)/;
@@ -59,20 +57,13 @@ function splitFrontMatter(text: string) {
   }
 }
 
-function parseFrontMatterYAML(frontMatterYaml: string) {
-  let parsed: FrontMatterMetadata =
-    // TODO: replace with https://www.npmjs.com/package/yaml so that we can
-    //       read/write comments too
-    yaml.load(frontMatterYaml, {
-      // To support config, we need JSON schema.
-      // https://www.yaml.org/spec/1.2/spec.html#id2803231
-      schema: yaml.JSON_SCHEMA,
-    }) ?? {};
+function parseFrontMatterYAML(frontMatterYaml: string): Document<YAMLMap, false> {
+  const document: Document = parseDocument(frontMatterYaml);
+  if (!isMap(document.contents)) {
+    document.contents = new YAMLMap();
+  }
 
-  // To handle runtime data type changes
-  parsed = typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
-
-  return parsed;
+  return document as unknown as Document<YAMLMap, false>;
 }
 
 /**
@@ -85,7 +76,7 @@ function parseFrontMatterYAML(frontMatterYaml: string) {
 export function extractFrontMatter(text: string): FrontMatterResult {
   const { diagramText, frontMatter } = splitFrontMatter(text);
 
-  const parsed = parseFrontMatterYAML(frontMatter);
+  const parsed = parseFrontMatterYAML(frontMatter).toJSON();
 
   const metadata: FrontMatterMetadata = {};
 
@@ -116,16 +107,16 @@ export function extractFrontMatter(text: string): FrontMatterResult {
  * @param newMetadata - The metadata fields to update.
  * @returns The text with the updated YAML frontmatter.
  */
-export function injectFrontMatter(text: string, newMetadata: Partial<FrontMatterMetadata>) {
+export function injectFrontMatter(text: string, newMetadata: Pick<FrontMatterMetadata, 'id'>) {
   const { diagramText, frontMatter } = splitFrontMatter(text);
 
-  const parsed = parseFrontMatterYAML(frontMatter);
+  const document = parseFrontMatterYAML(frontMatter);
 
-  const mergedFrontmatter = { ...parsed, ...newMetadata };
+  for (const [key, value] of Object.entries(newMetadata)) {
+    document.contents.set(key, value);
+  }
 
-  return `---\n${yaml.dump(mergedFrontmatter, {
-    schema: yaml.JSON_SCHEMA,
-  })}---\n${diagramText}`;
+  return `---\n${document.toString()}---\n${diagramText}`;
 }
 
 /**
@@ -138,24 +129,16 @@ export function injectFrontMatter(text: string, newMetadata: Partial<FrontMatter
 export function removeFrontMatterKeys(text: string, keysToRemove: Set<keyof FrontMatterMetadata>) {
   const { diagramText, frontMatter } = splitFrontMatter(text);
 
-  const parsedFrontMatter = parseFrontMatterYAML(frontMatter);
+  const document = parseFrontMatterYAML(frontMatter);
 
-  const entries = Object.entries(parsedFrontMatter)
-    .map((val) => {
-      if (keysToRemove.has(val[0] as keyof FrontMatterMetadata)) {
-        return null;
-      } else {
-        return val;
-      }
-    })
-    .filter((val) => val) as [string, any][]; // eslint-disable-line @typescript-eslint/no-explicit-any
+  for (const key of keysToRemove) {
+    document.contents.delete(key);
+  }
 
-  if (entries.length === 0) {
+  if (document.contents.items.length === 0) {
     // skip creating frontmatter if there is no frontmatter
     return diagramText;
   } else {
-    return `---\n${yaml.dump(Object.fromEntries(entries), {
-      schema: yaml.JSON_SCHEMA,
-    })}---\n${diagramText}`;
+    return `---\n${document.toString()}---\n${diagramText}`;
   }
 }
