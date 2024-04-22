@@ -1,13 +1,11 @@
 {
   "name": "@mermaidchart/cli",
-  "version": "0.1.0-alpha.0",
+  "version": "0.1.0",
   "description": "CLI for interacting with https://MermaidChart.com, the platform that makes collaborating with Mermaid diagrams easy",
   "main": "index.js",
   "bin": {
     "mermaid-chart": "dist/cli.js"
   },
-  "//1": "temporarily disable pushing until we finish progress on this",
-  "private": true,
   "engines": {
     "node": "^18.18.0 || ^20.0.0"
   },
@@ -57,7 +55,7 @@
     "@inquirer/confirm": "^2.0.15",
     "@inquirer/input": "^1.2.14",
     "@inquirer/select": "^1.3.1",
-    "@mermaidchart/sdk": "workspace:^",
+    "@mermaidchart/sdk": "^0.2.1-alpha.0",
     "commander": "^11.1.0",
     "remark": "^15.0.1",
     "remark-frontmatter": "^5.0.0",
