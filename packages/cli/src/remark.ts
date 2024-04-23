@@ -53,7 +53,7 @@ export function plugin({ client, ...options }: MCPluginOptions) {
         case 'link':
           node.value = await link(node.value, client, {
             cache: options.cache,
-            title: ``,
+            title, // TODO: should we update this title in the future, since the filename/line number might change
             getProjectId: options.getProjectId,
             ignoreAlreadyLinked: true,
           });
