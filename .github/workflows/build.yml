@@ -10,8 +10,9 @@ jobs:
       matrix:
         node: ['18.18.x']
         pkg: ['sdk', 'cli']
+        os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on:
-      labels: ubuntu-latest
+      labels: ${{ matrix.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

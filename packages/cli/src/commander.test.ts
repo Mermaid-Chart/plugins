@@ -390,8 +390,10 @@ describe('link', () => {
     expect(file).toMatch(idLineRegex);
     // other than the added `id: xxxx` field, everything else should be identical,
     // although in practice, we'd expect some formatting changes
-    expect(file.replace(idLineRegex, '')).toStrictEqual(
-      await readFile(UNUSUAL_MARKDOWN_FILE, { encoding: 'utf8' }),
+    //
+    // We also normalize line endings to LF to avoid issues with CRLF on Windows
+    expect(file.replace(idLineRegex, '').replaceAll('\r\n', '\n')).toStrictEqual(
+      (await readFile(UNUSUAL_MARKDOWN_FILE, { encoding: 'utf8' })).replaceAll('\r\n', '\n'),
     );
   });
 });
