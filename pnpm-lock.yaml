@@ -408,6 +408,18 @@ importers:
       '@types/uuid':
         specifier: ^9.0.2
         version: 9.0.2
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.11.0
+        version: 6.12.0(@typescript-eslint/parser@6.13.1)(eslint@8.54.0)(typescript@5.2.2)
+      '@typescript-eslint/parser':
+        specifier: ^6.11.0
+        version: 6.13.1(eslint@8.54.0)(typescript@5.2.2)
+      eslint:
+        specifier: ^8.54.0
+        version: 8.54.0
+      prettier:
+        specifier: ^3.0.3
+        version: 3.0.3
 
 packages:
 

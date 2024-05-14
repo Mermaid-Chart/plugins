@@ -143,7 +143,7 @@ export class MermaidChart {
   /**
    * This method is used after authentication to save the access token.
    * It should be called by the plugins if any update to access token is made outside this lib.
-   * @param accessToken access token to use for requests
+   * @param accessToken - access token to use for requests
    */
   public async setAccessToken(accessToken: string): Promise<void> {
     this.axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
@@ -152,7 +152,7 @@ export class MermaidChart {
     this.accessToken = accessToken;
   }
 
-  public async resetAccessToken(): Promise<void> {
+  public resetAccessToken(): void {
     this.accessToken = undefined;
     this.axios.defaults.headers.common['Authorization'] = `Bearer none`;
   }
@@ -204,38 +204,40 @@ export class MermaidChart {
   public async getDocument(
     document: Pick<MCDocument, 'documentID'> | Pick<MCDocument, 'documentID' | 'major' | 'minor'>,
   ) {
-    const {data} =  await this.axios.get<MCDocument>(URLS.rest.documents.pick(document).self);
+    const { data } = await this.axios.get<MCDocument>(URLS.rest.documents.pick(document).self);
     return data;
   }
 
   /**
    * Update the given document.
    *
-   * @param document The document to update.
+   * @param document - The document to update.
    */
   public async setDocument(
     document: Pick<MCDocument, 'documentID' | 'projectID'> & Partial<MCDocument>,
   ) {
-    const {data} = await this.axios.put<{result: "ok"} | {result: "failed", error: any}>(
+    const { data } = await this.axios.put<{ result: 'ok' } | { result: 'failed'; error: unknown }>(
       URLS.rest.documents.pick(document).self,
       document,
     );
 
-    if (data.result === "failed") {
+    if (data.result === 'failed') {
       throw new Error(
-        `setDocument(${JSON.stringify({documentID: document.documentID})} failed due to ${JSON.stringify(data.error)}`
+        `setDocument(${JSON.stringify({
+          documentID: document.documentID,
+        })} failed due to ${JSON.stringify(data.error)}`,
       );
     }
   }
 
   /**
    * Delete the given document.
-   * @param documentID The ID of the document to delete.
+   * @param documentID - The ID of the document to delete.
    * @returns Metadata about the deleted document.
    */
   public async deleteDocument(documentID: MCDocument['documentID']) {
     const deletedDocument = await this.axios.delete<Document>(
-      URLS.rest.documents.pick({documentID}).self,
+      URLS.rest.documents.pick({ documentID }).self,
       {}, // force sending empty JSON to avoid triggering CSRF check
     );
     return deletedDocument.data;

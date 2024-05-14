@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MermaidChart } from './index.js';
-import { AuthorizationData } from './types.js';
+import type { AuthorizationData } from './types.js';
 
 import { OAuth2Client } from '@badgateway/oauth2-client';
 
