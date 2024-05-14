@@ -30,6 +30,6 @@
     "prettier-plugin-jsdoc": "^1.0.1",
     "tsx": "^3.12.8",
     "typescript": "^5.2.2",
-    "vitest": "^0.34.3"
+    "vitest": "^1.6.0"
   }
 }
