@@ -2,6 +2,7 @@ export interface InitParams {
   clientID: string;
   redirectURI?: string;
   baseURL?: string;
+  requestTimeout?: number;
 }
 
 export interface OAuthAuthorizationParams {

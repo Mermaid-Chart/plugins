@@ -16,7 +16,6 @@ import { URLS } from './urls.js';
 
 const defaultBaseURL = 'https://www.mermaidchart.com'; // "http://127.0.0.1:5174"
 const authorizationURLTimeout = 60_000;
-const requestTimeout = 30_000;
 
 export class MermaidChart {
   private clientID: string;
@@ -26,12 +25,16 @@ export class MermaidChart {
   private pendingStates: Record<string, AuthState> = {};
   private redirectURI!: string;
   private accessToken?: string;
+  private requestTimeout = 30_000;
 
-  constructor({ clientID, baseURL, redirectURI }: InitParams) {
+  constructor({ clientID, baseURL, redirectURI, requestTimeout }: InitParams) {
     this.clientID = clientID;
     this.setBaseURL(baseURL || defaultBaseURL);
     if (redirectURI) {
       this.setRedirectURI(redirectURI);
+    }
+    if (requestTimeout) {
+      this.requestTimeout = requestTimeout;
     }
   }
 
@@ -53,7 +56,7 @@ export class MermaidChart {
     });
     this.axios = defaultAxios.create({
       baseURL: this.#baseURL,
-      timeout: requestTimeout,
+      timeout: this.requestTimeout,
     });
 
     this.axios.interceptors.response.use((res: AxiosResponse) => {
