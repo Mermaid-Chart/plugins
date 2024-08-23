@@ -1,11 +1,10 @@
 /**
  * E2E tests
  */
-import { MermaidChart } from './index.js';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-
+import { HTTPError } from 'ky';
 import process from 'node:process';
-import { AxiosError } from 'axios';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { MermaidChart } from './index.js';
 import type { MCDocument } from './types.js';
 
 let testProjectId = '316557b3-cb6f-47ed-acf7-fcfb7ce188d5';
@@ -190,16 +189,16 @@ describe('getDocument', () => {
   });
 
   it('should throw 404 on unknown document', async () => {
-    let error: AxiosError | undefined = undefined;
+    let error: HTTPError | undefined = undefined;
     try {
       await client.getDocument({
         documentID: '00000000-0000-0000-0000-0000deaddead',
       });
     } catch (err) {
-      error = err as AxiosError;
+      error = err as HTTPError;
     }
 
-    expect(error).toBeInstanceOf(AxiosError);
+    expect(error).toBeInstanceOf(HTTPError);
     expect(error?.response?.status).toBe(404);
   });
 });
