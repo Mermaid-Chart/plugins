@@ -3,11 +3,16 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [UNRELEASED]
 
 ### Changes
 
+- Set a 30 second default timeout for all requests
 - `MermaidChart#resetAccessToken()` no longer returns a `Promise`.
+
+### Added
+
+- Added `requestTimeout` option to configure timeout.
 
 ## [0.2.0] - 2024-04-11
 
