@@ -1,21 +1,22 @@
-import { v4 as uuid } from 'uuid';
 import { OAuth2Client, generateCodeVerifier } from '@badgateway/oauth2-client';
-import defaultAxios from 'axios';
 import type { AxiosInstance, AxiosResponse } from 'axios';
-import { RequiredParameterMissingError, OAuthError } from './errors.js';
-import { URLS } from './urls.js';
+import defaultAxios from 'axios';
+import { v4 as uuid } from 'uuid';
+import { OAuthError, RequiredParameterMissingError } from './errors.js';
 import type {
   AuthState,
+  AuthorizationData,
   Document,
   InitParams,
-  AuthorizationData,
-  MCUser,
-  MCProject,
   MCDocument,
+  MCProject,
+  MCUser,
 } from './types.js';
+import { URLS } from './urls.js';
 
 const defaultBaseURL = 'https://www.mermaidchart.com'; // "http://127.0.0.1:5174"
 const authorizationURLTimeout = 60_000;
+const requestTimeout = 5000;
 
 export class MermaidChart {
   private clientID: string;
@@ -52,6 +53,7 @@ export class MermaidChart {
     });
     this.axios = defaultAxios.create({
       baseURL: this.#baseURL,
+      timeout: requestTimeout,
     });
 
     this.axios.interceptors.response.use((res: AxiosResponse) => {
