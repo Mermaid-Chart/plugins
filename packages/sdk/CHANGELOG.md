@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changes
 
+- Uses KY instead of Axios for HTTP requests.
 - Set a 30 second default timeout for all requests
 - `MermaidChart#resetAccessToken()` no longer returns a `Promise`.
 
