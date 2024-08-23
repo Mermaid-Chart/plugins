@@ -5,6 +5,7 @@ export const URLS = {
     authorize: `/oauth/authorize`,
     token: `/oauth/token`,
   },
+  // KY does not allow / at the beginning of URLs, when using prefixURL option.
   rest: {
     documents: {
       pick: (
@@ -19,7 +20,7 @@ export const URLS = {
           queryParams = `v${major ?? 0}.${minor ?? 1}`;
         }
 
-        const baseURL = `/rest-api/documents/${documentID}`;
+        const baseURL = `rest-api/documents/${documentID}`;
         return {
           presentations: `${baseURL}/presentations`,
           self: baseURL,
@@ -28,26 +29,26 @@ export const URLS = {
       },
     },
     users: {
-      self: `/rest-api/users/me`,
+      self: `rest-api/users/me`,
     },
     projects: {
-      list: `/rest-api/projects`,
+      list: `rest-api/projects`,
       get: (projectID: string) => {
         return {
-          documents: `/rest-api/projects/${projectID}/documents`,
+          documents: `rest-api/projects/${projectID}/documents`,
         };
       },
     },
   },
   raw: (document: Pick<MCDocument, 'documentID' | 'major' | 'minor'>, theme: 'light' | 'dark') => {
-    const base = `/raw/${document.documentID}?version=v${document.major}.${document.minor}&theme=${theme}&format=`;
+    const base = `raw/${document.documentID}?version=v${document.major}.${document.minor}&theme=${theme}&format=`;
     return {
       html: base + 'html',
       svg: base + 'svg',
     };
   },
   diagram: (d: Pick<MCDocument, 'projectID' | 'documentID' | 'major' | 'minor'>) => {
-    const base = `/app/projects/${d.projectID}/diagrams/${d.documentID}/version/v${d.major}.${d.minor}`;
+    const base = `app/projects/${d.projectID}/diagrams/${d.documentID}/version/v${d.major}.${d.minor}`;
     return {
       self: base,
       edit: base + '/edit',

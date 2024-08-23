@@ -1,6 +1,5 @@
 import { OAuth2Client, generateCodeVerifier } from '@badgateway/oauth2-client';
-import type { AxiosInstance, AxiosResponse } from 'axios';
-import defaultAxios from 'axios';
+import ky, { type KyInstance } from 'ky';
 import { v4 as uuid } from 'uuid';
 import { OAuthError, RequiredParameterMissingError } from './errors.js';
 import type {
@@ -20,7 +19,7 @@ const authorizationURLTimeout = 60_000;
 export class MermaidChart {
   private clientID: string;
   #baseURL!: string;
-  private axios!: AxiosInstance;
+  private api!: KyInstance;
   private oauth!: OAuth2Client;
   private pendingStates: Record<string, AuthState> = {};
   private redirectURI!: string;
@@ -54,17 +53,26 @@ export class MermaidChart {
       tokenEndpoint: URLS.oauth.token,
       authorizationEndpoint: URLS.oauth.authorize,
     });
-    this.axios = defaultAxios.create({
-      baseURL: this.#baseURL,
-      timeout: this.requestTimeout,
-    });
 
-    this.axios.interceptors.response.use((res: AxiosResponse) => {
-      // Reset token if a 401 is thrown
-      if (res.status === 401) {
-        this.resetAccessToken();
-      }
-      return res;
+    this.api = ky.create({
+      prefixUrl: this.#baseURL + '/',
+      timeout: this.requestTimeout,
+      hooks: {
+        beforeError: [
+          (error) => {
+            // Reset token if a 401 is thrown
+            if (error.response.status === 401) {
+              this.resetAccessToken();
+            }
+            return error;
+          },
+        ],
+        beforeRequest: [
+          (request) => {
+            request.headers.set('Authorization', `Bearer ${this.accessToken}`);
+          },
+        ],
+      },
     });
   }
 
@@ -151,15 +159,13 @@ export class MermaidChart {
    * @param accessToken - access token to use for requests
    */
   public async setAccessToken(accessToken: string): Promise<void> {
-    this.axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+    this.accessToken = accessToken;
     // This is to verify that the token is valid
     await this.getUser();
-    this.accessToken = accessToken;
   }
 
   public resetAccessToken(): void {
     this.accessToken = undefined;
-    this.axios.defaults.headers.common['Authorization'] = `Bearer none`;
   }
 
   /**
@@ -175,42 +181,40 @@ export class MermaidChart {
   }
 
   public async getUser(): Promise<MCUser> {
-    const user = await this.axios.get<MCUser>(URLS.rest.users.self);
-    return user.data;
+    const user = await this.api.get<MCUser>(URLS.rest.users.self);
+    return user.json();
   }
 
   public async getProjects(): Promise<MCProject[]> {
-    const projects = await this.axios.get<MCProject[]>(URLS.rest.projects.list);
-    return projects.data;
+    const projects = await this.api.get<MCProject[]>(URLS.rest.projects.list);
+    return projects.json();
   }
 
   public async getDocuments(projectID: string): Promise<MCDocument[]> {
-    const projects = await this.axios.get<MCDocument[]>(
-      URLS.rest.projects.get(projectID).documents,
-    );
-    return projects.data;
+    const documents = await this.api.get<MCDocument[]>(URLS.rest.projects.get(projectID).documents);
+    return documents.json();
   }
 
   public async createDocument(projectID: string) {
-    const newDocument = await this.axios.post<MCDocument>(
+    const newDocument = await this.api.post<MCDocument>(
       URLS.rest.projects.get(projectID).documents,
-      {}, // force sending empty JSON to avoid triggering CSRF check
+      { json: {} }, // force sending empty JSON to avoid triggering CSRF check
     );
-    return newDocument.data;
+    return newDocument.json();
   }
 
   public async getEditURL(
     document: Pick<MCDocument, 'documentID' | 'major' | 'minor' | 'projectID'>,
   ) {
-    const url = `${this.#baseURL}${URLS.diagram(document).edit}`;
+    const url = `${this.#baseURL}/${URLS.diagram(document).edit}`;
     return url;
   }
 
   public async getDocument(
     document: Pick<MCDocument, 'documentID'> | Pick<MCDocument, 'documentID' | 'major' | 'minor'>,
   ) {
-    const { data } = await this.axios.get<MCDocument>(URLS.rest.documents.pick(document).self);
-    return data;
+    const res = await this.api.get<MCDocument>(URLS.rest.documents.pick(document).self);
+    return res.json();
   }
 
   /**
@@ -221,16 +225,16 @@ export class MermaidChart {
   public async setDocument(
     document: Pick<MCDocument, 'documentID' | 'projectID'> & Partial<MCDocument>,
   ) {
-    const { data } = await this.axios.put<{ result: 'ok' } | { result: 'failed'; error: unknown }>(
+    const res = await this.api.put<{ result: 'ok' } | { result: 'failed'; error: unknown }>(
       URLS.rest.documents.pick(document).self,
-      document,
+      { json: document },
     );
 
-    if (data.result === 'failed') {
+    if (!res.ok) {
       throw new Error(
         `setDocument(${JSON.stringify({
           documentID: document.documentID,
-        })} failed due to ${JSON.stringify(data.error)}`,
+        })} failed due to ${JSON.stringify(res.statusText)}`,
       );
     }
   }
@@ -241,18 +245,18 @@ export class MermaidChart {
    * @returns Metadata about the deleted document.
    */
   public async deleteDocument(documentID: MCDocument['documentID']) {
-    const deletedDocument = await this.axios.delete<Document>(
+    const deletedDocument = await this.api.delete<Document>(
       URLS.rest.documents.pick({ documentID }).self,
-      {}, // force sending empty JSON to avoid triggering CSRF check
+      { json: {} }, // force sending empty JSON to avoid triggering CSRF check
     );
-    return deletedDocument.data;
+    return deletedDocument.json();
   }
 
   public async getRawDocument(
     document: Pick<MCDocument, 'documentID' | 'major' | 'minor'>,
     theme: 'light' | 'dark',
   ) {
-    const raw = await this.axios.get<string>(URLS.raw(document, theme).svg);
-    return raw.data;
+    const raw = await this.api.get<string>(URLS.raw(document, theme).svg);
+    return raw.text();
   }
 }

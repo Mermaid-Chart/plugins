@@ -1,8 +1,7 @@
+import { OAuth2Client } from '@badgateway/oauth2-client';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MermaidChart } from './index.js';
 import type { AuthorizationData } from './types.js';
-
-import { OAuth2Client } from '@badgateway/oauth2-client';
 
 const mockOAuth2ClientRequest = (async (endpoint, _body) => {
   switch (endpoint) {
