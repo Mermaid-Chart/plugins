@@ -1,5 +1,5 @@
 import { OAuth2Client, generateCodeVerifier } from '@badgateway/oauth2-client';
-import ky, { KyInstance } from 'ky';
+import ky, { type KyInstance } from 'ky';
 import { v4 as uuid } from 'uuid';
 import { OAuthError, RequiredParameterMissingError } from './errors.js';
 import type {
