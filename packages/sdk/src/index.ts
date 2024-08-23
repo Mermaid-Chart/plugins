@@ -16,7 +16,7 @@ import { URLS } from './urls.js';
 
 const defaultBaseURL = 'https://www.mermaidchart.com'; // "http://127.0.0.1:5174"
 const authorizationURLTimeout = 60_000;
-const requestTimeout = 5000;
+const requestTimeout = 30_000;
 
 export class MermaidChart {
   private clientID: string;
