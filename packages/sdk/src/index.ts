@@ -153,7 +153,7 @@ export class MermaidChart {
   public async setAccessToken(accessToken: string): Promise<void> {
     this.axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
     // This is to verify that the token is valid
-    await this.getUser();
+    // await this.getUser();
     this.accessToken = accessToken;
   }
 
