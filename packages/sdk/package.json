@@ -1,6 +1,6 @@
 {
   "name": "@mermaidchart/sdk",
-  "version": "0.2.1-alpha.0",
+  "version": "0.2.1-alpha.1",
   "description": "Access the MermaidChart services with OAuth and type safety.",
   "browser": "dist/bundle.iife.js",
   "types": "dist/index.d.ts",
