@@ -75,15 +75,15 @@ export class MermaidChart {
   public async getAuthorizationData({
     state,
     scope = ['email'],
-    utm_source,
-    utm_medium,
-    utm_campaign
+    trackingParams,
   }: {
     state?: string;
     scope?: string[];
-    utm_source?: string;
-    utm_medium?: string;
-    utm_campaign?: string;
+    trackingParams?: {
+      utm_source: string;
+      utm_medium: string;
+      utm_campaign: string;
+    }
   } = {}): Promise<AuthorizationData> {
     if (!this.redirectURI) {
       throw new Error('redirectURI is not set');
@@ -96,20 +96,19 @@ export class MermaidChart {
     this.pendingStates[stateID] = {
       codeVerifier,
     };
-    
-    const extraParams: Record<string, string> = {};
-    if (utm_source && utm_medium && utm_campaign) {
-      extraParams.utm_source = utm_source;
-      extraParams.utm_medium = utm_medium;
-      extraParams.utm_campaign = utm_campaign;
-    }
 
     const url = await this.oauth.authorizationCode.getAuthorizeUri({
       redirectUri: this.redirectURI,
       state: stateID,
       codeVerifier,
       scope,
-      ...(Object.keys(extraParams).length > 0 && { extraParams }),
+      ...(trackingParams && {
+        extraParams: {
+          utm_source: trackingParams.utm_source,
+          utm_medium: trackingParams.utm_medium,
+          utm_campaign: trackingParams.utm_campaign,
+        }
+      }),
     });
 
     // Deletes the state after 60 seconds
