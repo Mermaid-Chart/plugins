@@ -75,9 +75,15 @@ export class MermaidChart {
   public async getAuthorizationData({
     state,
     scope = ['email'],
+    trackingParams,
   }: {
     state?: string;
     scope?: string[];
+    trackingParams?: {
+      utm_source: string;
+      utm_medium: string;
+      utm_campaign: string;
+    }
   } = {}): Promise<AuthorizationData> {
     if (!this.redirectURI) {
       throw new Error('redirectURI is not set');
@@ -96,6 +102,13 @@ export class MermaidChart {
       state: stateID,
       codeVerifier,
       scope,
+      ...(trackingParams && {
+        extraParams: {
+          utm_source: trackingParams.utm_source,
+          utm_medium: trackingParams.utm_medium,
+          utm_campaign: trackingParams.utm_campaign,
+        }
+      }),
     });
 
     // Deletes the state after 60 seconds
