@@ -14,7 +14,7 @@ import type {
 } from './types.js';
 import { URLS } from './urls.js';
 
-const defaultBaseURL = 'https://www.mermaidchart.com'; // "http://127.0.0.1:5174"
+const defaultBaseURL = 'https://www.mermaid.ai'; // "http://127.0.0.1:5174"
 const authorizationURLTimeout = 60_000;
 
 export class MermaidChart {
