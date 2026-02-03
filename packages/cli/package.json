@@ -13,9 +13,8 @@
     "dev": "tsx src/cli.ts",
     "lint": "eslint src/ && prettier --check src/",
     "lint:fix": "eslint --fix src/ && prettier --write src/",
-    "build": "tsc --build tsconfig.json",
     "prepare": "tsc --build tsconfig.json",
-    "test": "pnpm run build && vitest"
+    "test": "vitest"
   },
   "type": "module",
   "repository": {

@@ -25,13 +25,12 @@ jobs:
           cache: pnpm
           node-version: ${{ matrix.node }}
 
-      - name: Install dependencies for ${{ matrix.pkg }}
+      - name: Install dependencies
         run: |
           pnpm install --frozen-lockfile
 
-      - name: Build & Test ${{ matrix.pkg }}
+      - name: Test ${{ matrix.pkg }}
         run: |
-          pnpm --filter='${{ matrix.pkg }}...' run build
           pnpm --filter='${{ matrix.pkg }}' test
 
       - name: Lint (if present) ${{ matrix.pkg }}
