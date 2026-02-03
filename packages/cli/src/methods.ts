@@ -94,7 +94,7 @@ export async function link(
   return diagramWithId;
 }
 
-interface PullOptions extends CommonOptions {}
+type PullOptions = CommonOptions;
 
 /**
  * Pulls down a diagram from MermaidChart.com
@@ -123,7 +123,7 @@ export async function pull(diagram: string, client: MermaidChart, { title }: Pul
   return newFile;
 }
 
-interface PushOptions extends CommonOptions {}
+type PushOptions = CommonOptions;
 
 /**
  * Push the given diagram to MermaidChart.com

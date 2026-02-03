@@ -37,7 +37,7 @@ type CommonOptions = ReturnType<ReturnType<typeof createCommanderCommand>['opts'
  *  - The config file exists, but is not a valid TOML file.
  *  - The config file does not exist, and `ignoreENONET` is `false`.
  */
-async function readConfigFromConfigArg(configPath: string, ignoreENONET: boolean = false) {
+async function readConfigFromConfigArg(configPath: string, ignoreENONET = false) {
   try {
     return await readConfig(configPath);
   } catch (error) {
