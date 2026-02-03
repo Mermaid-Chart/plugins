@@ -83,7 +83,7 @@ export class MermaidChart {
       utm_source: string;
       utm_medium: string;
       utm_campaign: string;
-    }
+    };
   } = {}): Promise<AuthorizationData> {
     if (!this.redirectURI) {
       throw new Error('redirectURI is not set');
@@ -107,7 +107,7 @@ export class MermaidChart {
           utm_source: trackingParams.utm_source,
           utm_medium: trackingParams.utm_medium,
           utm_campaign: trackingParams.utm_campaign,
-        }
+        },
       }),
     });
 
