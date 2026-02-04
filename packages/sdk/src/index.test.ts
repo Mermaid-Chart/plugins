@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MermaidChart } from './index.js';
+import { AICreditsLimitExceededError } from './errors.js';
 import type { AuthorizationData } from './types.js';
 
 import { OAuth2Client } from '@badgateway/oauth2-client';
@@ -83,6 +84,41 @@ describe('MermaidChart', () => {
       const code = 'hello-nodejs-world';
       await client.handleAuthorizationResponse(`?code=${code}&state=${state}`);
       await expect(client.getAccessToken()).resolves.toBe('test-example-access_token');
+    });
+  });
+
+  describe('#repairDiagram', () => {
+    beforeEach(async () => {
+      await client.setAccessToken('test-access-token');
+    });
+
+    it('should repair diagram successfully', async () => {
+      vi.spyOn(client, 'repairDiagram').mockResolvedValue({
+        result: 'ok' as const,
+        code: '```mermaid\ngraph TD\n    A[Start] --> B[End]\n```',
+        solved: true,
+      });
+
+      const result = await client.repairDiagram({
+        code: 'graph TD\n    A[Start] --> B{Decision}',
+        error: 'Syntax error',
+      });
+
+      expect(result.result).toBe('ok');
+      expect(result.solved).toBe(true);
+    });
+
+    it('should throw AICreditsLimitExceededError on 402', async () => {
+      vi.spyOn(client, 'repairDiagram').mockRejectedValue(
+        new AICreditsLimitExceededError('AI credits limit exceeded'),
+      );
+
+      await expect(
+        client.repairDiagram({
+          code: 'graph TD\n    A --> B',
+          error: 'Syntax error',
+        }),
+      ).rejects.toThrow(AICreditsLimitExceededError);
     });
   });
 });

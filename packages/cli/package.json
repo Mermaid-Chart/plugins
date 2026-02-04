@@ -7,7 +7,7 @@
     "mermaid-chart": "dist/cli.js"
   },
   "engines": {
-    "node": "^18.18.0 || ^20.0.0"
+    "node": "^18.18.0 || ^20.0.0 || ^22.0.0 || ^24.0.0"
   },
   "scripts": {
     "dev": "tsx src/cli.ts",

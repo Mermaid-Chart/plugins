@@ -2,6 +2,7 @@
  * E2E tests
  */
 import { MermaidChart } from './index.js';
+import { AICreditsLimitExceededError } from './errors.js';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import process from 'node:process';
@@ -202,4 +203,27 @@ describe('getDocument', () => {
     expect(error).toBeInstanceOf(AxiosError);
     expect(error?.response?.status).toBe(404);
   });
+});
+
+describe('repairDiagram', () => {
+  it('should repair a broken diagram', async () => {
+    const brokenCode = 'graph TD\n    A[Start] --> B{Decision}\n    B -->|Yes| C[End';
+    const error = 'Syntax error: missing closing bracket';
+
+    try {
+      const result = await client.repairDiagram({
+        code: brokenCode,
+        error: error,
+      });
+
+      expect(result).toHaveProperty('result');
+      expect(result).toHaveProperty('code');
+      expect(['ok', 'fail']).toContain(result.result);
+    } catch (error) {
+      if (error instanceof AICreditsLimitExceededError) {
+        return; // Credits exceeded is acceptable
+      }
+      throw error;
+    }
+  }, 60000); // 60 seconds timeout for AI repair operations
 });

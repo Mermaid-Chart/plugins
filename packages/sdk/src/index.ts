@@ -2,7 +2,11 @@ import { OAuth2Client, generateCodeVerifier } from '@badgateway/oauth2-client';
 import type { AxiosInstance, AxiosResponse } from 'axios';
 import defaultAxios from 'axios';
 import { v4 as uuid } from 'uuid';
-import { OAuthError, RequiredParameterMissingError } from './errors.js';
+import {
+  AICreditsLimitExceededError,
+  OAuthError,
+  RequiredParameterMissingError,
+} from './errors.js';
 import type {
   AuthState,
   AuthorizationData,
@@ -11,6 +15,8 @@ import type {
   MCDocument,
   MCProject,
   MCUser,
+  RepairDiagramRequest,
+  RepairDiagramResponse,
 } from './types.js';
 import { URLS } from './urls.js';
 
@@ -265,5 +271,40 @@ export class MermaidChart {
   ) {
     const raw = await this.axios.get<string>(URLS.raw(document, theme).svg);
     return raw.data;
+  }
+
+  /**
+   * Repairs a broken Mermaid diagram using AI.
+   *
+   * @param request - The repair request containing diagram code and error message
+   * @returns The repair response with repaired code and status
+   * @throws {@link AICreditsLimitExceededError} if credits limit exceeded (HTTP 402)
+   */
+  public async repairDiagram(request: RepairDiagramRequest): Promise<RepairDiagramResponse> {
+    try {
+      const response = await this.axios.post<RepairDiagramResponse>(
+        URLS.rest.openai.repair,
+        request,
+      );
+      return response.data;
+    } catch (error: unknown) {
+      if (
+        error &&
+        typeof error === 'object' &&
+        'response' in error &&
+        error.response &&
+        typeof error.response === 'object' &&
+        'status' in error.response &&
+        error.response.status === 402
+      ) {
+        const axiosError = error as { response: { status: number; data?: unknown } };
+        throw new AICreditsLimitExceededError(
+          typeof axiosError.response.data === 'string'
+            ? axiosError.response.data
+            : 'AI credits limit exceeded',
+        );
+      }
+      throw error;
+    }
   }
 }

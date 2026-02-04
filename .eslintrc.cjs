@@ -110,7 +110,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['cypress/**', 'demos/**'],
+      files: ['cypress/**', 'demos/**', 'packages/cli/**', 'packages/sdk/**'],
       rules: {
         'no-console': 'off',
       },

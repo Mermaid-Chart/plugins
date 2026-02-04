@@ -65,3 +65,50 @@ export interface AuthorizationData {
   state: string;
   scope: string[];
 }
+
+/**
+ * Request parameters for repairing a diagram.
+ */
+export interface RepairDiagramRequest {
+  /** The Mermaid diagram code that needs to be repaired */
+  code: string;
+  /** The error message from the broken diagram */
+  error: string;
+  /**
+   * The diagram UUID to associate this repair with, or
+   * `undefined` if it is not associated with a diagram (e.g. in the playground).
+   */
+  diagramDocumentID?: string;
+  /**
+   * The diagram ID associated with this repair.
+   */
+  diagramID?: string;
+  /**
+   * The user ID associated with this repair.
+   */
+  userID?: string;
+}
+
+/**
+ * Response from repairing a diagram.
+ * Matches OpenAIGenerationResult from collab.
+ */
+export interface RepairDiagramResponse {
+  /**
+   * The status of the repair: 'ok' if successful, 'fail' if not.
+   * `ok` indicates that a valid mermaid code block was generated.
+   * It may still fail to render.
+   *
+   * `fail` indicates that there were no exceptions/errors, but no valid
+   * mermaid code block was generated.
+   */
+  result: 'ok' | 'fail';
+  /**
+   * Markdown message, that may contain a valid mermaid code block
+   */
+  code: string;
+  /**
+   * Whether the diagram repair was successful (only present for repair responses)
+   */
+  solved?: boolean;
+}
