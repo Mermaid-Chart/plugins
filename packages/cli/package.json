@@ -1,6 +1,6 @@
 {
   "name": "@mermaidchart/cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "CLI for interacting with https://MermaidChart.com, the platform that makes collaborating with Mermaid diagrams easy",
   "main": "index.js",
   "bin": {
