@@ -11,6 +11,6 @@ module.exports = /** @type {import("eslint").Linter.Config} */ ({
     parser: '@typescript-eslint/parser',
   },
   rules: {
-    "no-console": ["warn"], // TODO: fix all of these
+    "no-console": "off", // Console output is expected in CLI applications
   }
 });

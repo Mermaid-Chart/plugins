@@ -38,6 +38,9 @@ export const URLS = {
         };
       },
     },
+    openai: {
+      repair: `/rest-api/openai/repair`,
+    },
   },
   raw: (document: Pick<MCDocument, 'documentID' | 'major' | 'minor'>, theme: 'light' | 'dark') => {
     const base = `/raw/${document.documentID}?version=v${document.major}.${document.minor}&theme=${theme}&format=`;
