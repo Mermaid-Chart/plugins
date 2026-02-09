@@ -44,7 +44,7 @@ describe('MermaidChart', () => {
         aiCredits: {
           remaining: 10,
           total: 15,
-        }
+        },
       };
     });
   });
@@ -153,7 +153,7 @@ describe('MermaidChart', () => {
         aiCredits: {
           remaining: 10,
           total: 15,
-        }
+        },
       });
     });
   });

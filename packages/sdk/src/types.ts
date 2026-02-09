@@ -28,7 +28,7 @@ export interface AICreditsUsage {
   aiCredits: {
     remaining: number;
     total: number;
-  }
+  };
 }
 
 export interface MCProject {
