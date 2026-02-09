@@ -79,6 +79,18 @@ describe('getUser', () => {
   });
 });
 
+describe('getAICredits', () => {
+  it('should get AI credits information', async () => {
+    const aiCredits = await client.getAICredits();
+
+    expect(aiCredits).toHaveProperty('aiCredits');
+    expect(aiCredits.aiCredits).toHaveProperty('remaining');
+    expect(aiCredits.aiCredits).toHaveProperty('total');
+    expect(typeof aiCredits.aiCredits.remaining).toBe('number');
+    expect(typeof aiCredits.aiCredits.total).toBe('number');
+  });
+});
+
 const documentMatcher = expect.objectContaining({
   documentID: expect.any(String),
   major: expect.any(Number),
