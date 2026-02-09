@@ -39,5 +39,6 @@ jobs:
       - name: E2E tests (if present) for ${{ matrix.pkg }}
         env:
           TEST_MERMAIDCHART_API_TOKEN: ${{ secrets.TEST_MERMAIDCHART_API_TOKEN }}
+          TEST_MERMAIDCHART_PROJECT_ID: ${{ secrets.TEST_MERMAIDCHART_PROJECT_ID }}
         run: |
           pnpm --if-present --filter='${{ matrix.pkg }}' test:e2e
