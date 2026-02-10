@@ -39,7 +39,7 @@ beforeAll(async () => {
   if (!testProjectId) {
     throw new Error(
       'Missing required environment variable TEST_MERMAIDCHART_PROJECT_ID. ' +
-        `Please go to ${new URL('/app/projects', baseURL)} and create one Project.`,
+        `Please go to ${new URL('/app/projects', baseURL)} and create a Project.`,
     );
   }
 
