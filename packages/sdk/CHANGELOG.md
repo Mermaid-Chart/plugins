@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fixed `requestTimeout` option not being applied correctly to requests.
+- Add `MermaidChart#getAICredits()` function to get users ai credit usage(Total and remaining credits)
 
 ## [0.2.2] - 2026-02-04
 

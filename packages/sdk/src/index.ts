@@ -17,6 +17,7 @@ import type {
   MCUser,
   RepairDiagramRequest,
   RepairDiagramResponse,
+  AICreditsUsage,
 } from './types.js';
 import { URLS } from './urls.js';
 
@@ -195,6 +196,16 @@ export class MermaidChart {
   public async getUser(): Promise<MCUser> {
     const user = await this.axios.get<MCUser>(URLS.rest.users.self);
     return user.data;
+  }
+
+  /**
+   * Get AI credits information for the current user.
+   *
+   * @returns AI credits information including remaining credits and total limit.
+   */
+  public async getAICredits(): Promise<AICreditsUsage> {
+    const response = await this.axios.get<AICreditsUsage>(URLS.rest.users.aiCreditUsage);
+    return response.data;
   }
 
   public async getProjects(): Promise<MCProject[]> {
