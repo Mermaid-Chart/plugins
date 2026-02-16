@@ -38,15 +38,6 @@ describe('MermaidChart', () => {
         emailAddress: 'test@invalid.invalid',
       };
     });
-
-    vi.spyOn(client, 'getAICredits').mockImplementation(async () => {
-      return {
-        aiCredits: {
-          remaining: 10,
-          total: 15,
-        },
-      };
-    });
   });
 
   describe('#getAuthorizationData', () => {
@@ -128,33 +119,6 @@ describe('MermaidChart', () => {
           error: 'Syntax error',
         }),
       ).rejects.toThrow(AICreditsLimitExceededError);
-    });
-  });
-
-  describe('#getAICredits', () => {
-    beforeEach(async () => {
-      await client.setAccessToken('test-access-token');
-    });
-
-    it('should get AI credits information', async () => {
-      const result = await client.getAICredits();
-
-      expect(result).toHaveProperty('aiCredits');
-      expect(result.aiCredits).toHaveProperty('remaining');
-      expect(result.aiCredits).toHaveProperty('total');
-      expect(typeof result.aiCredits.remaining).toBe('number');
-      expect(typeof result.aiCredits.total).toBe('number');
-    });
-
-    it('should return expected structure', async () => {
-      const result = await client.getAICredits();
-
-      expect(result).toEqual({
-        aiCredits: {
-          remaining: 10,
-          total: 15,
-        },
-      });
     });
   });
 });

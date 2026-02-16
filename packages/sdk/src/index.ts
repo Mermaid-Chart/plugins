@@ -201,7 +201,7 @@ export class MermaidChart {
   /**
    * Get AI credits information for the current user.
    *
-   * @returns AI credits information including remaining credits and total limit,
+   * @returns AI credits information including remaining credits and total limit.
    */
   public async getAICredits(): Promise<AICreditsUsage> {
     const response = await this.axios.get<AICreditsUsage>(URLS.rest.users.aiCreditUsage);
