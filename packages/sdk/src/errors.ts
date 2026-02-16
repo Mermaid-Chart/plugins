@@ -15,7 +15,7 @@ export class OAuthError extends Error {
  * This corresponds to HTTP 402 status code from the repair API.
  */
 export class AICreditsLimitExceededError extends Error {
-  constructor(message: string = 'AI credits limit exceeded') {
+  constructor(message = 'AI credits limit exceeded') {
     super(message);
     this.name = 'AICreditsLimitExceededError';
   }
