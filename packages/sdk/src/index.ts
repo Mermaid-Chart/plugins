@@ -35,12 +35,13 @@ export class MermaidChart {
 
   constructor({ clientID, baseURL, redirectURI, requestTimeout }: InitParams) {
     this.clientID = clientID;
+    // Set requestTimeout BEFORE calling setBaseURL so axios is created with the correct timeout
+    if (requestTimeout) {
+      this.requestTimeout = requestTimeout;
+    }
     this.setBaseURL(baseURL || defaultBaseURL);
     if (redirectURI) {
       this.setRedirectURI(redirectURI);
-    }
-    if (requestTimeout) {
-      this.requestTimeout = requestTimeout;
     }
   }
 
