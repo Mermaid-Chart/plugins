@@ -9,7 +9,7 @@ import process from 'node:process';
 import { AxiosError } from 'axios';
 import type { MCDocument } from './types.js';
 
-let testProjectId = '316557b3-cb6f-47ed-acf7-fcfb7ce188d5';
+const testProjectId = process.env.TEST_MERMAIDCHART_PROJECT_ID || '';
 let baseURL = new URL('https://test.mermaidchart.com');
 
 let client: MermaidChart;
@@ -36,6 +36,13 @@ beforeAll(async () => {
     );
   }
 
+  if (!testProjectId) {
+    throw new Error(
+      'Missing required environment variable TEST_MERMAIDCHART_PROJECT_ID. ' +
+        `Please go to ${new URL('/app/projects', baseURL)} and create a Project.`,
+    );
+  }
+
   client = new MermaidChart({
     clientID: '00000000-0000-0000-0000-000000git000test',
     baseURL: baseURL.href,
@@ -47,8 +54,7 @@ beforeAll(async () => {
   const projects = await client.getProjects();
 
   // confirm that testProjectId is valid
-  if (process.env.TEST_MERMAIDCHART_PROJECT_ID) {
-    testProjectId = process.env.TEST_MERMAIDCHART_PROJECT_ID;
+  if (testProjectId) {
     if (!projects.some((project) => project.id === testProjectId)) {
       throw new Error(
         `Invalid environment variable TEST_MERMAIDCHART_PROJECT_ID. ` +
@@ -65,9 +71,6 @@ beforeAll(async () => {
           `Please go to ${new URL('/app/projects', baseURL)} and create one.`,
       );
     }
-    process.emitWarning(
-      `Missing optional environment variable TEST_MERMAIDCHART_PROJECT_ID. Defaulting to ${testProjectId}`,
-    );
   }
 });
 
