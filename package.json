@@ -4,7 +4,10 @@
   "private": "true",
   "description": "",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "changeset": "changeset",
+    "changeset:version": "changeset version && pnpm install && git add --all",
+    "changeset:publish": "changeset publish"
   },
   "keywords": [],
   "contributors": [
@@ -12,6 +15,8 @@
   ],
   "license": "MIT",
   "devDependencies": {
+    "@changesets/changelog-github": "^0.5.2",
+    "@changesets/cli": "^2.29.8",
     "@cspell/eslint-plugin": "^7.3.2",
     "esbuild": "^0.19.2",
     "eslint": "^8.48.0",
