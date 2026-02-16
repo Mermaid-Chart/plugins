@@ -2,6 +2,6 @@
 '@mermaidchart/sdk': patch
 ---
 
-chore: test changeset release flow
+fix: correct request timeout initialization order in MermaidChart constructor so the Axios instance uses the configured timeout before making requests
 
-pr: 37
+pr: 36
