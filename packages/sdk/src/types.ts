@@ -24,6 +24,13 @@ export interface MCUser {
   emailAddress: string;
 }
 
+export interface AICreditsUsage {
+  aiCredits: {
+    remaining: number;
+    total: number;
+  };
+}
+
 export interface MCProject {
   id: string;
   title: string;

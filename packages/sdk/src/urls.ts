@@ -29,6 +29,7 @@ export const URLS = {
     },
     users: {
       self: `/rest-api/users/me`,
+      aiCreditUsage: `/rest-api/users/me/ai-credit-usage`,
     },
     projects: {
       list: `/rest-api/projects`,
