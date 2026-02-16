@@ -12,9 +12,10 @@ permissions:
 
 jobs:
   release:
+    if: github.repository == 'Mermaid-Chart/plugins'
     permissions:
       contents: write # to create release (changesets/action)
-      id-token: write # OpenID Connect token needed for npm provenance (optional, if using OIDC)
+      id-token: write # Required for npm trusted publishing (OIDC)
       pull-requests: write # to create pull request (changesets/action)
     name: Release
     runs-on: ubuntu-latest
@@ -28,7 +29,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           cache: pnpm
-          node-version: "20"
+          node-version: "22"
 
       - name: Install Packages
         run: pnpm install --frozen-lockfile
@@ -41,5 +42,4 @@ jobs:
           publish: pnpm changeset:publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
