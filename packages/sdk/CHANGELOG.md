@@ -1,15 +1,5 @@
 # Changelog
 
-## 0.2.3
-
-### Patch Changes
-
-- [#37](https://github.com/Mermaid-Chart/plugins/pull/37) [`4a0c04c`](https://github.com/Mermaid-Chart/plugins/commit/4a0c04cddf223d9c1814233c2d7aa5f49faf1315) Thanks [@Prashant-7718](https://github.com/Prashant-7718)! - feat: expose AI credit remaining API in SDK
-
-  Add `getAICredits` method to the SDK for fetching user's AI credits from `/rest-api/users/me/ai-credit-usage` endpoint
-
-- [#36](https://github.com/Mermaid-Chart/plugins/pull/36) [`0f832dc`](https://github.com/Mermaid-Chart/plugins/commit/0f832dceef3ced1a7886aa3c94c8982cd6a7ae39) Thanks [@Prashant-7718](https://github.com/Prashant-7718)! - fix: correct request timeout initialization order in MermaidChart constructor so the Axios instance uses the configured timeout before making requests
-
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
