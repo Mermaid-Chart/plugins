@@ -1,6 +1,6 @@
 {
   "name": "@mermaidchart/sdk",
-  "version": "0.2.3",
+  "version": "0.2.2",
   "description": "Access the MermaidChart services with OAuth and type safety.",
   "browser": "dist/bundle.iife.js",
   "types": "dist/index.d.ts",
@@ -26,6 +26,15 @@
     "Sidharth Vinod (https://sidharth.dev)"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mermaid-Chart/plugins.git",
+    "directory": "packages/sdk"
+  },
+  "bugs": {
+    "url": "https://github.com/Mermaid-Chart/plugins/issues"
+  },
+  "homepage": "https://github.com/Mermaid-Chart/plugins/tree/main/packages/sdk#readme",
   "dependencies": {
     "@badgateway/oauth2-client": "^2.2.4",
     "axios": "^1.5.0",
