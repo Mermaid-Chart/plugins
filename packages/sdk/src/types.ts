@@ -103,17 +103,16 @@ export interface DiagramChatRequest {
   /** The user's chat message / question */
   message: string;
   /**
+   * MermaidChart document ID to associate the chat thread with.
+   */
+  documentID: string;
+  /**
    * Optional Mermaid diagram code to use as context.
    * Pass the current diagram code when the user wants to modify or discuss a specific
    * diagram. Leave empty (or omit) for general Mermaid questions.
    * Defaults to an empty string.
    */
   code?: string;
-  /**
-   * MermaidChart document ID to associate the chat thread with.
-   * Required for starting a brand-new thread (when documentChatThreadID is absent).
-   */
-  documentID?: string;
   /**
    * Existing chat thread ID to continue a conversation.
    * Returned from a previous diagramChat() call.
@@ -135,9 +134,7 @@ export interface DiagramChatResponse {
    */
   documentChatThreadID?: string;
   /**
-   * The document ID used for this conversation.
-   * May differ from the one you passed in when a document was auto-created.
-   * Save this alongside documentChatThreadID to resume the conversation.
+   * The document ID used for this conversation. Same as the one passed in the request.
    */
   documentID?: string;
 }

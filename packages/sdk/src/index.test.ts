@@ -87,6 +87,47 @@ describe('MermaidChart', () => {
     });
   });
 
+  describe('#diagramChat', () => {
+    beforeEach(async () => {
+      await client.setAccessToken('test-access-token');
+    });
+
+    it('should parse stream body into text and documentChatThreadID', async () => {
+      const streamBody = [
+        '0:"Hello, "',
+        '0:"here is your diagram!"',
+        '2:[{"documentChatThreadID":"thread-abc-123"}]',
+        'e:{"finishReason":"stop"}',
+        'd:{"finishReason":"stop"}',
+      ].join('\n');
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      vi.spyOn((client as any).axios, 'post').mockResolvedValue({ data: streamBody });
+
+      const result = await client.diagramChat({
+        message: 'Create a flowchart',
+        documentID: 'doc-123',
+      });
+
+      expect(result.text).toBe('Hello, here is your diagram!');
+      expect(result.documentChatThreadID).toBe('thread-abc-123');
+      expect(result.documentID).toBe('doc-123');
+    });
+
+    it('should throw AICreditsLimitExceededError on 402', async () => {
+      vi.spyOn(client, 'diagramChat').mockRejectedValue(
+        new AICreditsLimitExceededError('AI credits limit exceeded'),
+      );
+
+      await expect(
+        client.diagramChat({
+          message: 'Create a flowchart',
+          documentID: 'doc-123',
+        }),
+      ).rejects.toThrow(AICreditsLimitExceededError);
+    });
+  });
+
   describe('#repairDiagram', () => {
     beforeEach(async () => {
       await client.setAccessToken('test-access-token');

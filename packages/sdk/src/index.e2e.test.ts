@@ -180,7 +180,7 @@ describe('deleteDocument', () => {
     expect(deletedDoc.projectID).toStrictEqual(newDocument.projectID);
 
     expect(await client.getDocuments(testProjectId)).not.toContainEqual(newDocument);
-  });
+  }, 20000); // 20 seconds — test makes 4 sequential HTTP calls
 });
 
 describe('getDocument', () => {

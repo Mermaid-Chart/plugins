@@ -65,8 +65,11 @@ function parseVercelAIStreamData(rawBody: string): { documentChatThreadID?: stri
       const items: unknown[] = JSON.parse(line.slice(2));
       for (const item of items) {
         if (item && typeof item === 'object' && 'documentChatThreadID' in item) {
-          documentChatThreadID = (item as Record<string, unknown>).documentChatThreadID as string;
-          break;
+          const value = (item as Record<string, unknown>).documentChatThreadID;
+          if (typeof value === 'string') {
+            documentChatThreadID = value;
+            break;
+          }
         }
       }
     } catch {
@@ -389,7 +392,7 @@ export class MermaidChart {
    * @throws {@link AICreditsLimitExceededError} if AI credits limit is exceeded (HTTP 402)
    */
   public async diagramChat(request: DiagramChatRequest): Promise<DiagramChatResponse> {
-    const { message, code = '', documentID, documentChatThreadID } = request;
+    const { message, documentID , code = '', documentChatThreadID } = request;
 
     // Send only the current user message. The backend will prepend the stored
     // conversation history when autoFetchHistory is true (see AIChatRequestData).
