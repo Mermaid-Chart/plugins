@@ -10,6 +10,8 @@ import {
 import type {
   AuthState,
   AuthorizationData,
+  DiagramChatRequest,
+  DiagramChatResponse,
   Document,
   InitParams,
   MCDocument,
@@ -23,6 +25,57 @@ import { URLS } from './urls.js';
 
 const defaultBaseURL = 'https://www.mermaid.ai'; // "http://127.0.0.1:5174"
 const authorizationURLTimeout = 60_000;
+
+/**
+ * Parses text tokens from a Vercel AI SDK data-stream response body.
+ *
+ * The stream format uses line prefixes:
+ *   `0:"text_chunk"\n` – text token (JSON-encoded string)
+ *   `2:[{"documentChatThreadID":"thread-abc-123"}]\n`      – data payload (JSON-encoded array)
+ *   `e:{...}\n`        – step finish
+ *   `d:{...}\n`        – stream done
+ */
+function parseVercelAIStreamText(rawBody: string): string {
+  return rawBody
+    .split('\n')
+    .filter((line) => line.startsWith('0:'))
+    .map((line) => {
+      try {
+        const value = JSON.parse(line.slice(2));
+        return typeof value === 'string' ? value : '';
+      } catch {
+        return '';
+      }
+    })
+    .join('');
+}
+
+/**
+ * Extracts data payloads from a Vercel AI SDK data-stream response body.
+ * Returns the first `documentChatThreadID` found in the stream, if any.
+ */
+function parseVercelAIStreamData(rawBody: string): { documentChatThreadID?: string } {
+  let documentChatThreadID: string | undefined;
+
+  for (const line of rawBody.split('\n')) {
+    if (!line.startsWith('2:')) { continue; }
+    try {
+      const items: unknown[] = JSON.parse(line.slice(2));
+      for (const item of items) {
+        if (item && typeof item === 'object' && 'documentChatThreadID' in item) {
+          documentChatThreadID = (item as Record<string, unknown>)
+            .documentChatThreadID as string;
+          break;
+        }
+      }
+    } catch {
+      // ignore malformed lines
+    }
+    if (documentChatThreadID) { break; }
+  }
+
+  return { documentChatThreadID };
+}
 
 export class MermaidChart {
   private clientID: string;
@@ -308,6 +361,81 @@ export class MermaidChart {
         typeof error.response === 'object' &&
         'status' in error.response &&
         error.response.status === 402
+      ) {
+        const axiosError = error as { response: { status: number; data?: unknown } };
+        throw new AICreditsLimitExceededError(
+          typeof axiosError.response.data === 'string'
+            ? axiosError.response.data
+            : 'AI credits limit exceeded',
+        );
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Chat with Mermaid AI about a diagram.
+   *
+   * Sends a single user message to the Mermaid AI chat endpoint.  The backend
+   * automatically fetches the full conversation history from the database
+   * (when `documentChatThreadID` is provided), so callers never need to track
+   * or resend previous messages.
+   *
+   * @param request - The chat request containing the user message and diagram context
+   * @returns The AI response text and the chat thread ID
+   * @throws {@link AICreditsLimitExceededError} if AI credits limit is exceeded (HTTP 402)
+   */
+  public async diagramChat(request: DiagramChatRequest): Promise<DiagramChatResponse> {
+    const { message, code = '', documentID, documentChatThreadID } = request;
+
+    // Send only the current user message. The backend will prepend the stored
+    // conversation history when autoFetchHistory is true (see AIChatRequestData).
+    const messages = [
+      {
+        id: uuid(),
+        role: 'user' as const,
+        content: message,
+        experimental_attachments: [] as [],
+      },
+    ];
+
+    const requestBody = {
+      messages,
+      code,
+      documentID,
+      documentChatThreadID,
+      // parentID null: the backend already handles finding the correct parent
+      parentID: null,
+      // Tell the backend to fetch DB history and prepend it before calling the AI.
+      autoFetchHistory: true,
+    };
+
+    try {
+      // responseType: 'text' buffers the full stream body as a plain string so we
+      // can parse the Vercel AI SDK data-stream format after the request completes.
+      const response = await this.axios.post<string>(URLS.rest.openai.chat, requestBody, {
+        responseType: 'text',
+        timeout: 120_000,
+      });
+
+      const rawBody = response.data;
+      const text = parseVercelAIStreamText(rawBody);
+      const { documentChatThreadID: returnedThreadID } = parseVercelAIStreamData(rawBody);
+
+      return {
+        text,
+        documentChatThreadID: returnedThreadID ?? documentChatThreadID,
+        documentID,
+      };
+    } catch (error: unknown) {
+      if (
+        error &&
+        typeof error === 'object' &&
+        'response' in error &&
+        error.response &&
+        typeof error.response === 'object' &&
+        'status' in error.response &&
+        (error as { response: { status: number } }).response.status === 402
       ) {
         const axiosError = error as { response: { status: number; data?: unknown } };
         throw new AICreditsLimitExceededError(
