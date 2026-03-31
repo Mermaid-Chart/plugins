@@ -58,20 +58,23 @@ function parseVercelAIStreamData(rawBody: string): { documentChatThreadID?: stri
   let documentChatThreadID: string | undefined;
 
   for (const line of rawBody.split('\n')) {
-    if (!line.startsWith('2:')) { continue; }
+    if (!line.startsWith('2:')) {
+      continue;
+    }
     try {
       const items: unknown[] = JSON.parse(line.slice(2));
       for (const item of items) {
         if (item && typeof item === 'object' && 'documentChatThreadID' in item) {
-          documentChatThreadID = (item as Record<string, unknown>)
-            .documentChatThreadID as string;
+          documentChatThreadID = (item as Record<string, unknown>).documentChatThreadID as string;
           break;
         }
       }
     } catch {
       // ignore malformed lines
     }
-    if (documentChatThreadID) { break; }
+    if (documentChatThreadID) {
+      break;
+    }
   }
 
   return { documentChatThreadID };
