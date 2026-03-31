@@ -392,7 +392,7 @@ export class MermaidChart {
    * @throws {@link AICreditsLimitExceededError} if AI credits limit is exceeded (HTTP 402)
    */
   public async diagramChat(request: DiagramChatRequest): Promise<DiagramChatResponse> {
-    const { message, documentID , code = '', documentChatThreadID } = request;
+    const { message, documentID, code = '', documentChatThreadID } = request;
 
     // Send only the current user message. The backend will prepend the stored
     // conversation history when autoFetchHistory is true (see AIChatRequestData).
