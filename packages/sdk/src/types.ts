@@ -129,14 +129,14 @@ export interface DiagramChatResponse {
   /** The full AI-generated response text (may contain Mermaid code blocks) */
   text: string;
   /**
+   * The document ID used for this conversation. Same as the one passed in the request.
+   */
+  documentID: string;
+  /**
    * The chat thread ID created or used for this conversation.
    * Pass this back as documentChatThreadID in subsequent calls to continue the thread.
    */
   documentChatThreadID?: string;
-  /**
-   * The document ID used for this conversation. Same as the one passed in the request.
-   */
-  documentID?: string;
 }
 
 /**
