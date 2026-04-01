@@ -27,6 +27,30 @@ const defaultBaseURL = 'https://www.mermaid.ai'; // "http://127.0.0.1:5174"
 const authorizationURLTimeout = 60_000;
 
 /**
+ * Re-throws an Axios error as {@link AICreditsLimitExceededError} when the
+ * server responds with HTTP 402, otherwise rethrows the original error.
+ */
+function throwIfAICreditsExceeded(error: unknown): never {
+  if (
+    error &&
+    typeof error === 'object' &&
+    'response' in error &&
+    error.response &&
+    typeof error.response === 'object' &&
+    'status' in error.response &&
+    (error as { response: { status: number } }).response.status === 402
+  ) {
+    const axiosError = error as { response: { status: number; data?: unknown } };
+    throw new AICreditsLimitExceededError(
+      typeof axiosError.response.data === 'string'
+        ? axiosError.response.data
+        : 'AI credits limit exceeded',
+    );
+  }
+  throw error as Error;
+}
+
+/**
  * Parses text tokens from a Vercel AI SDK data-stream response body.
  *
  * The stream format uses line prefixes:
@@ -359,23 +383,7 @@ export class MermaidChart {
       );
       return response.data;
     } catch (error: unknown) {
-      if (
-        error &&
-        typeof error === 'object' &&
-        'response' in error &&
-        error.response &&
-        typeof error.response === 'object' &&
-        'status' in error.response &&
-        error.response.status === 402
-      ) {
-        const axiosError = error as { response: { status: number; data?: unknown } };
-        throw new AICreditsLimitExceededError(
-          typeof axiosError.response.data === 'string'
-            ? axiosError.response.data
-            : 'AI credits limit exceeded',
-        );
-      }
-      throw error;
+      throwIfAICreditsExceeded(error);
     }
   }
 
@@ -421,7 +429,6 @@ export class MermaidChart {
       // can parse the Vercel AI SDK data-stream format after the request completes.
       const response = await this.axios.post<string>(URLS.rest.openai.chat, requestBody, {
         responseType: 'text',
-        timeout: 120_000,
       });
 
       const rawBody = response.data;
@@ -434,23 +441,7 @@ export class MermaidChart {
         documentID,
       };
     } catch (error: unknown) {
-      if (
-        error &&
-        typeof error === 'object' &&
-        'response' in error &&
-        error.response &&
-        typeof error.response === 'object' &&
-        'status' in error.response &&
-        (error as { response: { status: number } }).response.status === 402
-      ) {
-        const axiosError = error as { response: { status: number; data?: unknown } };
-        throw new AICreditsLimitExceededError(
-          typeof axiosError.response.data === 'string'
-            ? axiosError.response.data
-            : 'AI credits limit exceeded',
-        );
-      }
-      throw error;
+      throwIfAICreditsExceeded(error);
     }
   }
 }
