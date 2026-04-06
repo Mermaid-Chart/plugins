@@ -92,17 +92,15 @@ describe('MermaidChart', () => {
       await client.setAccessToken('test-access-token');
     });
 
-    it('should parse stream body into text and documentChatThreadID', async () => {
-      const streamBody = [
-        '0:"Hello, "',
-        '0:"here is your diagram!"',
-        '2:[{"documentChatThreadID":"thread-abc-123"}]',
-        'e:{"finishReason":"stop"}',
-        'd:{"finishReason":"stop"}',
-      ].join('\n');
+    it('should parse JSON response with text and documentChatThreadID', async () => {
+      const jsonResponse = {
+        text: 'Hello, here is your diagram!',
+        documentChatThreadID: 'thread-abc-123',
+        documentID: 'doc-123',
+      };
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      vi.spyOn((client as any).axios, 'post').mockResolvedValue({ data: streamBody });
+      vi.spyOn((client as any).axios, 'post').mockResolvedValue({ data: jsonResponse });
 
       const result = await client.diagramChat({
         message: 'Create a flowchart',
