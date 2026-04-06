@@ -50,63 +50,6 @@ function throwIfAICreditsExceeded(error: unknown): never {
   throw error as Error;
 }
 
-/**
- * Parses text tokens from a Vercel AI SDK data-stream response body.
- *
- * The stream format uses line prefixes:
- *   `0:"text_chunk"\n` – text token (JSON-encoded string)
- *   `2:[{"documentChatThreadID":"thread-abc-123"}]\n`      – data payload (JSON-encoded array)
- *   `e:{...}\n`        – step finish
- *   `d:{...}\n`        – stream done
- */
-function parseVercelAIStreamText(rawBody: string): string {
-  return rawBody
-    .split('\n')
-    .filter((line) => line.startsWith('0:'))
-    .map((line) => {
-      try {
-        const value = JSON.parse(line.slice(2));
-        return typeof value === 'string' ? value : '';
-      } catch {
-        return '';
-      }
-    })
-    .join('');
-}
-
-/**
- * Extracts data payloads from a Vercel AI SDK data-stream response body.
- * Returns the first `documentChatThreadID` found in the stream, if any.
- */
-function parseVercelAIStreamData(rawBody: string): { documentChatThreadID?: string } {
-  let documentChatThreadID: string | undefined;
-
-  for (const line of rawBody.split('\n')) {
-    if (!line.startsWith('2:')) {
-      continue;
-    }
-    try {
-      const items: unknown[] = JSON.parse(line.slice(2));
-      for (const item of items) {
-        if (item && typeof item === 'object' && 'documentChatThreadID' in item) {
-          const value = (item as Record<string, unknown>).documentChatThreadID;
-          if (typeof value === 'string') {
-            documentChatThreadID = value;
-            break;
-          }
-        }
-      }
-    } catch {
-      // ignore malformed lines
-    }
-    if (documentChatThreadID) {
-      break;
-    }
-  }
-
-  return { documentChatThreadID };
-}
-
 export class MermaidChart {
   private clientID: string;
   #baseURL!: string;
@@ -425,19 +368,15 @@ export class MermaidChart {
     };
 
     try {
-      // responseType: 'text' buffers the full stream body as a plain string so we
-      // can parse the Vercel AI SDK data-stream format after the request completes.
-      const response = await this.axios.post<string>(URLS.rest.openai.chat, requestBody, {
-        responseType: 'text',
-      });
-
-      const rawBody = response.data;
-      const text = parseVercelAIStreamText(rawBody);
-      const { documentChatThreadID: returnedThreadID } = parseVercelAIStreamData(rawBody);
+      const response = await this.axios.post<{
+        text: string;
+        documentChatThreadID?: string;
+        documentID: string;
+      }>(URLS.rest.openai.chat, requestBody);
 
       return {
-        text,
-        documentChatThreadID: returnedThreadID ?? documentChatThreadID,
+        text: response.data.text,
+        documentChatThreadID: response.data.documentChatThreadID ?? documentChatThreadID,
         documentID,
       };
     } catch (error: unknown) {
