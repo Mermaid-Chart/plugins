@@ -347,7 +347,9 @@ export class MermaidChart {
 
     try {
       const { data } = await this.axios.post<DiagramChatResponse>(URLS.rest.openai.chat, {
-        messages: [{ id: uuid(), role: 'user' as const, content: message, experimental_attachments: [] }],
+        messages: [
+          { id: uuid(), role: 'user' as const, content: message, experimental_attachments: [] },
+        ],
         code,
         documentID,
         documentChatThreadID,
