@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.4
+
+### Patch Changes
+
+- [#43](https://github.com/Mermaid-Chart/plugins/pull/43) [`d021928`](https://github.com/Mermaid-Chart/plugins/commit/d021928e6472c5077d1cb0e2b21b1c2b1541600a) Thanks [@Prashant-7718](https://github.com/Prashant-7718)! - Add diagramChat method to SDK for external clients like MCP to interact with Mermaid chat
+
 ## 0.2.3
 
 ### Patch Changes
