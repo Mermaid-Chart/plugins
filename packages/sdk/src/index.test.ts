@@ -87,6 +87,51 @@ describe('MermaidChart', () => {
     });
   });
 
+  describe('#diagramChat', () => {
+    beforeEach(async () => {
+      await client.setAccessToken('test-access-token');
+    });
+
+    it('should parse JSON response with text and documentChatThreadID', async () => {
+      const jsonResponse = {
+        text: 'Hello, here is your diagram!',
+        documentChatThreadID: 'thread-abc-123',
+        documentID: 'doc-123',
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      vi.spyOn((client as any).axios, 'post').mockResolvedValue({ data: jsonResponse });
+
+      const result = await client.diagramChat({
+        message: 'Create a flowchart',
+        documentID: 'doc-123',
+      });
+
+      expect(result.text).toBe('Hello, here is your diagram!');
+      expect(result.documentChatThreadID).toBe('thread-abc-123');
+      expect(result.documentID).toBe('doc-123');
+    });
+
+    it('should throw AICreditsLimitExceededError on 402', async () => {
+      // Mock the underlying axios call to simulate a 402 response from the API
+      // so the actual error-mapping logic inside diagramChat() is exercised.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      vi.spyOn((client as any).axios, 'post').mockRejectedValue({
+        response: {
+          status: 402,
+          data: 'AI credits limit exceeded',
+        },
+      });
+
+      await expect(
+        client.diagramChat({
+          message: 'Create a flowchart',
+          documentID: 'doc-123',
+        }),
+      ).rejects.toThrow(AICreditsLimitExceededError);
+    });
+  });
+
   describe('#repairDiagram', () => {
     beforeEach(async () => {
       await client.setAccessToken('test-access-token');
@@ -109,9 +154,14 @@ describe('MermaidChart', () => {
     });
 
     it('should throw AICreditsLimitExceededError on 402', async () => {
-      vi.spyOn(client, 'repairDiagram').mockRejectedValue(
-        new AICreditsLimitExceededError('AI credits limit exceeded'),
-      );
+      // Mock the underlying axios call to simulate a 402 response from the API
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      vi.spyOn((client as any).axios, 'post').mockRejectedValue({
+        response: {
+          status: 402,
+          data: 'AI credits limit exceeded',
+        },
+      });
 
       await expect(
         client.repairDiagram({

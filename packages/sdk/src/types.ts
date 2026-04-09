@@ -97,6 +97,40 @@ export interface RepairDiagramRequest {
 }
 
 /**
+ * Request parameters for chatting with the Mermaid AI about a diagram.
+ */
+export interface DiagramChatRequest {
+  /** The user's chat message / question. */
+  message: string;
+  /** The MermaidChart document ID to associate the chat thread with. */
+  documentID: string;
+  /** Mermaid diagram code for context. Defaults to an empty string. */
+  code?: string;
+  /**
+   * Existing chat thread ID to continue a conversation.
+   * Returned from a previous diagramChat() call.
+   * When provided, the backend automatically fetches the stored conversation
+   * history from the database so the AI has full context.
+   */
+  documentChatThreadID?: string;
+}
+
+/**
+ * Response from chatting with the Mermaid AI.
+ */
+export interface DiagramChatResponse {
+  /** The AI response text, which may contain Mermaid code blocks. */
+  text: string;
+  /** Same as the document ID passed in the request. */
+  documentID: string;
+  /**
+   * The chat thread ID created or used for this conversation.
+   * Pass this back as documentChatThreadID in subsequent calls to continue the thread.
+   */
+  documentChatThreadID?: string;
+}
+
+/**
  * Response from repairing a diagram.
  * Matches OpenAIGenerationResult from collab.
  */

@@ -10,6 +10,8 @@ import {
 import type {
   AuthState,
   AuthorizationData,
+  DiagramChatRequest,
+  DiagramChatResponse,
   Document,
   InitParams,
   MCDocument,
@@ -23,6 +25,30 @@ import { URLS } from './urls.js';
 
 const defaultBaseURL = 'https://www.mermaid.ai'; // "http://127.0.0.1:5174"
 const authorizationURLTimeout = 60_000;
+
+/**
+ * Re-throws an Axios error as {@link AICreditsLimitExceededError} when the
+ * server responds with HTTP 402, otherwise rethrows the original error.
+ */
+function throwIfAICreditsExceeded(error: unknown): never {
+  if (
+    error &&
+    typeof error === 'object' &&
+    'response' in error &&
+    error.response &&
+    typeof error.response === 'object' &&
+    'status' in error.response &&
+    (error as { response: { status: number } }).response.status === 402
+  ) {
+    const axiosError = error as { response: { status: number; data?: unknown } };
+    throw new AICreditsLimitExceededError(
+      typeof axiosError.response.data === 'string'
+        ? axiosError.response.data
+        : 'AI credits limit exceeded',
+    );
+  }
+  throw error as Error;
+}
 
 export class MermaidChart {
   private clientID: string;
@@ -300,23 +326,44 @@ export class MermaidChart {
       );
       return response.data;
     } catch (error: unknown) {
-      if (
-        error &&
-        typeof error === 'object' &&
-        'response' in error &&
-        error.response &&
-        typeof error.response === 'object' &&
-        'status' in error.response &&
-        error.response.status === 402
-      ) {
-        const axiosError = error as { response: { status: number; data?: unknown } };
-        throw new AICreditsLimitExceededError(
-          typeof axiosError.response.data === 'string'
-            ? axiosError.response.data
-            : 'AI credits limit exceeded',
-        );
-      }
-      throw error;
+      throwIfAICreditsExceeded(error);
+    }
+  }
+
+  /**
+   * Chat with Mermaid AI about a diagram.
+   *
+   * Sends a single user message to the Mermaid AI chat endpoint.  The backend
+   * automatically fetches the full conversation history from the database
+   * (when `documentChatThreadID` is provided), so callers never need to track
+   * or resend previous messages.
+   *
+   * @param request - The chat request containing the user message and diagram context
+   * @returns The AI response text and the chat thread ID
+   * @throws {@link AICreditsLimitExceededError} if AI credits limit is exceeded (HTTP 402)
+   */
+  public async diagramChat(request: DiagramChatRequest): Promise<DiagramChatResponse> {
+    const { message, documentID, code = '', documentChatThreadID } = request;
+
+    try {
+      const { data } = await this.axios.post<DiagramChatResponse>(URLS.rest.openai.chat, {
+        messages: [
+          { id: uuid(), role: 'user' as const, content: message, experimental_attachments: [] },
+        ],
+        code,
+        documentID,
+        documentChatThreadID,
+        parentID: null,
+        autoFetchHistory: true,
+      });
+
+      return {
+        text: data.text,
+        documentChatThreadID: data.documentChatThreadID ?? documentChatThreadID,
+        documentID,
+      };
+    } catch (error: unknown) {
+      throwIfAICreditsExceeded(error);
     }
   }
 }

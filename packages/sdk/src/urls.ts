@@ -41,6 +41,7 @@ export const URLS = {
     },
     openai: {
       repair: `/rest-api/openai/repair`,
+      chat: `/rest-api/openai/chat`,
     },
   },
   raw: (document: Pick<MCDocument, 'documentID' | 'major' | 'minor'>, theme: 'light' | 'dark') => {
