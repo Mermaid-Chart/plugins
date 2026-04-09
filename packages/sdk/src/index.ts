@@ -345,38 +345,19 @@ export class MermaidChart {
   public async diagramChat(request: DiagramChatRequest): Promise<DiagramChatResponse> {
     const { message, documentID, code = '', documentChatThreadID } = request;
 
-    // Send only the current user message. The backend will prepend the stored
-    // conversation history when autoFetchHistory is true (see AIChatRequestData).
-    const messages = [
-      {
-        id: uuid(),
-        role: 'user' as const,
-        content: message,
-        experimental_attachments: [] as [],
-      },
-    ];
-
-    const requestBody = {
-      messages,
-      code,
-      documentID,
-      documentChatThreadID,
-      // parentID null: the backend already handles finding the correct parent
-      parentID: null,
-      // Tell the backend to fetch DB history and prepend it before calling the AI.
-      autoFetchHistory: true,
-    };
-
     try {
-      const response = await this.axios.post<{
-        text: string;
-        documentChatThreadID?: string;
-        documentID: string;
-      }>(URLS.rest.openai.chat, requestBody);
+      const { data } = await this.axios.post<DiagramChatResponse>(URLS.rest.openai.chat, {
+        messages: [{ id: uuid(), role: 'user' as const, content: message, experimental_attachments: [] }],
+        code,
+        documentID,
+        documentChatThreadID,
+        parentID: null,
+        autoFetchHistory: true,
+      });
 
       return {
-        text: response.data.text,
-        documentChatThreadID: response.data.documentChatThreadID ?? documentChatThreadID,
+        text: data.text,
+        documentChatThreadID: data.documentChatThreadID ?? documentChatThreadID,
         documentID,
       };
     } catch (error: unknown) {
