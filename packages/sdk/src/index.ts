@@ -338,7 +338,9 @@ export class MermaidChart {
    * @param request - `originalDiagram` and `editedDiagram` only
    * @throws {@link AICreditsLimitExceededError} if credits limit exceeded (HTTP 402)
    */
-  public async mermaidPrSuggestion(request: MermaidPrSuggestionRequest): Promise<MermaidPrSuggestionResponse> {
+  public async mermaidPrSuggestion(
+    request: MermaidPrSuggestionRequest,
+  ): Promise<MermaidPrSuggestionResponse> {
     try {
       const response = await this.axios.post<MermaidPrSuggestionResponse>(
         URLS.rest.openai.prSummary,
