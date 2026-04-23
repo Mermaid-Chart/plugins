@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MermaidChart } from './index.js';
 import { AICreditsLimitExceededError } from './errors.js';
 import type { AuthorizationData } from './types.js';
+import { URLS } from './urls.js';
 
 import { OAuth2Client } from '@badgateway/oauth2-client';
 
@@ -172,27 +173,35 @@ describe('MermaidChart', () => {
     });
   });
 
-  describe('#mermaidPrSuggestion', () => {
+  describe('#suggestPrSummary', () => {
     beforeEach(async () => {
       await client.setAccessToken('test-access-token');
     });
 
-    it('should return title and description from diagram diff', async () => {
-      vi.spyOn(client, 'mermaidPrSuggestion').mockResolvedValue({
+    it('should POST to the pr-summary endpoint with the request body and return response.data', async () => {
+      const jsonResponse = {
         title: 'Add validation step to flowchart',
         description: '## What changed\n- Added node C',
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const postSpy = vi.spyOn((client as any).axios, 'post').mockResolvedValue({
+        data: jsonResponse,
       });
 
-      const result = await client.mermaidPrSuggestion({
+      const requestBody = {
         originalDiagram: 'flowchart TD\n  A --> B',
         editedDiagram: 'flowchart TD\n  A --> B\n  B --> C[Validate]',
-      });
+      };
 
-      expect(result.title).toContain('validation');
-      expect(result.description).toContain('What changed');
+      const result = await client.suggestPrSummary(requestBody);
+
+      expect(postSpy).toHaveBeenCalledWith(URLS.rest.openai.prSummary, requestBody);
+      expect(result).toEqual(jsonResponse);
     });
 
     it('should throw AICreditsLimitExceededError on 402', async () => {
+      // Mock the underlying axios call so the error mapping in suggestPrSummary is exercised.
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       vi.spyOn((client as any).axios, 'post').mockRejectedValue({
         response: {
@@ -202,7 +211,7 @@ describe('MermaidChart', () => {
       });
 
       await expect(
-        client.mermaidPrSuggestion({
+        client.suggestPrSummary({
           originalDiagram: 'flowchart TD\n  A --> B',
           editedDiagram: 'flowchart TD\n  A --> B\n  B --> C',
         }),

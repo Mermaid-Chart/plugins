@@ -97,9 +97,9 @@ export interface RepairDiagramRequest {
 }
 
 /**
- * Only the two diagram versions are sent; the server derives user plan and usage from the session.
+ * Only the two diagram versions are sent; the server derives user plan and usage from the auth context provided by the access token.
  */
-export interface MermaidPrSuggestionRequest {
+export interface PrSummaryRequest {
   originalDiagram: string;
   editedDiagram: string;
 }
@@ -107,7 +107,7 @@ export interface MermaidPrSuggestionRequest {
 /**
  * Public response: suggested PR title and markdown description
  */
-export interface MermaidPrSuggestionResponse {
+export interface PrSummaryResponse {
   title: string;
   description: string;
 }

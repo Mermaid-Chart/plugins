@@ -19,8 +19,8 @@ import type {
   MCUser,
   RepairDiagramRequest,
   RepairDiagramResponse,
-  MermaidPrSuggestionRequest,
-  MermaidPrSuggestionResponse,
+  PrSummaryRequest,
+  PrSummaryResponse,
   AICreditsUsage,
 } from './types.js';
 import { URLS } from './urls.js';
@@ -338,11 +338,9 @@ export class MermaidChart {
    * @param request - `originalDiagram` and `editedDiagram` only
    * @throws {@link AICreditsLimitExceededError} if credits limit exceeded (HTTP 402)
    */
-  public async mermaidPrSuggestion(
-    request: MermaidPrSuggestionRequest,
-  ): Promise<MermaidPrSuggestionResponse> {
+  public async suggestPrSummary(request: PrSummaryRequest): Promise<PrSummaryResponse> {
     try {
-      const response = await this.axios.post<MermaidPrSuggestionResponse>(
+      const response = await this.axios.post<PrSummaryResponse>(
         URLS.rest.openai.prSummary,
         request,
       );
