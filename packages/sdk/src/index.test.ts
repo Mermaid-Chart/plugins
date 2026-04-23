@@ -171,4 +171,42 @@ describe('MermaidChart', () => {
       ).rejects.toThrow(AICreditsLimitExceededError);
     });
   });
+
+  describe('#mermaidPrSuggestion', () => {
+    beforeEach(async () => {
+      await client.setAccessToken('test-access-token');
+    });
+
+    it('should return title and description from diagram diff', async () => {
+      vi.spyOn(client, 'mermaidPrSuggestion').mockResolvedValue({
+        title: 'Add validation step to flowchart',
+        description: '## What changed\n- Added node C',
+      });
+
+      const result = await client.mermaidPrSuggestion({
+        originalDiagram: 'flowchart TD\n  A --> B',
+        editedDiagram: 'flowchart TD\n  A --> B\n  B --> C[Validate]',
+      });
+
+      expect(result.title).toContain('validation');
+      expect(result.description).toContain('What changed');
+    });
+
+    it('should throw AICreditsLimitExceededError on 402', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      vi.spyOn((client as any).axios, 'post').mockRejectedValue({
+        response: {
+          status: 402,
+          data: 'AI credits limit exceeded',
+        },
+      });
+
+      await expect(
+        client.mermaidPrSuggestion({
+          originalDiagram: 'flowchart TD\n  A --> B',
+          editedDiagram: 'flowchart TD\n  A --> B\n  B --> C',
+        }),
+      ).rejects.toThrow(AICreditsLimitExceededError);
+    });
+  });
 });

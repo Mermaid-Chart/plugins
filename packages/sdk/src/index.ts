@@ -19,6 +19,8 @@ import type {
   MCUser,
   RepairDiagramRequest,
   RepairDiagramResponse,
+  MermaidPrSuggestionRequest,
+  MermaidPrSuggestionResponse,
   AICreditsUsage,
 } from './types.js';
 import { URLS } from './urls.js';
@@ -322,6 +324,24 @@ export class MermaidChart {
     try {
       const response = await this.axios.post<RepairDiagramResponse>(
         URLS.rest.openai.repair,
+        request,
+      );
+      return response.data;
+    } catch (error: unknown) {
+      throwIfAICreditsExceeded(error);
+    }
+  }
+
+  /**
+   * Suggests a pull request title and body (markdown) from a before/after diagram diff (Mermaid AI).
+   *
+   * @param request - `originalDiagram` and `editedDiagram` only
+   * @throws {@link AICreditsLimitExceededError} if credits limit exceeded (HTTP 402)
+   */
+  public async mermaidPrSuggestion(request: MermaidPrSuggestionRequest): Promise<MermaidPrSuggestionResponse> {
+    try {
+      const response = await this.axios.post<MermaidPrSuggestionResponse>(
+        URLS.rest.openai.prSummary,
         request,
       );
       return response.data;

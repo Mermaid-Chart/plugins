@@ -97,6 +97,22 @@ export interface RepairDiagramRequest {
 }
 
 /**
+ * Only the two diagram versions are sent; the server derives user plan and usage from the session.
+ */
+export interface MermaidPrSuggestionRequest {
+  originalDiagram: string;
+  editedDiagram: string;
+}
+
+/**
+ * Public response: suggested PR title and markdown description
+ */
+export interface MermaidPrSuggestionResponse {
+  title: string;
+  description: string;
+}
+
+/**
  * Request parameters for chatting with the Mermaid AI about a diagram.
  */
 export interface DiagramChatRequest {
