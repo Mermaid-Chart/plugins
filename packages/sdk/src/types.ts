@@ -105,11 +105,13 @@ export interface PrSummaryRequest {
 }
 
 /**
- * Public response: suggested PR title and markdown description
+ * Public response: suggested PR title and markdown description, branch name, and commit message.
  */
 export interface PrSummaryResponse {
   title: string;
   description: string;
+  branchName?: string;
+  commitMessage?: string;
 }
 
 /**

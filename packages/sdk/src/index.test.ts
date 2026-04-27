@@ -182,6 +182,8 @@ describe('MermaidChart', () => {
       const jsonResponse = {
         title: 'Add validation step to flowchart',
         description: '## What changed\n- Added node C',
+        branchName: 'feature/flowchart-validation',
+        commitMessage: 'Add validation node C',
       };
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
