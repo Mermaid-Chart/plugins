@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.5
+
+### Patch Changes
+
+- [#45](https://github.com/Mermaid-Chart/plugins/pull/45) [`072fd50`](https://github.com/Mermaid-Chart/plugins/commit/072fd50121501a6ce03c22524fb8b0c88d31e708) Thanks [@Prashant-7718](https://github.com/Prashant-7718)! - Add a suggestPrSummary method to the SDK that generates PR details based on Mermaid diagram changes, including the branch name, title, commit message, and description.
+
 ## 0.2.4
 
 ### Patch Changes
