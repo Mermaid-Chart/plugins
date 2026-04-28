@@ -242,3 +242,28 @@ describe('repairDiagram', () => {
     }
   }, 60000); // 60 seconds timeout for AI repair operations
 });
+
+describe('suggestPrSummary', () => {
+  it('should generate PR summary from diagram differences', async () => {
+    const originalDiagram = `flowchart TD\n A[Start] --> B[Process]\n B --> C[End]`;
+    const editedDiagram = `flowchart TD\n A[Start] --> B[Process]\n B --> D[Validate]\n D --> C[End]`;
+
+    try {
+      const result = await client.suggestPrSummary({
+        originalDiagram,
+        editedDiagram,
+      });
+
+      // Verify response structure
+      expect(result).toHaveProperty('title');
+      expect(result).toHaveProperty('description');
+      expect(result).toHaveProperty('branchName');
+      expect(result).toHaveProperty('commitMessage');
+    } catch (error) {
+      if (error instanceof AICreditsLimitExceededError) {
+        return; // Credits exceeded is acceptable for E2E test
+      }
+      throw error;
+    }
+  }, 60000); // 60 seconds timeout for AI operations
+});

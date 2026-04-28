@@ -41,6 +41,7 @@ export const URLS = {
     },
     openai: {
       repair: `/rest-api/openai/repair`,
+      prSummary: `/rest-api/openai/pr-summary`,
       chat: `/rest-api/openai/chat`,
     },
   },

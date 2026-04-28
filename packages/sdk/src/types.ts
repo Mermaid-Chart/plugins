@@ -97,6 +97,24 @@ export interface RepairDiagramRequest {
 }
 
 /**
+ * Only the two diagram versions are sent; the server derives user plan and usage from the auth context provided by the access token.
+ */
+export interface PrSummaryRequest {
+  originalDiagram: string;
+  editedDiagram: string;
+}
+
+/**
+ * Public response: suggested PR title and markdown description, branch name, and commit message.
+ */
+export interface PrSummaryResponse {
+  title: string;
+  description: string;
+  branchName: string;
+  commitMessage: string;
+}
+
+/**
  * Request parameters for chatting with the Mermaid AI about a diagram.
  */
 export interface DiagramChatRequest {
