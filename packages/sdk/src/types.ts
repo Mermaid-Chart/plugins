@@ -110,8 +110,8 @@ export interface PrSummaryRequest {
 export interface PrSummaryResponse {
   title: string;
   description: string;
-  branchName?: string;
-  commitMessage?: string;
+  branchName: string;
+  commitMessage: string;
 }
 
 /**

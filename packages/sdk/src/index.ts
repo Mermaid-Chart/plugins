@@ -334,7 +334,7 @@ export class MermaidChart {
 
   /**
    * Suggests a pull request title and body (markdown) from a before/after diagram diff (Mermaid AI).
-   * The response also include  `branchName` and `commitMessage`.
+   * The response also includes `branchName` and `commitMessage`.
    *
    * @param request - `originalDiagram` and `editedDiagram` only
    * @throws {@link AICreditsLimitExceededError} if credits limit exceeded (HTTP 402)
