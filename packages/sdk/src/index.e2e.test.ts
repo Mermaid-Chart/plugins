@@ -267,3 +267,29 @@ describe('suggestPrSummary', () => {
     }
   }, 60000); // 60 seconds timeout for AI operations
 });
+
+describe('regenerateDiagram', () => {
+  it('should regenerate a diagram from updated source files', async () => {
+    const code = `flowchart TD\n  A[Start] --> B[Process]\n  B --> C[End]`;
+    const sourceFiles = [
+      'function processOrder(order) {\n  validateOrder(order);\n  shipOrder(order);\n}',
+    ];
+
+    try {
+      const result = await client.regenerateDiagram({
+        code,
+        sourceFiles,
+      });
+
+      // Verify response structure
+      expect(result).toHaveProperty('result');
+      expect(result).toHaveProperty('code');
+      expect(['ok', 'fail']).toContain(result.result);
+    } catch (error) {
+      if (error instanceof AICreditsLimitExceededError) {
+        return; // Credits exceeded is acceptable for E2E test
+      }
+      throw error;
+    }
+  }, 60000); // 60 seconds timeout for AI operations
+});
