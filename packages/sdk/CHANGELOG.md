@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.6
+
+### Patch Changes
+
+- [#47](https://github.com/Mermaid-Chart/plugins/pull/47) [`0d7022e`](https://github.com/Mermaid-Chart/plugins/commit/0d7022e0cc44ecf2990e01b032e81f650b97bc8f) Thanks [@Prashant-7718](https://github.com/Prashant-7718)! - Add a regenerate method to the SDK that complements our Mermaid Diagram Sync GitHub App functionality. This method should accept the existing Mermaid diagram content along with source file changes, and regenerate the diagram based on those updates while preserving the overall diagram structure and intent.
+
 ## 0.2.5
 
 ### Patch Changes
