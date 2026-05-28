@@ -220,5 +220,4 @@ describe('MermaidChart', () => {
       ).rejects.toThrow(AICreditsLimitExceededError);
     });
   });
-
 });
