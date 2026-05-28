@@ -276,6 +276,8 @@ describe('regenerateDiagram', () => {
     ];
 
     try {
+      const creditsBefore = await client.getAICredits();
+
       const result = await client.regenerateDiagram({
         code,
         sourceFiles,
@@ -285,6 +287,21 @@ describe('regenerateDiagram', () => {
       expect(result).toHaveProperty('result');
       expect(result).toHaveProperty('code');
       expect(['ok', 'fail']).toContain(result.result);
+
+      // When the AI successfully regenerates the diagram, creditUsage should be present
+      // and credits should have been deducted
+      if (result.result === 'ok' && result.solved === true) {
+        expect(result.creditUsage).toMatchObject({
+          creditsToDeduct: expect.any(Number),
+          baseCost: expect.any(Number),
+          reason: expect.any(String),
+        });
+
+        const creditsAfter = await client.getAICredits();
+        expect(creditsAfter.aiCredits.remaining).toBe(
+          creditsBefore.aiCredits.remaining - result.creditUsage!.creditsToDeduct,
+        );
+      }
     } catch (error) {
       if (error instanceof AICreditsLimitExceededError) {
         return; // Credits exceeded is acceptable for E2E test
