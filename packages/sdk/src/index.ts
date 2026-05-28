@@ -21,6 +21,8 @@ import type {
   RepairDiagramResponse,
   PrSummaryRequest,
   PrSummaryResponse,
+  RegenerateDiagramRequest,
+  RegenerateDiagramResponse,
   AICreditsUsage,
 } from './types.js';
 import { URLS } from './urls.js';
@@ -343,6 +345,26 @@ export class MermaidChart {
     try {
       const response = await this.axios.post<PrSummaryResponse>(
         URLS.rest.openai.prSummary,
+        request,
+      );
+      return response.data;
+    } catch (error: unknown) {
+      throwIfAICreditsExceeded(error);
+    }
+  }
+
+  /**
+   * Regenerates a Mermaid diagram based on updated source files using AI.
+   *
+   * @param request - `code` (current diagram source) and `sourceFiles` (full contents of related source files)
+   * @throws {@link AICreditsLimitExceededError} if credits limit exceeded (HTTP 402)
+   */
+  public async regenerateDiagram(
+    request: RegenerateDiagramRequest,
+  ): Promise<RegenerateDiagramResponse> {
+    try {
+      const response = await this.axios.post<RegenerateDiagramResponse>(
+        URLS.rest.openai.regenerate,
         request,
       );
       return response.data;

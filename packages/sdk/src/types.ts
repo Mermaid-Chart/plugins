@@ -115,6 +115,42 @@ export interface PrSummaryResponse {
 }
 
 /**
+ * Request parameters for regenerating a Mermaid diagram from updated source files.
+ */
+export interface RegenerateDiagramRequest {
+  /** The current Mermaid diagram source to be regenerated. */
+  code: string;
+  /** Ordered full contents of the source files that the diagram is based on. */
+  sourceFiles: string[];
+}
+
+/**
+ * Response from regenerating a Mermaid diagram.
+ */
+export interface RegenerateDiagramResponse {
+  /**
+   * The status of the regeneration: 'ok' if a valid mermaid code block was generated, 'fail' otherwise.
+   */
+  result: 'ok' | 'fail';
+  /**
+   * Markdown message that may contain a valid mermaid code block.
+   */
+  code: string;
+  /**
+   * Whether the diagram regeneration was successful.
+   */
+  solved?: boolean;
+  /**
+   * Credit usage for client-side deduction (only present when solved).
+   */
+  creditUsage?: {
+    creditsToDeduct: number;
+    baseCost: number;
+    reason: string;
+  };
+}
+
+/**
  * Request parameters for chatting with the Mermaid AI about a diagram.
  */
 export interface DiagramChatRequest {
