@@ -22,6 +22,10 @@ export interface AuthState {
 export interface MCUser {
   fullName: string;
   emailAddress: string;
+  analyticsID: string;
+  avatarUrl: string | null;
+  mermaidTheme?: string;
+  mermaidLook?: string;
 }
 
 export interface AICreditsUsage {

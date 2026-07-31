@@ -37,6 +37,8 @@ describe('MermaidChart', () => {
       return {
         fullName: 'Test User',
         emailAddress: 'test@invalid.invalid',
+        analyticsID: '00000000-0000-0000-0000-0000000000aa',
+        avatarUrl: null,
       };
     });
   });
