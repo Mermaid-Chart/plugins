@@ -82,6 +82,13 @@ describe('getUser', () => {
     expect(user).toHaveProperty('analyticsID');
     expect(typeof user.analyticsID).toBe('string');
     expect(user.analyticsID.length).toBeGreaterThan(0);
+    expect(user.avatarUrl === null || typeof user.avatarUrl === 'string').toBe(true);
+    if (user.mermaidTheme !== undefined) {
+      expect(typeof user.mermaidTheme).toBe('string');
+    }
+    if (user.mermaidLook !== undefined) {
+      expect(typeof user.mermaidLook).toBe('string');
+    }
   });
 });
 
