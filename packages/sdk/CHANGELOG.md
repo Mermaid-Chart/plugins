@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.7
+
+### Patch Changes
+
+- [#49](https://github.com/Mermaid-Chart/plugins/pull/49) [`12d9d97`](https://github.com/Mermaid-Chart/plugins/commit/12d9d97f66b651e83e21687e1e05d3d2aa9c2f79) Thanks [@Prashant-7718](https://github.com/Prashant-7718)! - Add `analyticsID`, `avatarUrl`, `mermaidTheme`, and `mermaidLook` return types to `getUser()`
+
 ## 0.2.6
 
 ### Patch Changes
