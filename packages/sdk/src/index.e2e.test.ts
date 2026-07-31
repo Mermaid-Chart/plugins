@@ -79,6 +79,9 @@ describe('getUser', () => {
     const user = await client.getUser();
 
     expect(user).toHaveProperty('emailAddress');
+    expect(user).toHaveProperty('analyticsID');
+    expect(typeof user.analyticsID).toBe('string');
+    expect(user.analyticsID.length).toBeGreaterThan(0);
   });
 });
 

@@ -2,4 +2,4 @@
 '@mermaidchart/sdk': patch
 ---
 
-Added the optional analyticsID for MCUser so we can track the evetns on mermaid mcp server
+Added required analyticsID to MCUser so consumers (e.g. mermaid-mcp) can use the stable Mixpanel identity

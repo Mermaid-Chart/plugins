@@ -22,7 +22,7 @@ export interface AuthState {
 export interface MCUser {
   fullName: string;
   emailAddress: string;
-  analyticsID?: string;
+  analyticsID: string;
 }
 
 export interface AICreditsUsage {
