@@ -60,6 +60,7 @@ const mockedMCUser = {
   fullName: 'My Test User',
   emailAddress: 'my-test-user@test.invalid',
   analyticsID: '00000000-0000-0000-0000-0000000000aa',
+  avatarUrl: null,
 } as const satisfies MCUser;
 const mockedProjects = [
   {
