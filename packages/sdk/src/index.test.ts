@@ -230,7 +230,8 @@ describe('MermaidChart', () => {
 
     it('should POST to the document share endpoint with the request body and return response.data', async () => {
       const jsonResponse = {
-        shareUrl: 'https://test.mermaidchart.invalid/app/projects/proj-1/diagrams/doc-123/share/invite/test-token',
+        shareUrl:
+          'https://test.mermaidchart.invalid/app/projects/proj-1/diagrams/doc-123/share/invite/test-token',
         access: 'View' as const,
       };
 
@@ -246,6 +247,27 @@ describe('MermaidChart', () => {
       expect(postSpy).toHaveBeenCalledWith(
         URLS.rest.documents.pick({ documentID: 'doc-123' }).share,
         requestBody,
+      );
+      expect(result).toEqual(jsonResponse);
+    });
+
+    it('should default to an empty request body when none is provided', async () => {
+      const jsonResponse = {
+        shareUrl:
+          'https://test.mermaidchart.invalid/app/projects/proj-1/diagrams/doc-123/share/invite/test-token',
+        access: 'View' as const,
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const postSpy = vi.spyOn((client as any).axios, 'post').mockResolvedValue({
+        data: jsonResponse,
+      });
+
+      const result = await client.shareDiagram('doc-123');
+
+      expect(postSpy).toHaveBeenCalledWith(
+        URLS.rest.documents.pick({ documentID: 'doc-123' }).share,
+        {},
       );
       expect(result).toEqual(jsonResponse);
     });

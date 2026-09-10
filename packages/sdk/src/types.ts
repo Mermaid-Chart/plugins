@@ -198,7 +198,6 @@ export interface ShareDiagramRequest {
   emailAddresses?: string[];
 }
 
-
 export interface ShareDiagramResponse {
   shareUrl: string;
   access: ShareDiagramAccess;
