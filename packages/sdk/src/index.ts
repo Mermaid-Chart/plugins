@@ -24,8 +24,12 @@ import type {
   RegenerateDiagramRequest,
   RegenerateDiagramResponse,
   AICreditsUsage,
+  ShareDiagramRequest,
+  ShareDiagramResponse,
 } from './types.js';
 import { URLS } from './urls.js';
+
+export type { ShareDiagramAccess, ShareDiagramRequest, ShareDiagramResponse } from './types.js';
 
 const defaultBaseURL = 'https://www.mermaid.ai'; // "http://127.0.0.1:5174"
 const authorizationURLTimeout = 60_000;
@@ -313,6 +317,24 @@ export class MermaidChart {
   ) {
     const raw = await this.axios.get<string>(URLS.raw(document, theme).svg);
     return raw.data;
+  }
+
+  /**
+   * Generates a copy-link style share URL for a diagram, so it can be shared
+   * with a colleague without opening the Mermaid Chart web app.
+   *
+   * @param documentID - The ID of the document to share.
+   * @param request - Optional access level to grant recipients (defaults to 'View').
+   */
+  public async shareDiagram(
+    documentID: MCDocument['documentID'],
+    request: ShareDiagramRequest = {},
+  ): Promise<ShareDiagramResponse> {
+    const response = await this.axios.post<ShareDiagramResponse>(
+      URLS.rest.documents.pick({ documentID }).share,
+      request,
+    );
+    return response.data;
   }
 
   /**
