@@ -201,7 +201,6 @@ export interface ShareDiagramRequest {
 export interface ShareDiagramResponse {
   shareUrl: string;
   access: ShareDiagramAccess;
-  emailsSent?: string[];
 }
 
 /**
