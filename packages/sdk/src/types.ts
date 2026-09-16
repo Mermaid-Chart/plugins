@@ -196,6 +196,7 @@ export type ShareDiagramAccess = 'Edit' | 'Comment' | 'View';
 export interface ShareDiagramRequest {
   access?: ShareDiagramAccess;
   emailAddresses?: string[];
+  source?: string;
 }
 
 export interface ShareDiagramResponse {
