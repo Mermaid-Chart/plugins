@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.8
+
+### Patch Changes
+
+- [#51](https://github.com/Mermaid-Chart/plugins/pull/51) [`265074c`](https://github.com/Mermaid-Chart/plugins/commit/265074c5cc68c047338e63fc9485d91a00200c3c) Thanks [@Prashant-7718](https://github.com/Prashant-7718)! - Added share diagram endpoint for mermaid commercial plugin
+
 ## 0.2.7
 
 ### Patch Changes
