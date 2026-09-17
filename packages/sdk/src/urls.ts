@@ -23,6 +23,7 @@ export const URLS = {
         return {
           presentations: `${baseURL}/presentations`,
           self: baseURL,
+          share: `${baseURL}/share`,
           withVersion: `${baseURL}${queryParams}`,
         };
       },

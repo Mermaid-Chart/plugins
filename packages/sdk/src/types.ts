@@ -189,6 +189,22 @@ export interface DiagramChatResponse {
 }
 
 /**
+ * Access level to grant via a generated share link.
+ */
+export type ShareDiagramAccess = 'Edit' | 'Comment' | 'View';
+
+export interface ShareDiagramRequest {
+  access?: ShareDiagramAccess;
+  emailAddresses?: string[];
+  source?: string;
+}
+
+export interface ShareDiagramResponse {
+  shareUrl: string;
+  access: ShareDiagramAccess;
+}
+
+/**
  * Response from repairing a diagram.
  * Matches OpenAIGenerationResult from collab.
  */
